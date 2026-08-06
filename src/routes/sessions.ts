@@ -1,0 +1,196 @@
+import { Router, Response } from "express";
+import { Session } from "../models/Session";
+import { Group } from "../models/Group";
+import { auth, AuthRequest } from "../middleware/auth";
+import { requireRole } from "../middleware/rbac";
+
+const router = Router();
+
+// Get all sessions (filtered by group or teacher)
+router.get(
+  "/",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { groupId } = req.query;
+      let sessions;
+
+      if (req.user!.role === "TEACHER") {
+        const query: any = { teacherId: req.user!._id };
+        if (groupId) query.groupId = groupId;
+        sessions = await Session.find(query)
+          .populate("groupId", "title subject")
+          .sort("-date");
+      } else if (req.user!.role === "STUDENT") {
+        const groups = await Group.find({ students: req.user!._id });
+        const groupIds = groups.map((g) => g._id);
+        const query: any = { groupId: { $in: groupIds } };
+        if (groupId) query.groupId = groupId;
+        sessions = await Session.find(query)
+          .populate("groupId", "title subject")
+          .sort("-date");
+      } else {
+        const query: any = {};
+        if (groupId) query.groupId = groupId;
+        sessions = await Session.find(query)
+          .populate("groupId", "title subject")
+          .populate("teacherId", "name")
+          .sort("-date");
+      }
+
+      res.json(sessions);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching sessions", error: error.message });
+    }
+  }
+);
+
+// Create session (teacher only)
+router.post(
+  "/",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { groupId, title, date } = req.body;
+
+      // Verify teacher owns the group
+      const group = await Group.findById(groupId);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden: You can only create sessions for your own groups" });
+        return;
+      }
+
+      const session = await Session.create({
+        groupId,
+        teacherId: req.user!._id,
+        title,
+        date,
+      });
+
+      res.status(201).json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating session", error: error.message });
+    }
+  }
+);
+
+// Get session by ID
+router.get(
+  "/:id",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const session = await Session.findById(req.params.id)
+        .populate("groupId", "title subject grade googleMeetLink")
+        .populate("teacherId", "name email phone");
+
+      if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+      }
+
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching session", error: error.message });
+    }
+  }
+);
+
+// Update session (teacher only)
+router.put(
+  "/:id",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const session = await Session.findById(req.params.id);
+
+      if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+      }
+
+      if (session.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const { title, date, status } = req.body;
+
+      if (title) session.title = title;
+      if (date) session.date = date;
+      if (status) session.status = status;
+
+      await session.save();
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating session", error: error.message });
+    }
+  }
+);
+
+// Update video path after upload
+router.post(
+  "/:id/video",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { supabaseVideoPath } = req.body;
+      const session = await Session.findById(req.params.id);
+
+      if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+      }
+
+      if (session.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      session.supabaseVideoPath = supabaseVideoPath;
+      session.status = "COMPLETED";
+      await session.save();
+
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating video", error: error.message });
+    }
+  }
+);
+
+// Delete session
+router.delete(
+  "/:id",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const session = await Session.findById(req.params.id);
+
+      if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+      }
+
+      if (session.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      await Session.findByIdAndDelete(req.params.id);
+      res.json({ message: "Session deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting session", error: error.message });
+    }
+  }
+);
+
+export default router;
