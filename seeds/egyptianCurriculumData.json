@@ -1,0 +1,1198 @@
+{
+  "stages": [
+    {
+      "name": "المرحلة الابتدائية",
+      "nameEn": "Primary Stage",
+      "key": "PRIMARY",
+      "grades": [
+        {
+          "name": "الصف الأول الابتدائي",
+          "nameEn": "Primary 1",
+          "level": 1,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القراءة", "الكتابة", "الإملاء"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القراءة", "الكتابة", "الإملاء"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Letters", "Numbers", "Colors"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Animals", "Family", "Food"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد", "الجمع", "الطرح"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الأشكال", "القياس", "الجمع والطرح"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["السيرة", "العبادات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الأخلاق", "الآداب"] }
+              ]
+            },
+            {
+              "name": "التربية الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأسرة", "المدرسة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الحي", "المجتمع"] }
+              ]
+            },
+            {
+              "name": "التربية العلمية",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الحيوان", "النبات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الماء", "الهواء"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "التشكيل"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الألوان", "القصاصات"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الترانيم", "العزف"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثاني الابتدائي",
+          "nameEn": "Primary 2",
+          "level": 2,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القراءة", "القواعد", "الإملاء", "الخط"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القراءة", "القواعد", "الإملاء", "الخط"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Sentences", "Vocabulary", "Grammar"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Reading", "Writing", "Speaking"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد حتى ٩٩", "الجمع", "الطرح", "الضرب"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القسمة", "الكسور", "القياس", "الهندسة"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["قصص الأنبياء", "العبادات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الأخلاق", "الآداب الإسلامية"] }
+              ]
+            },
+            {
+              "name": "التربية الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["بلدنا مصر", "المناخ"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الإمدادات", "البيئة"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الحيوانات", "النباتات", "جسم الإنسان"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الماء", "الهواء", "الطاقة"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "التشكيل", "ال origami"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الألوان", "المناظر الطبيعية"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الإيقاع", "الأغاني الوطنية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الترانيم", "الكورال"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثالث الابتدائي",
+          "nameEn": "Primary 3",
+          "level": 3,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القراءة", "النحو", "الصرف", "الإملاء", "التعبير"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القراءة", "النحو", "الصرف", "الإملاء", "التعبير"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Vocabulary"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Conversation"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد حتى ٩٩٩", "الجمع", "الطرح", "الضرب", "القسمة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الكسور", "الهندسة", "القياس", "الجدول"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السيرة", "الأخلاق", "العبادات"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا مصر", "تاريخ مصر"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["المجتمع المصري", "البيئة"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الكائنات الحية", "جسم الإنسان", "النباتات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الماء", "الهواء", "الطاقة", "المواد"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مقدمة في الحاسب", "الويندوز", "لوحة المفاتيح"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الورد", "الرسم", "الإنترنت"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "التشكيل", "النحت"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الألوان", "التصميم"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العزف", "الكورال"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الرابع الابتدائي",
+          "nameEn": "Primary 4",
+          "level": 4,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الإملاء"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الإملاء"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading Comprehension", "Writing", "Listening"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading Comprehension", "Writing", "Speaking"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد حتى ٩٩٩٩", "العمليات", "الكسور", "الهندسة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القياس", "المساحة", "الحجم", "الجدول البيانية"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه", "السيرة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العقيدة", "الأخلاق", "العبادات"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا مصر", "تاريخ مصر القديمة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["تاريخ مصر الإسلامية", "المجتمع"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جسم الإنسان", "النباتات", "الحيوانات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الطاقة", "الكهرباء", "المغناطيس"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الوورد المتقدم", "الإكسل", "الإنترنت"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["البرمجة", "الباوربوينت", "الأمان الإلكتروني"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "النحت", "الخزف"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الطباعة", "التصميم"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_4",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية الموسيقية", "الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العزف", "الترنيمة", "الاستماع"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الخامس الابتدائي",
+          "nameEn": "Primary 5",
+          "level": 5,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير الكتابي"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير الكتابي"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Vocabulary"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Project"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد الكبيرة", "الجمع", "الطرح", "الضرب", "القسمة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الكسور العشرية", "النسبة", "الهندسة", "الإحصاء"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن الكريم", "الأحاديث", "الفقه"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السيرة", "الأخلاق", "العقيدة"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا", "تاريخ", "الحضارة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["المجتمع", "الاقتصاد", "البيئة"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جسم الإنسان", "الجهاز الدوري", "الجهاز التنفسي"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الطاقة", "الضوء", "الصوت", "الكهرباء"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["معالجة النصوص", "الجداول الإلكترونية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["البرمجة", "العروض التقديمية", "الشبكات"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "النحت", "الخزف"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["التصميم", "الألوان"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_5",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العزف", "الاستماع"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف السادس الابتدائي",
+          "nameEn": "Primary 6",
+          "level": 6,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Project"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد", "العمليات", "الكسور", "النسبة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الهندسة", "المساحة", "الحجم", "الإحصاء"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه", "السيرة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العقيدة", "الأخلاق", "العبادات"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مصر", "الوطن العربي", "العالم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["التاريخ", "الجغرافيا", "المجتمع"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جسم الإنسان", "الجهاز العصبي", "التكاثر"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الطاقة", "المادة", "الكيمياء", "الفلك"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["البرمجة", "قواعد البيانات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الشبكات", "الأمن الإلكتروني", "الروبوت"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "النحت", "التصميم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الفنون التطبيقية", "الخزف"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PRIMARY_6",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "العزف", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الاستماع", "التحليل الموسيقي"] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "المرحلة الإعدادية",
+      "nameEn": "Preparatory Stage",
+      "key": "PREPARATORY",
+      "grades": [
+        {
+          "name": "الصف الأول الإعدادي",
+          "nameEn": "Preparatory 1",
+          "level": 7,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص الأدبية", "النحو", "الصرف", "البلاغة", "التعبير الكتابي"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص الأدبية", "النحو", "الصرف", "البلاغة", "التعبير الكتابي"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Listening", "Speaking"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Literature"] }
+              ]
+            },
+            {
+              "name": "اللغة الثانية (فرنسية/ألمانية)",
+              "nameEn": "Second Foreign Language",
+              "code": "FR_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القواعد", "القراءة", "الكتابة", "المحادثة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القواعد", "القراءة", "الكتابة", "الاستماع"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (جبر)",
+              "nameEn": "Mathematics (Algebra)",
+              "code": "ALG_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الأعداد الصحيحة", "الكسور", "العمليات", "المعادلات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الأعداد النسبية", "النسبة", "التناسب", "القوى"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (هندسة)",
+              "nameEn": "Mathematics (Geometry)",
+              "code": "GEO_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الهندسة المستوية", "الزوايا", "المثلثات", "الأشكال الرباعية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["التوازي", "التقاطع", "المساحة", "التحويلات"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الخلية", "الأنسجة", "الجهاز الهضمي", "الجهاز الدوري"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الطاقة", "الحرارة", "الضوء", "الصوت"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا مصر", "المناخ", "السكان", "الزراعة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["تاريخ مصر القديمة", "الحضارة الفرعونية"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن الكريم", "الحديث الشريف", "الفقه"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السيرة النبوية", "الأخلاق", "العقيدة"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["أنظمة التشغيل", "Internet", "Word", "Excel"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["البرمجة", "PowerPoint", "الأمان"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "التلوين", "التشكيل"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النحت", "الخزف", "التصميم"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العزف", "الاستماع", "التحليل"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_PREP_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الجري", "القفز", "كرة القدم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الجمباز", "ألعاب القوى", "كرة السلة"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثاني الإعدادي",
+          "nameEn": "Preparatory 2",
+          "level": 8,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Project"] }
+              ]
+            },
+            {
+              "name": "اللغة الثانية",
+              "nameEn": "Second Foreign Language",
+              "code": "FR_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القواعد", "القراءة", "الكتابة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القواعد", "المحادثة", "الاستماع"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (جبر)",
+              "nameEn": "Mathematics (Algebra)",
+              "code": "ALG_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الجبر", "المعادلات", "المتباينات", "الأسس"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الجذور", "النسبة التقديرية", "الجبر المتقدم"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (هندسة)",
+              "nameEn": "Mathematics (Geometry)",
+              "code": "GEO_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["المربعات", "المتوازيات", "ال𝔻eltoid", "التوازي"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["ال𝔻eltoid", "التقاطع", "المساحة", "ال𝔻eltoid"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الجهاز التنفسي", "الجهاز العصبي", "ال内分泌", "الحواس"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الكهرباء", "المغناطيس", "الطاقة", "الاتزان"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا", "مناخ", "تاريخ"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["مصر", "العالم", "المجتمع"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السيرة", "الأخلاق", "العقيدة"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["البرمجة", "قواعد البيانات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الشبكات", "التصميم", "الأمان"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "النحت", "التصميم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الخزف", "الألوان", "الفنون"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "الإيقاع", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العزف", "الاستماع"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_PREP_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["كرة القدم", "كرة السلة", "ألعاب القوى"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السباحة", "الجمباز", "كرة الطائرة"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثالث الإعدادي",
+          "nameEn": "Preparatory 3",
+          "level": 9,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature", "Exam Prep"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Literature", "Exam Prep"] }
+              ]
+            },
+            {
+              "name": "اللغة الثانية",
+              "nameEn": "Second Foreign Language",
+              "code": "FR_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القواعد", "القراءة", "الكتابة", "المحادثة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القواعد", "القراءة", "الكتابة", "الاستماع"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (جبر)",
+              "nameEn": "Mathematics (Algebra)",
+              "code": "ALG_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["المعادلات", "المتباينات", "الدوال", "الجبر المتقدم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["ال𝔻eltoid", "ال𝔼ltoid", "ال𝔼quations", "ال𝔼ltoid"] }
+              ]
+            },
+            {
+              "name": "الرياضيات (هندسة)",
+              "nameEn": "Mathematics (Geometry)",
+              "code": "GEO_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["𝔻eltoid", "𝔼ltoid", "𝔽ltoid", "𝔻eltoid"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["𝔻eltoid", "𝔼ltoid", "𝔽ltoid", "𝔻eltoid"] }
+              ]
+            },
+            {
+              "name": "العلوم",
+              "nameEn": "Science",
+              "code": "SCI_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الكيمياء", "الفيزياء", "الbiology", "الطاقة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الكيمياء", "الفيزياء", "الbiology", "الطاقة"] }
+              ]
+            },
+            {
+              "name": "الدراسات الاجتماعية",
+              "nameEn": "Social Studies",
+              "code": "SOC_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مصر", "الوطن العربي", "العالم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["التاريخ", "الجغرافيا", "المجتمع", "الاقتصاد"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه", "السيرة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العقيدة", "الأخلاق", "العبادات"] }
+              ]
+            },
+            {
+              "name": "حاسب آلي",
+              "nameEn": "ICT",
+              "code": "ICT_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["البرمجة", "قواعد البيانات", "الشبكات"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["التصميم", "الأمن", "الروبوت"] }
+              ]
+            },
+            {
+              "name": "التربية الفنية",
+              "nameEn": "Art Education",
+              "code": "ART_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الرسم", "النحت", "التصميم"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الخزف", "الألوان", "الفنون"] }
+              ]
+            },
+            {
+              "name": "التربية الموسيقية",
+              "nameEn": "Music Education",
+              "code": "MUS_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النظرية", "العزف", "الأغاني"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الاستماع", "التحليل", "الكورال"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_PREP_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["كرة القدم", "كرة السلة", "ألعاب القوى"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السباحة", "الجمباز", "كرة الطائرة"] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "المرحلة الثانوية",
+      "nameEn": "Secondary Stage",
+      "key": "SECONDARY",
+      "grades": [
+        {
+          "name": "الصف الأول الثانوي",
+          "nameEn": "Secondary 1",
+          "level": 10,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص الأدبية", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص الأدبية", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature", "Vocabulary"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Literature", "Project"] }
+              ]
+            },
+            {
+              "name": "اللغة الثانية",
+              "nameEn": "Second Foreign Language",
+              "code": "FR_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القواعد", "القراءة", "الكتابة", "المحادثة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["القواعد", "القراءة", "الكتابة", "الاستماع"] }
+              ]
+            },
+            {
+              "name": "الفيزياء",
+              "nameEn": "Physics",
+              "code": "PHYS_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["ال运动学", "ال动力学", "الforces", "الenergy"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الميكانيكا", "الgravitational", "الطاقة", "الاتزان"] }
+              ]
+            },
+            {
+              "name": "الكيمياء",
+              "nameEn": "Chemistry",
+              "code": "CHEM_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الstructure of matter", "الelements", "الperiodic table", "الchemical bonds"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الchemical reactions", "الoxidation", "الacids and bases"] }
+              ]
+            },
+            {
+              "name": "الbiology",
+              "nameEn": "Biology",
+              "code": "BIO_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الcell", "الtissues", "الorgans", "الsystems"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الnutrition", "الrespiration", "الexcretion"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الalgebra", "الfunctions", "الtrigonometry", "الgeometry"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الalgebra", "الfunctions", "الstatistics", "الprobability"] }
+              ]
+            },
+            {
+              "name": "التاريخ",
+              "nameEn": "History",
+              "code": "HIST_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مصر القديمة", "الحضارة الفرعونية", "الإغريقية", "الرومانية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["مصر الإسلامية", "الدولة العربية", "مصر الحديثة"] }
+              ]
+            },
+            {
+              "name": "الجغرافيا",
+              "nameEn": "Geography",
+              "code": "GEO_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا مصر", "المناخ", "السكان", "الزراعة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الصناعة", "التجارة", "الموارد", "البيئة"] }
+              ]
+            },
+            {
+              "name": "الgeology",
+              "nameEn": "Geology",
+              "code": "GEOL_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الearth", "الrocks", "الminerals", "الfossils"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الearthquakes", "الvolcanoes", "الerosion", "الdeposition"] }
+              ]
+            },
+            {
+              "name": "الphilosophy",
+              "nameEn": "Philosophy",
+              "code": "PHIL_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["المنطق", "الفلسفة", "المعرفة", "الحقيقة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الethics", "الaesthetics", "الexistence", "الthinking"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه", "السيرة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العقيدة", "الأخلاق", "العبادات"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_SEC_1",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["كرة القدم", "كرة السلة", "ألعاب القوى"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السباحة", "الجمباز", "كرة الطائرة"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثاني الثانوي",
+          "nameEn": "Secondary 2",
+          "level": 11,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Literature"] }
+              ]
+            },
+            {
+              "name": "الفيزياء",
+              "nameEn": "Physics",
+              "code": "PHYS_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الelectricity", "الmagnetism", "الcircuits"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الwaves", "الlight", "الsound", "الoptics"] }
+              ]
+            },
+            {
+              "name": "الكيمياء",
+              "nameEn": "Chemistry",
+              "code": "CHEM_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الchemical bonding", "الreactions", "الsolutions", "الequilibrium"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الorganic chemistry", "الelectrochemistry", "الnuclear chemistry"] }
+              ]
+            },
+            {
+              "name": "الbiology",
+              "nameEn": "Biology",
+              "code": "BIO_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الgenetics", "الevolution", "الecology"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الhuman biology", "الhealth", "الdiseases"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الcalculus", "الderivatives", "الintegrals"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الvectors", "الcomplex numbers", "الdifferential equations"] }
+              ]
+            },
+            {
+              "name": "التاريخ",
+              "nameEn": "History",
+              "code": "HIST_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["التاريخ الحديث", "أوروبا", "الثورة الفرنسية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["مصر الحديثة", "العثمانية", "محمد علي"] }
+              ]
+            },
+            {
+              "name": "الجغرافيا",
+              "nameEn": "Geography",
+              "code": "GEO_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["جغرافيا العالم", "القارات", "المناخ"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السكان", "الاقتصاد", "التنمية"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السيرة", "الأخلاق", "العقيدة"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_SEC_2",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["كرة القدم", "كرة السلة", "ألعاب القوى"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السباحة", "الجمباز", "كرة الطائرة"] }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "الصف الثالث الثانوي",
+          "nameEn": "Secondary 3",
+          "level": 12,
+          "subjects": [
+            {
+              "name": "اللغة العربية",
+              "nameEn": "Arabic Language",
+              "code": "AR_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب", "النقد"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["النصوص", "النحو", "الصرف", "البلاغة", "التعبير", "الأدب", "النقد"] }
+              ]
+            },
+            {
+              "name": "اللغة الإنجليزية",
+              "nameEn": "English Language",
+              "code": "EN_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["Grammar", "Reading", "Writing", "Literature", "Exam Prep"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["Grammar", "Reading", "Writing", "Literature", "Exam Prep"] }
+              ]
+            },
+            {
+              "name": "الفيزياء",
+              "nameEn": "Physics",
+              "code": "PHYS_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الميكانيكا", "الthermodynamics", "الfluid mechanics"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الelectricity", "الmagnetism", "الmodern physics"] }
+              ]
+            },
+            {
+              "name": "الكيمياء",
+              "nameEn": "Chemistry",
+              "code": "CHEM_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الphysical chemistry", "الthermodynamics", "الkinetics"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الanalytical chemistry", "الorganic chemistry", "الbiochemistry"] }
+              ]
+            },
+            {
+              "name": "الbiology",
+              "nameEn": "Biology",
+              "code": "BIO_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الgenetics", "الmolecular biology", "الbiotechnology"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الecology", "الevolution", "الenvironment"] }
+              ]
+            },
+            {
+              "name": "الرياضيات",
+              "nameEn": "Mathematics",
+              "code": "MATH_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["الcalculus", "الintegration", "الdifferential equations"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["الvectors", "الcomplex analysis", "الstatistics"] }
+              ]
+            },
+            {
+              "name": "التاريخ",
+              "nameEn": "History",
+              "code": "HIST_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مصر الحديثة", "الثورة المصرية", "الجمهورية"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العالم المعاصر", "الحرب العالمية", "الحرب الباردة"] }
+              ]
+            },
+            {
+              "name": "الجغرافيا",
+              "nameEn": "Geography",
+              "code": "GEO_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["مصر", "الوطن العربي", "أفريقيا"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["آسيا", "أوروبا", "أمريكا", "أوقيانوسيا"] }
+              ]
+            },
+            {
+              "name": "التربية الدينية",
+              "nameEn": "Religious Education",
+              "code": "REL_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["القرآن", "الحديث", "الفقه", "السيرة"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["العقيدة", "الأخلاق", "العبادات", "الدعوة"] }
+              ]
+            },
+            {
+              "name": "التربية الرياضية",
+              "nameEn": "Physical Education",
+              "code": "PE_SEC_3",
+              "terms": [
+                { "name": "الفصل الأول", "code": "TERM_1", "topics": ["كرة القدم", "كرة السلة", "ألعاب القوى"] },
+                { "name": "الفصل الثاني", "code": "TERM_2", "topics": ["السباحة", "الجمباز", "كرة الطائرة"] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

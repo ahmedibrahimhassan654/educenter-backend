@@ -8,6 +8,9 @@ import userRoutes from "./routes/users";
 import groupRoutes from "./routes/groups";
 import sessionRoutes from "./routes/sessions";
 import attendanceRoutes from "./routes/attendance";
+import curriculumRoutes from "./routes/curriculum";
+import adminCurriculumRoutes from "./routes/adminCurriculum";
+import emailRoutes from "./routes/emails";
 import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
@@ -37,6 +40,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/curriculum", curriculumRoutes);
+
+// Admin routes
+app.use("/api/admin/curriculum", adminCurriculumRoutes);
+app.use("/api/emails", emailRoutes);
 
 // Error handler
 app.use(errorHandler);

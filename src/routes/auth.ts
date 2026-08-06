@@ -2,6 +2,11 @@ import { Router, Response } from "express";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import {
+  sendTeacherWelcomeEmail,
+  sendStudentWelcomeEmail,
+  sendParentWelcomeEmail,
+} from "../services/emailService";
 
 const router = Router();
 
@@ -24,6 +29,25 @@ router.post("/register", async (req: AuthRequest, res: Response): Promise<void> 
       phone,
       role,
     });
+
+    // Send welcome email based on role
+    try {
+      switch (role) {
+        case "TEACHER":
+          await sendTeacherWelcomeEmail(name, email);
+          break;
+        case "STUDENT":
+          await sendStudentWelcomeEmail(name, email);
+          break;
+        case "PARENT":
+          await sendParentWelcomeEmail(name, email);
+          break;
+      }
+      console.log(`✅ Welcome email sent to ${email} (${role})`);
+    } catch (emailError) {
+      // Don't fail registration if email fails
+      console.error("⚠️ Failed to send welcome email:", emailError);
+    }
 
     res.status(201).json(user);
   } catch (error: any) {
