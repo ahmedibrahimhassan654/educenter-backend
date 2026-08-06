@@ -9,7 +9,6 @@ export interface IUser extends Document {
   role: "TEACHER" | "STUDENT" | "PARENT" | "ADMIN";
   parentId?: mongoose.Types.ObjectId;
   students: mongoose.Types.ObjectId[];
-  subscriptionStatus: boolean;
   linkingCode?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -59,10 +58,6 @@ const userSchema = new Schema<IUser>(
         ref: "User",
       },
     ],
-    subscriptionStatus: {
-      type: Boolean,
-      default: false,
-    },
     linkingCode: {
       type: String,
       unique: true,

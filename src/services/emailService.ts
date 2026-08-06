@@ -129,6 +129,22 @@ export const sendPasswordResetEmail = async (
   });
 };
 
+/**
+ * Send account deletion email
+ */
+export const sendAccountDeletionEmail = async (
+  userName: string,
+  userEmail: string
+): Promise<boolean> => {
+  const html = getAccountDeletionTemplate(userName);
+  
+  return sendEmail({
+    to: userEmail,
+    subject: "إشعار حذف الحساب - إديو سنتر",
+    html,
+  });
+};
+
 // ==========================================
 // EMAIL TEMPLATES
 // ==========================================
@@ -511,6 +527,100 @@ const getPasswordResetTemplate = (name: string, link: string) => `
       <p>© ${new Date().getFullYear()} إديو سنتر. جميع الحقوق محفوظة.</p>
     </div>
   </div>
+</body>
+</html>
+`;
+
+const getAccountDeletionTemplate = (name: string) => `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إشعار حذف الحساب</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F3F4F6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  
+  <!-- Main Container -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F3F4F6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        
+        <!-- Email Container -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); padding: 48px 40px; text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+              <h1 style="color: #FFFFFF; margin: 0 0 8px 0; font-size: 32px; font-weight: 700;">إشعار حذف الحساب</h1>
+              <p style="color: #FEE2E2; margin: 0; font-size: 18px;">إديو سنتر</p>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 48px 40px;">
+              <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">مرحباً ${name}</h2>
+              
+              <p style="color: #4B5563; margin: 0 0 24px 0; font-size: 18px; line-height: 1.7;">
+                نود إعلامك بأنه تم حذف حسابك من منصة إديو سنتر بواسطة مدير النظام.
+              </p>
+              
+              <!-- Info Box -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 32px 0;">
+                <tr>
+                  <td style="background-color: #FEF2F2; border: 2px solid #FECACA; border-radius: 12px; padding: 24px;">
+                    <h3 style="color: #991B1B; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">ما يعني هذا:</h3>
+                    <ul style="color: #7F1D1D; margin: 0; padding: 0 0 0 20px; font-size: 16px; line-height: 1.8;">
+                      <li>لن تتمكن من تسجيل الدخول إلى حسابك</li>
+                      <li>تم حذف جميع بياناتك من النظام</li>
+                      <li>لن تتمكن من الوصول إلى أي محتوى مرتبط بحسابك</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="color: #4B5563; margin: 0 0 16px 0; font-size: 18px; line-height: 1.7;">
+                إذا كنت تعتقد أن هذا الخطأ، يرجى التواصل مع فريق الدعم الفني.
+              </p>
+              
+              <!-- Contact Info -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 32px 0;">
+                <tr>
+                  <td style="background-color: #F9FAFB; border-radius: 12px; padding: 24px; text-align: center;">
+                    <p style="color: #6B7280; margin: 0 0 8px 0; font-size: 14px;">للتواصل مع الدعم الفني</p>
+                    <p style="color: #4F46E5; margin: 0; font-size: 18px; font-weight: 600;">support@educenter.com</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="color: #4B5563; margin: 0; font-size: 16px; line-height: 1.6;">
+                مع تحيات فريق إديو سنتر
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #F9FAFB; padding: 32px 40px; text-align: center; border-top: 2px solid #E5E7EB;">
+              <p style="color: #6B7280; margin: 0 0 8px 0; font-size: 14px;">
+                © ${new Date().getFullYear()} إديو سنتر. جميع الحقوق محفوظة.
+              </p>
+              <p style="color: #9CA3AF; margin: 0; font-size: 12px;">
+                تم إرسال هذا البريد تلقائياً، يرجى عدم الرد عليه.
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+        <!-- End Email Container -->
+        
+      </td>
+    </tr>
+  </table>
+  <!-- End Main Container -->
+  
 </body>
 </html>
 `;
