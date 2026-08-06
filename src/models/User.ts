@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   phone: string;
+  avatarUrl?: string;
   role: "TEACHER" | "STUDENT" | "PARENT" | "ADMIN";
   parentId?: mongoose.Types.ObjectId;
   students: mongoose.Types.ObjectId[];
@@ -38,6 +39,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    avatarUrl: {
+      type: String,
+      default: null,
     },
     role: {
       type: String,

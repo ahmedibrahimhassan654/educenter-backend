@@ -44,8 +44,16 @@ router.put(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { name, phone } = req.body;
-      const user = await User.findById(req.params.id);
+      const { name, phone, avatarUrl } = req.body;
+      const userId = req.params.id;
+
+      // Validate ObjectId format
+      if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+        res.status(400).json({ message: "Invalid user ID format" });
+        return;
+      }
+
+      const user = await User.findById(userId);
 
       if (!user) {
         res.status(404).json({ message: "User not found" });
@@ -53,17 +61,26 @@ router.put(
       }
 
       // Only allow users to update their own profile (or admin)
-      if (req.user!._id.toString() !== req.params.id && req.user!.role !== "ADMIN") {
-        res.status(403).json({ message: "Forbidden" });
+      const requestingUserId = req.user!._id.toString();
+      const isOwnProfile = requestingUserId === userId;
+      const isAdmin = req.user!.role === "ADMIN";
+
+      if (!isOwnProfile && !isAdmin) {
+        res.status(403).json({ message: "Forbidden: You can only update your own profile" });
         return;
       }
 
       if (name) user.name = name;
-      if (phone) user.phone = phone;
+      if (phone !== undefined) user.phone = phone;
+      if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
 
       await user.save();
-      res.json(user);
+
+      // Return updated user without sensitive fields
+      const updatedUser = await User.findById(userId).select("-__v");
+      res.json(updatedUser);
     } catch (error: any) {
+      console.error("Error updating user:", error);
       res.status(500).json({ message: "Error updating user", error: error.message });
     }
   }
