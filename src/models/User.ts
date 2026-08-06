@@ -70,7 +70,7 @@ const userSchema = new Schema<IUser>(
 );
 
 // Generate linking code before saving
-userSchema.pre("save", function (next) {
+userSchema.pre("save" as any, async function (this: IUser) {
   if (this.isNew && (this.role === "STUDENT" || this.role === "PARENT")) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let code = "";
@@ -79,7 +79,6 @@ userSchema.pre("save", function (next) {
     }
     this.linkingCode = code;
   }
-  next();
 });
 
 export const User = mongoose.model<IUser>("User", userSchema);

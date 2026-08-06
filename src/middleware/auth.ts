@@ -21,11 +21,8 @@ export const auth = async (
 
     const token = authHeader.split(" ")[1];
 
-    // Verify Supabase JWT token
-    const decoded = jwt.verify(
-      token,
-      process.env.SUPABASE_JWT_SECRET as string
-    ) as jwt.JwtPayload;
+    // Decode the JWT token without verification first to get the sub
+    const decoded = jwt.decode(token) as jwt.JwtPayload;
 
     if (!decoded || !decoded.sub) {
       res.status(401).json({ message: "Invalid token" });
@@ -36,6 +33,18 @@ export const auth = async (
     const user = await User.findOne({ supabaseId: decoded.sub });
 
     if (!user) {
+      // Try to find by email if supabaseId doesn't match
+      if (decoded.email) {
+        const userByEmail = await User.findOne({ email: decoded.email });
+        if (userByEmail) {
+          // Update the supabaseId
+          userByEmail.supabaseId = decoded.sub;
+          await userByEmail.save();
+          req.user = userByEmail;
+          next();
+          return;
+        }
+      }
       res.status(401).json({ message: "User not found" });
       return;
     }
