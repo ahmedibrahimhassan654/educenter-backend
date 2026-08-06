@@ -59,7 +59,7 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json() as { users: { id: string }[] };
       if (data.users && data.users.length > 0) {
         return data.users[0].id;
       }
@@ -105,11 +105,11 @@ async function createSupabaseUser(user: SupabaseUser): Promise<string | null> {
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json() as { id: string };
       console.log("  ✓ User created in Supabase Auth");
       return data.id;
     } else {
-      const error = await response.json();
+      const error = await response.json() as { msg?: string; message?: string };
       console.log("  ⚠ Error:", error.msg || error.message || "Unknown error");
       return null;
     }
