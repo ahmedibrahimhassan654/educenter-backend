@@ -22,9 +22,11 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
       }
     );
     if (response.ok) {
-      const data = (await response.json()) as { users: { id: string }[] };
+      const data = (await response.json()) as { users: { id: string; email: string }[] };
       if (data.users && data.users.length > 0) {
-        return data.users[0].id;
+        // Find exact email match (API may return partial matches)
+        const exactMatch = data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+        return exactMatch ? exactMatch.id : null;
       }
     }
   } catch {
@@ -187,6 +189,22 @@ router.post(
 
       if (supabaseUserId) {
         console.log(`✅ Supabase user already exists: ${supabaseUserId}`);
+        
+        // Check if MongoDB user already exists with this supabaseId
+        const existingBySupabaseId = await User.findOne({ supabaseId: supabaseUserId });
+        if (existingBySupabaseId) {
+          console.log(`⚠️ MongoDB user already exists: ${existingBySupabaseId.email} (${existingBySupabaseId._id})`);
+          res.status(409).json({ 
+            message: "User already exists in system",
+            existingUser: {
+              id: existingBySupabaseId._id,
+              email: existingBySupabaseId.email,
+              name: existingBySupabaseId.name,
+              role: existingBySupabaseId.role
+            }
+          });
+          return;
+        }
       } else {
         // Create Supabase auth user
         const supabaseUrl = `${config.supabaseUrl}/auth/v1/admin/users`;

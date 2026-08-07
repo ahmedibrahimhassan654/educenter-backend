@@ -11,8 +11,16 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const { explore } = req.query;
       let groups;
-      if (req.user!.role === "TEACHER") {
+      
+      // If explore=true, return all groups (for explore page)
+      if (explore === "true") {
+        groups = await Group.find()
+          .populate("teacherId", "name email")
+          .populate("students", "name email phone")
+          .sort("-createdAt");
+      } else if (req.user!.role === "TEACHER") {
         groups = await Group.find({ teacherId: req.user!._id })
           .populate("students", "name email phone")
           .sort("-createdAt");
