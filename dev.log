@@ -518,3 +518,73 @@ JWT verification failed: jwt malformed
 MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
 Server running on port 5000
 Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T21:49:34.258Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 771ms
+[2026-08-07T21:49:34.363Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 859ms
+[2026-08-07T21:49:34.683Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 319ms
+[2026-08-07T21:49:38.683Z] GET /api/verification/pending?status=REJECTED | Controller: /api/verification | Status: 200 | SUCCESS | 301ms
+[2026-08-07T21:49:40.073Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 390ms
+[2026-08-07T21:49:44.294Z] GET /api/verification/6a7584351caf87501b00b4a7/documents | Controller: /api/verification | Status: 200 | SUCCESS | 199ms
+[2026-08-07T21:49:49.991Z] GET /api/verification/6a752589149a1a2380f65954/documents | Controller: /api/verification | Status: 200 | SUCCESS | 199ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T21:51:51.311Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 1114ms
+[2026-08-07T21:51:51.413Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1238ms
+[2026-08-07T21:51:51.640Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 221ms
+[2026-08-07T21:51:51.817Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 505ms
+[2026-08-07T21:53:36.177Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-07T21:53:36.286Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[2026-08-07T21:53:36.709Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 218ms
+[2026-08-07T21:53:36.713Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 214ms
+[2026-08-07T21:53:36.987Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 273ms
+[2026-08-07T21:53:37.729Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1226ms
+[2026-08-07T21:53:37.949Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 208ms
+[2026-08-07T21:54:11.920Z] GET /api/groups/teacher/6a752589149a1a2380f65954/summary | Controller: /api/groups | Status: 403 | FAILED | 115ms
+[2026-08-07T21:54:12.005Z] GET /api/groups/teacher/6a752589149a1a2380f65954/summary | Controller: /api/groups | Status: 401 | FAILED | 1ms
+[2026-08-07T21:54:12.193Z] GET /api/groups/teacher/notanid/summary | Controller: /api/groups | Status: 403 | FAILED | 100ms
+[2026-08-07T21:55:02.272Z] GET /api/groups/teacher/6a752589149a1a2380f65954/summary | Controller: /api/groups | Status: 200 | SUCCESS | 683ms
+[2026-08-07T21:55:03.787Z] GET /api/groups/teacher/6a7584351caf87501b00b4a7/summary | Controller: /api/groups | Status: 200 | SUCCESS | 1386ms
+[2026-08-07T21:55:04.117Z] GET /api/groups/teacher/notanid/summary | Controller: /api/groups | Status: 400 | FAILED | 251ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T21:55:40.601Z] GET /api/groups/teacher/6a752589149a1a2380f65954/summary | Controller: /api/groups | Status: 200 | SUCCESS | 548ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development

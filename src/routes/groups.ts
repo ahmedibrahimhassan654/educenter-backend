@@ -83,6 +83,68 @@ router.post(
   }
 );
 
+// Admin: summary of a teacher's groups and their student counts.
+// Declared before "/:id" so "teacher" is not matched as an id.
+router.get(
+  "/teacher/:teacherId/summary",
+  auth,
+  requireRole("ADMIN"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const teacherId = String(req.params.teacherId);
+
+      if (!/^[0-9a-fA-F]{24}$/.test(teacherId)) {
+        res.status(400).json({ message: "Invalid teacher ID format" });
+        return;
+      }
+
+      const groups = await Group.find({ teacherId })
+        .select(
+          "title subject grade stage scheduleDays totalSessionPrice priceTeacherShare students createdAt"
+        )
+        .sort("-createdAt")
+        .lean();
+
+      const summary = groups.map((group: any) => ({
+        _id: group._id,
+        title: group.title,
+        subject: group.subject,
+        grade: group.grade,
+        stage: group.stage,
+        scheduleDays: group.scheduleDays || [],
+        totalSessionPrice: group.totalSessionPrice,
+        priceTeacherShare: group.priceTeacherShare,
+        studentsCount: group.students?.length || 0,
+        createdAt: group.createdAt,
+      }));
+
+      const totalStudents = summary.reduce(
+        (sum, group) => sum + group.studentsCount,
+        0
+      );
+
+      res.json({
+        success: true,
+        data: {
+          groups: summary,
+          stats: {
+            totalGroups: summary.length,
+            totalStudents,
+            averageStudentsPerGroup: summary.length
+              ? Math.round((totalStudents / summary.length) * 10) / 10
+              : 0,
+          },
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        message: "Error fetching teacher groups",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Get group by ID
 router.get(
   "/:id",
