@@ -1,5 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+export interface IVerificationData {
+  experience?: string;
+  curriculum?: string[];
+  bio?: string;
+  documents?: string[];
+}
+
 export interface IUser extends Document {
   supabaseId: string;
   name: string;
@@ -10,9 +17,24 @@ export interface IUser extends Document {
   parentId?: mongoose.Types.ObjectId;
   students: mongoose.Types.ObjectId[];
   linkingCode?: string;
+  // Verification fields (for teachers)
+  verificationStatus: "PENDING" | "SUBMITTED" | "VERIFIED" | "REJECTED";
+  verificationData?: IVerificationData;
+  verificationNotes?: string;
+  verifiedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const verificationDataSchema = new Schema<IVerificationData>(
+  {
+    experience: { type: String, trim: true },
+    curriculum: [{ type: String, trim: true }],
+    bio: { type: String, trim: true },
+    documents: [{ type: String }],
+  },
+  { _id: false }
+);
 
 const userSchema = new Schema<IUser>(
   {
@@ -62,6 +84,25 @@ const userSchema = new Schema<IUser>(
       type: String,
       unique: true,
       sparse: true,
+    },
+    // Verification fields
+    verificationStatus: {
+      type: String,
+      enum: ["PENDING", "SUBMITTED", "VERIFIED", "REJECTED"],
+      default: function (this: IUser) {
+        return this.role === "TEACHER" ? "PENDING" : "VERIFIED";
+      },
+    },
+    verificationData: {
+      type: verificationDataSchema,
+      default: undefined,
+    },
+    verificationNotes: {
+      type: String,
+      trim: true,
+    },
+    verifiedAt: {
+      type: Date,
     },
   },
   {

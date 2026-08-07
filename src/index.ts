@@ -12,6 +12,7 @@ import curriculumRoutes from "./routes/curriculum";
 import adminCurriculumRoutes from "./routes/adminCurriculum";
 import emailRoutes from "./routes/emails";
 import notificationRoutes from "./routes/notifications";
+import verificationRoutes from "./routes/verification";
 import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
@@ -47,6 +48,9 @@ app.use("/api/notifications", notificationRoutes);
 // Admin routes
 app.use("/api/admin/curriculum", adminCurriculumRoutes);
 app.use("/api/emails", emailRoutes);
+
+// Verification routes
+app.use("/api/verification", verificationRoutes);
 
 // Error handler
 app.use(errorHandler);
