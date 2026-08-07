@@ -6,7 +6,7 @@ import connectDB from "./config/db";
 dotenv.config();
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 
 interface SupabaseUser {
   email: string;
@@ -48,13 +48,13 @@ const testUsers: SupabaseUser[] = [
 ];
 
 async function getSupabaseUserId(email: string): Promise<string | null> {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return null;
+  if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) return null;
 
   try {
     const response = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}`, {
       headers: {
-        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+        apikey: SUPABASE_SECRET_KEY,
       },
     });
 
@@ -71,7 +71,7 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
 }
 
 async function createSupabaseUser(user: SupabaseUser): Promise<string | null> {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
     console.log("  ⚠ Supabase credentials not provided.");
     return null;
   }
@@ -89,8 +89,8 @@ async function createSupabaseUser(user: SupabaseUser): Promise<string | null> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+        apikey: SUPABASE_SECRET_KEY,
       },
       body: JSON.stringify({
         email: user.email,

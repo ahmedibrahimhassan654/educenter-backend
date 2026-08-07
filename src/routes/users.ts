@@ -2,14 +2,36 @@ import { Router, Response } from "express";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { config } from "../config/env";
 import {
-  sendTeacherWelcomeEmail,
-  sendStudentWelcomeEmail,
-  sendParentWelcomeEmail,
   sendAccountDeletionEmail,
+  sendCredentialsEmail,
 } from "../services/emailService";
 
 const router = Router();
+
+async function getSupabaseUserId(email: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `${config.supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${config.supabaseSecretKey}`,
+          apikey: config.supabaseSecretKey,
+        },
+      }
+    );
+    if (response.ok) {
+      const data = (await response.json()) as { users: { id: string }[] };
+      if (data.users && data.users.length > 0) {
+        return data.users[0].id;
+      }
+    }
+  } catch {
+    // User doesn't exist
+  }
+  return null;
+}
 
 // Get all users with filtering, search, and pagination (admin only)
 router.get(
@@ -140,7 +162,7 @@ router.post(
   requireRole("ADMIN"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { name, email, phone, role } = req.body;
+      const { name, email, phone, role, password } = req.body;
 
       // Validate required fields
       if (!name || !email || !phone || !role) {
@@ -148,50 +170,102 @@ router.post(
         return;
       }
 
-      // Check if email already exists
+      // Check if email already exists in MongoDB
       const existingUser = await User.findOne({ email: email.toLowerCase() });
       if (existingUser) {
         res.status(409).json({ message: "Email already exists" });
         return;
       }
 
-      // Create user (supabaseId will be set when user signs up via Supabase)
+      // Generate password if not provided
+      const userPassword = password && password.length >= 6
+        ? password
+        : generatePassword();
+
+      // Check if user already exists in Supabase
+      let supabaseUserId = await getSupabaseUserId(email.toLowerCase());
+
+      if (supabaseUserId) {
+        console.log(`✅ Supabase user already exists: ${supabaseUserId}`);
+      } else {
+        // Create Supabase auth user
+        const supabaseUrl = `${config.supabaseUrl}/auth/v1/admin/users`;
+        console.log(`🔗 Creating Supabase user at: ${supabaseUrl}`);
+
+        const supabaseResponse = await fetch(supabaseUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: config.supabaseSecretKey,
+            Authorization: `Bearer ${config.supabaseSecretKey}`,
+          },
+          body: JSON.stringify({
+            email: email.toLowerCase(),
+            password: userPassword,
+            email_confirm: true,
+            user_metadata: {
+              name,
+              phone,
+              role: role.toUpperCase(),
+            },
+          }),
+        });
+
+        if (supabaseResponse.ok) {
+          const supabaseUser = await supabaseResponse.json();
+          supabaseUserId = supabaseUser.id;
+          console.log(`✅ Supabase auth user created: ${supabaseUserId}`);
+        } else {
+          const errorBody = await supabaseResponse.text();
+          console.error(`❌ Supabase user creation FAILED (HTTP ${supabaseResponse.status}):`, errorBody);
+          res.status(400).json({
+            message: "Failed to create auth account in Supabase. Check backend logs.",
+          });
+          return;
+        }
+      }
+
+      // Create MongoDB user with the real Supabase user ID
       const user = await User.create({
-        supabaseId: `admin-created-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        supabaseId: supabaseUserId,
         name,
         email: email.toLowerCase(),
         phone,
         role: role.toUpperCase(),
       });
 
-      // Send welcome email based on role
-      try {
-        const userEmail = email.toLowerCase();
-        const userRole = role.toUpperCase();
-        
-        switch (userRole) {
-          case "TEACHER":
-            await sendTeacherWelcomeEmail(name, userEmail);
-            break;
-          case "STUDENT":
-            await sendStudentWelcomeEmail(name, userEmail);
-            break;
-          case "PARENT":
-            await sendParentWelcomeEmail(name, userEmail);
-            break;
-        }
-        console.log(`✅ Welcome email sent to ${userEmail} (${userRole})`);
-      } catch (emailError) {
-        // Don't fail user creation if email fails
-        console.error("⚠️ Failed to send welcome email:", emailError);
+      // Send credentials email
+      const userEmail = email.toLowerCase();
+      const userRole = role.toUpperCase();
+      const loginUrl = `${config.frontendUrl}/login`;
+
+      const emailSent = await sendCredentialsEmail(name, userEmail, userPassword, userRole, loginUrl);
+      if (emailSent) {
+        console.log(`✅ Credentials email sent to ${userEmail}`);
+      } else {
+        console.error(`❌ Credentials email FAILED to send to ${userEmail}`);
       }
 
-      res.status(201).json({ success: true, data: user });
+      res.status(201).json({
+        success: true,
+        data: user,
+        generatedPassword: password ? undefined : userPassword,
+      });
     } catch (error: any) {
+      console.error("❌ Error creating user:", error);
       res.status(500).json({ message: "Error creating user", error: error.message });
     }
   }
 );
+
+function generatePassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%";
+  let password = "";
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
 
 // Update user (user can update own profile, admin can update any user)
 router.put(

@@ -31,11 +31,17 @@ export const sendEmail = async (options: EmailOptions): Promise<boolean> => {
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: `"إديو سنتر" <${process.env.GMAIL_USER}>`,
+      from: `"EduCenter" <${process.env.GMAIL_USER}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
-      text: options.text,
+      text: options.text || options.subject,
+      replyTo: process.env.GMAIL_USER,
+      headers: {
+        "X-Mailer": "EduCenter",
+        "List-Unsubscribe": `<mailto:${process.env.GMAIL_USER}>`,
+        "Precedence": "bulk",
+      },
     };
 
     await transporter.sendMail(mailOptions);
@@ -141,6 +147,25 @@ export const sendAccountDeletionEmail = async (
   return sendEmail({
     to: userEmail,
     subject: "إشعار حذف الحساب - إديو سنتر",
+    html,
+  });
+};
+
+/**
+ * Send login credentials email to admin-created user
+ */
+export const sendCredentialsEmail = async (
+  userName: string,
+  userEmail: string,
+  password: string,
+  role: string,
+  loginUrl: string
+): Promise<boolean> => {
+  const html = getCredentialsTemplate(userName, userEmail, password, role, loginUrl);
+
+  return sendEmail({
+    to: userEmail,
+    subject: "بيانات حسابك في إديو سنتر",
     html,
   });
 };
@@ -624,3 +649,129 @@ const getAccountDeletionTemplate = (name: string) => `
 </body>
 </html>
 `;
+
+const getCredentialsTemplate = (
+  name: string,
+  email: string,
+  password: string,
+  role: string,
+  loginUrl: string
+) => {
+  const roleLabels: Record<string, string> = {
+    TEACHER: "معلم",
+    STUDENT: "طالب",
+    PARENT: "ولي أمر",
+    ADMIN: "مدير",
+  };
+  const roleLabel = roleLabels[role] || role;
+
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بيانات حسابك - إديو سنتر</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F3F4F6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F3F4F6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); padding: 48px 40px; text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 16px;">🔐</div>
+              <h1 style="color: #FFFFFF; margin: 0 0 8px 0; font-size: 32px; font-weight: 700;">بيانات حسابك</h1>
+              <p style="color: #BFDBFE; margin: 0; font-size: 18px;">إديو سنتر</p>
+            </td>
+          </tr>
+
+          <!-- Welcome -->
+          <tr>
+            <td style="padding: 48px 40px 24px 40px;">
+              <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">مرحباً ${name}! 👋</h2>
+              <p style="color: #4B5563; margin: 0; font-size: 18px; line-height: 1.7;">
+                تم إنشاء حسابك في منصة إديو سنتر كـ <strong style="color: #2563EB;">${roleLabel}</strong>.
+                يمكنك الآن تسجيل الدخول باستخدام البيانات التالية:
+              </p>
+            </td>
+          </tr>
+
+          <!-- Credentials Box -->
+          <tr>
+            <td style="padding: 0 40px 32px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #EFF6FF; border: 2px solid #BFDBFE; border-radius: 12px;">
+                <tr>
+                  <td style="padding: 32px;">
+                    <h3 style="color: #1E40AF; margin: 0 0 24px 0; font-size: 20px; font-weight: 700; text-align: center;">بيانات تسجيل الدخول</h3>
+
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #DBEAFE;">
+                          <span style="color: #6B7280; font-size: 14px; display: block; margin-bottom: 4px;">البريد الإلكتروني</span>
+                          <span style="color: #111827; font-size: 18px; font-weight: 600; direction: ltr; display: block;">${email}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 12px 0;">
+                          <span style="color: #6B7280; font-size: 14px; display: block; margin-bottom: 4px;">كلمة المرور</span>
+                          <span style="color: #111827; font-size: 18px; font-weight: 600; direction: ltr; display: block; font-family: monospace; background-color: #FFFFFF; padding: 8px 12px; border-radius: 6px; border: 1px solid #BFDBFE;">${password}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Login Button -->
+          <tr>
+            <td style="padding: 0 40px 32px 40px; text-align: center;">
+              <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); color: #FFFFFF; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 18px; font-weight: 700;">
+                تسجيل الدخول الآن
+              </a>
+            </td>
+          </tr>
+
+          <!-- Security Note -->
+          <tr>
+            <td style="padding: 0 40px 40px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFBEB; border: 2px solid #FDE68A; border-radius: 12px;">
+                <tr>
+                  <td style="padding: 20px 24px;">
+                    <p style="color: #92400E; margin: 0; font-size: 15px; line-height: 1.7;">
+                      ⚠️ <strong>ملاحظة أمنية:</strong> ننصحك بتغيير كلمة المرور بعد تسجيل الدخول الأول من إعدادات الحساب.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #F9FAFB; padding: 32px 40px; text-align: center; border-top: 2px solid #E5E7EB;">
+              <p style="color: #6B7280; margin: 0 0 8px 0; font-size: 14px;">
+                © ${new Date().getFullYear()} إديو سنتر. جميع الحقوق محفوظة.
+              </p>
+              <p style="color: #9CA3AF; margin: 0; font-size: 12px;">
+                تم إرسال هذا البريد تلقائياً، يرجى عدم الرد عليه.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+`;
+};

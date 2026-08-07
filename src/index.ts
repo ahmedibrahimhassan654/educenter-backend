@@ -11,6 +11,7 @@ import attendanceRoutes from "./routes/attendance";
 import curriculumRoutes from "./routes/curriculum";
 import adminCurriculumRoutes from "./routes/adminCurriculum";
 import emailRoutes from "./routes/emails";
+import notificationRoutes from "./routes/notifications";
 import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use("/api/groups", groupRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/curriculum", curriculumRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Admin routes
 app.use("/api/admin/curriculum", adminCurriculumRoutes);
