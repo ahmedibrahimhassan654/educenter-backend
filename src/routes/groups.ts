@@ -1,7 +1,9 @@
 import { Router, Response } from "express";
 import { Group } from "../models/Group";
+import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { createNotification } from "../services/notificationService";
 
 const router = Router();
 
@@ -17,20 +19,21 @@ router.get(
       // If explore=true, return all groups (for explore page)
       if (explore === "true") {
         groups = await Group.find()
-          .populate("teacherId", "name email")
+          .populate("teacherId", "name email phone verificationData verificationStatus")
           .populate("students", "name email phone")
           .sort("-createdAt");
       } else if (req.user!.role === "TEACHER") {
         groups = await Group.find({ teacherId: req.user!._id })
+          .populate("teacherId", "name email phone verificationData verificationStatus")
           .populate("students", "name email phone")
           .sort("-createdAt");
       } else if (req.user!.role === "STUDENT") {
         groups = await Group.find({ students: req.user!._id })
-          .populate("teacherId", "name email")
+          .populate("teacherId", "name email phone verificationData verificationStatus")
           .sort("-createdAt");
       } else {
         groups = await Group.find()
-          .populate("teacherId", "name email")
+          .populate("teacherId", "name email phone verificationData verificationStatus")
           .populate("students", "name email phone")
           .sort("-createdAt");
       }
@@ -59,6 +62,20 @@ router.post(
         scheduleDays,
       });
 
+      // Notify all admins about new group
+      const admins = await User.find({ role: "ADMIN" });
+      const teacher = await User.findById(req.user!._id);
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "مجموعة جديدة",
+          message: `تم إنشاء مجموعة جديدة: ${title} بواسطة ${teacher?.name || "معلم"}`,
+          type: "INFO",
+          category: "GROUP",
+          link: "/admin/groups",
+        });
+      }
+
       res.status(201).json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error creating group", error: error.message });
@@ -73,7 +90,7 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const group = await Group.findById(req.params.id)
-        .populate("teacherId", "name email phone")
+        .populate("teacherId", "name email phone verificationData verificationStatus")
         .populate("students", "name email phone");
 
       if (!group) {

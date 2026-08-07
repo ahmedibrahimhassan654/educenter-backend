@@ -1,7 +1,9 @@
+// Must be first: populates process.env before any module reads it at import time
+import "./config/env";
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import dotenv from "dotenv";
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
@@ -15,21 +17,58 @@ import notificationRoutes from "./routes/notifications";
 import verificationRoutes from "./routes/verification";
 import { errorHandler } from "./middleware/errorHandler";
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Disable ETags: a 304 Not Modified sends an empty body, which breaks
+// clients that expect JSON on every request
+app.set("etag", false);
+
+// Allowed origins: configured frontend URL, plus any localhost port in development
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const isDevelopment = process.env.NODE_ENV !== "production";
+const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 // Middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin(origin, callback) {
+      // Allow non-browser clients (curl, server-to-server) with no Origin header
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (isDevelopment && localhostPattern.test(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+    },
     credentials: true,
   })
 );
 app.use(helmet());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  const startTime = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - startTime;
+    const status = res.statusCode;
+    const statusText = status >= 400 ? "FAILED" : "SUCCESS";
+    const timestamp = new Date().toISOString();
+
+    console.log(
+      `[${timestamp}] ${req.method} ${req.originalUrl} | Controller: ${req.baseUrl || "N/A"} | Status: ${status} | ${statusText} | ${duration}ms`
+    );
+  });
+
+  next();
+});
 
 // Health check
 app.get("/api/health", (req, res) => {

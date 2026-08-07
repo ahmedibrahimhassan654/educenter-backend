@@ -3,6 +3,7 @@ import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { config } from "../config/env";
+import { createNotification } from "../services/notificationService";
 import {
   sendAccountDeletionEmail,
   sendCredentialsEmail,
@@ -80,10 +81,10 @@ router.get(
       const limitNum = parseInt(limit as string) || 20;
       const skip = (pageNum - 1) * limitNum;
 
-      // Execute query
+      // Execute query - select only needed fields
       const [users, total] = await Promise.all([
         User.find(query)
-          .select("-__v")
+          .select("_id name email phone role avatarUrl verificationStatus verificationData createdAt updatedAt")
           .sort(sort as string)
           .skip(skip)
           .limit(limitNum)
@@ -262,6 +263,19 @@ router.post(
         console.log(`✅ Credentials email sent to ${userEmail}`);
       } else {
         console.error(`❌ Credentials email FAILED to send to ${userEmail}`);
+      }
+
+      // Notify all admins about new user
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "مستخدم جديد",
+          message: `تم تسجيل مستخدم جديد: ${name} (${userRole})`,
+          type: "INFO",
+          category: "USER",
+          link: "/admin/users",
+        });
       }
 
       res.status(201).json({

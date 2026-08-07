@@ -38,6 +38,10 @@ const groupSchema = new Schema<IGroup>(
       required: true,
       trim: true,
     },
+    stage: {
+      type: String,
+      trim: true,
+    },
     priceTeacherShare: {
       type: Number,
       default: 50,
@@ -57,15 +61,6 @@ const groupSchema = new Schema<IGroup>(
     scheduleDays: [
       {
         type: String,
-        enum: [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ],
       },
     ],
     students: [
@@ -77,6 +72,28 @@ const groupSchema = new Schema<IGroup>(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: (_doc, ret) => {
+        if (ret._id) {
+          ret.id = ret._id;
+          delete ret._id;
+        }
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: (_doc, ret) => {
+        if (ret._id) {
+          ret.id = ret._id;
+          delete ret._id;
+        }
+        return ret;
+      },
+    },
   }
 );
 

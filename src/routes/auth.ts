@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { createNotification } from "../services/notificationService";
 import {
   sendTeacherWelcomeEmail,
   sendStudentWelcomeEmail,
@@ -47,6 +48,23 @@ router.post("/register", async (req: AuthRequest, res: Response): Promise<void> 
     } catch (emailError) {
       // Don't fail registration if email fails
       console.error("⚠️ Failed to send welcome email:", emailError);
+    }
+
+    // Notify all admins about new user registration
+    try {
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "مستخدم جديد",
+          message: `تسجيل مستخدم جديد: ${name} (${role})`,
+          type: "INFO",
+          category: "USER",
+          link: "/admin/users",
+        });
+      }
+    } catch (notifError) {
+      console.error("⚠️ Failed to send admin notification:", notifError);
     }
 
     res.status(201).json(user);
