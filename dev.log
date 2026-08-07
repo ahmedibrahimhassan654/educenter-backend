@@ -1,0 +1,520 @@
+
+> educenter-backend@1.0.0 dev
+> nodemon --exec tsx src/index.ts
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T19:36:31.274Z] POST /api/auth/register | Controller: /api/auth | Status: 401 | FAILED | 367ms
+[2026-08-07T19:36:44.888Z] POST /api/auth/register | Controller: /api/auth | Status: 400 | FAILED | 0ms
+[2026-08-07T19:36:45.037Z] POST /api/auth/register | Controller: /api/auth | Status: 400 | FAILED | 0ms
+[2026-08-07T19:36:45.137Z] POST /api/auth/register | Controller: /api/auth | Status: 400 | FAILED | 1ms
+✅ Email sent to probe.reg.1786131430@gmail.com
+✅ Welcome email sent to probe.reg.1786131430@gmail.com (STUDENT)
+[2026-08-07T19:37:15.493Z] POST /api/auth/register | Controller: /api/auth | Status: 201 | SUCCESS | 3136ms
+[2026-08-07T19:37:29.681Z] POST /api/auth/register | Controller: /api/auth | Status: 409 | FAILED | 406ms
+[2026-08-07T19:37:29.792Z] POST /api/auth/register | Controller: /api/auth | Status: 403 | FAILED | 1ms
+[2026-08-07T19:37:30.129Z] POST /api/auth/register | Controller: /api/auth | Status: 409 | FAILED | 237ms
+[2026-08-07T19:37:30.293Z] POST /api/auth/register | Controller: /api/auth | Status: 403 | FAILED | 1ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T19:46:27.684Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 527ms
+[2026-08-07T19:46:27.801Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T19:46:28.358Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 231ms
+[2026-08-07T19:46:28.671Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 538ms
+[2026-08-07T19:46:29.197Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 525ms
+[2026-08-07T19:46:32.300Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 4168ms
+[2026-08-07T19:46:57.205Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 541ms
+[2026-08-07T19:46:57.414Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 208ms
+[2026-08-07T19:49:19.564Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 122ms
+[2026-08-07T19:49:19.670Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+[2026-08-07T19:51:47.777Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 237ms
+[2026-08-07T19:51:48.029Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 198ms
+[2026-08-07T19:51:48.255Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 216ms
+[2026-08-07T19:51:53.088Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 5260ms
+[2026-08-07T19:54:22.926Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 105ms
+[2026-08-07T19:54:23.030Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-07T19:54:23.375Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 238ms
+[2026-08-07T19:54:23.922Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 539ms
+[2026-08-07T19:54:24.162Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 1026ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:03:57.978Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 123ms
+[2026-08-07T20:03:58.044Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 400 | FAILED | 3ms
+✅ Email sent to blushing.caterpillar6862@maildrop.cc
+[2026-08-07T20:04:18.901Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 10821ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:05:01.128Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 951ms
+[2026-08-07T20:05:01.435Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 209ms
+[2026-08-07T20:05:02.079Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 559ms
+[2026-08-07T20:05:02.166Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 1ms
+[2026-08-07T20:05:02.512Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 200 | SUCCESS | 209ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:14:16.957Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 138ms
+[2026-08-07T20:14:17.075Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 400 | FAILED | 2ms
+[2026-08-07T20:14:17.192Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 400 | FAILED | 1ms
+[2026-08-07T20:14:17.424Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 115ms
+[2026-08-07T20:14:17.535Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 1ms
+[2026-08-07T20:14:17.648Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 1ms
+[2026-08-07T20:14:17.766Z] POST /api/auth/reset-password | Controller: /api/auth | Status: 400 | FAILED | 2ms
+[2026-08-07T20:14:18.095Z] POST /api/auth/reset-password | Controller: /api/auth | Status: 400 | FAILED | 224ms
+[2026-08-07T20:14:18.212Z] POST /api/auth/change-password | Controller: /api/auth | Status: 401 | FAILED | 1ms
+✅ Email sent to deccoric5588@gmail.com
+[2026-08-07T20:14:43.005Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 11638ms
+[2026-08-07T20:14:43.301Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 217ms
+[2026-08-07T20:14:43.628Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 216ms
+[2026-08-07T20:14:44.255Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 534ms
+[2026-08-07T20:14:44.539Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 202ms
+[2026-08-07T20:14:44.837Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 201ms
+[2026-08-07T20:14:45.136Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 400 | FAILED | 210ms
+[2026-08-07T20:14:55.649Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-07T20:14:55.848Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T20:14:56.044Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T20:14:56.135Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 429 | FAILED | 1ms
+[2026-08-07T20:14:56.222Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 429 | FAILED | 1ms
+[2026-08-07T20:15:42.442Z] POST /api/auth/change-password | Controller: /api/auth | Status: 400 | FAILED | 13221ms
+[2026-08-07T20:16:01.160Z] POST /api/auth/change-password | Controller: /api/auth | Status: 400 | FAILED | 18589ms
+[2026-08-07T20:16:12.980Z] POST /api/auth/change-password | Controller: /api/auth | Status: 400 | FAILED | 11746ms
+[2026-08-07T20:16:26.111Z] POST /api/auth/change-password | Controller: /api/auth | Status: 200 | SUCCESS | 13076ms
+[2026-08-07T20:16:28.414Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 112ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (9) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:18:01.346Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-07T20:22:21.385Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 419ms
+[2026-08-07T20:22:21.496Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T20:22:25.460Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 535ms
+[2026-08-07T20:22:26.452Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1522ms
+[2026-08-07T20:22:26.731Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 278ms
+[2026-08-07T20:23:00.687Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 198ms
+[2026-08-07T20:23:00.895Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 207ms
+[2026-08-07T20:23:21.723Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 1277ms
+[2026-08-07T20:23:22.871Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 1147ms
+[2026-08-07T20:23:26.533Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 530ms
+[2026-08-07T20:23:26.767Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 233ms
+[2026-08-07T20:23:27.424Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 1425ms
+[2026-08-07T20:23:33.621Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 248ms
+[2026-08-07T20:23:33.824Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 202ms
+✅ Email sent to deccoric5588@gmail.com
+[2026-08-07T20:25:08.523Z] POST /api/auth/forgot-password | Controller: /api/auth | Status: 200 | SUCCESS | 22180ms
+[2026-08-07T20:25:35.357Z] POST /api/auth/verify-otp | Controller: /api/auth | Status: 200 | SUCCESS | 202ms
+[2026-08-07T20:26:06.036Z] POST /api/auth/reset-password | Controller: /api/auth | Status: 200 | SUCCESS | 9689ms
+[2026-08-07T20:28:27.662Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 1ms
+[2026-08-07T20:34:24.370Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 12176ms
+[2026-08-07T20:37:48.736Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T20:37:48.848Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 111ms
+[2026-08-07T20:37:51.936Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 230ms
+[2026-08-07T20:37:52.837Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1128ms
+[2026-08-07T20:37:53.389Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 550ms
+[2026-08-07T20:41:32.291Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T20:42:51.031Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T20:42:51.130Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 98ms
+[2026-08-07T20:42:51.622Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 197ms
+[2026-08-07T20:42:52.756Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1331ms
+[2026-08-07T20:42:52.956Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 199ms
+[2026-08-07T20:43:42.517Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+[2026-08-07T20:43:42.623Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T20:43:43.211Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 513ms
+[2026-08-07T20:43:43.412Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 200ms
+[2026-08-07T20:43:43.550Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 857ms
+[2026-08-07T20:44:20.286Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 1079ms
+[2026-08-07T20:44:20.902Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 615ms
+[2026-08-07T20:45:32.973Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 207ms
+[2026-08-07T20:45:32.977Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 218ms
+[2026-08-07T20:45:33.510Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 532ms
+[2026-08-07T20:45:41.404Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 204ms
+[2026-08-07T20:45:41.605Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 196ms
+[2026-08-07T20:46:20.168Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 562ms
+[2026-08-07T20:46:20.386Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 217ms
+[2026-08-07T20:46:59.221Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 546ms
+[2026-08-07T20:46:59.446Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 223ms
+[2026-08-07T20:47:21.088Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 537ms
+[2026-08-07T20:47:27.071Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 124ms
+[2026-08-07T20:47:27.713Z] GET /api/notifications?limit=5 | Controller: /api/notifications | Status: 200 | SUCCESS | 535ms
+[2026-08-07T20:47:52.053Z] GET /api/users?page=1&limit=5 | Controller: /api/users | Status: 200 | SUCCESS | 24236ms
+[2026-08-07T20:47:52.422Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 229ms
+[2026-08-07T20:48:29.977Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 217ms
+[2026-08-07T20:49:00.401Z] GET /api/verification/pending?status=PENDING | Controller: /api/verification | Status: 200 | SUCCESS | 263ms
+[2026-08-07T20:49:01.011Z] GET /api/verification/pending?status=REJECTED | Controller: /api/verification | Status: 200 | SUCCESS | 533ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ override existing { override: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:52:21.739Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 796ms
+[2026-08-07T20:52:22.145Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 330ms
+[2026-08-07T20:52:22.944Z] GET /api/verification/pending?status=PENDING | Controller: /api/verification | Status: 200 | SUCCESS | 632ms
+[2026-08-07T20:52:23.533Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 532ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T20:57:40.240Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 409ms
+[2026-08-07T20:57:40.423Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 105ms
+[2026-08-07T20:57:40.943Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 445ms
+[2026-08-07T20:57:41.170Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 100ms
+[2026-08-07T20:57:41.458Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 213ms
+[2026-08-07T20:57:41.767Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 233ms
+[2026-08-07T20:57:42.135Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 294ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T21:20:56.281Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 822ms
+[2026-08-07T21:20:56.368Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 704ms
+[2026-08-07T21:20:56.383Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 910ms
+[2026-08-07T21:20:56.597Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 226ms
+[2026-08-07T21:20:56.730Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 346ms
+[2026-08-07T21:20:57.601Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 1939ms
+[2026-08-07T21:22:28.492Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 377ms
+[2026-08-07T21:22:34.452Z] GET /api/verification/6a752589149a1a2380f65954/documents | Controller: /api/verification | Status: 200 | SUCCESS | 210ms
+[2026-08-07T21:22:48.148Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T21:22:52.564Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+JWT verification failed: jwt malformed
+[2026-08-07T21:22:56.149Z] GET /api/auth/me | Controller: /api/auth | Status: 401 | FAILED | 2ms
+JWT verification failed: jwt malformed
+[2026-08-07T21:22:56.241Z] GET /api/auth/me | Controller: /api/auth | Status: 401 | FAILED | 1ms
+[2026-08-07T21:22:56.862Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T21:23:34.002Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 216ms
+[2026-08-07T21:23:34.214Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 211ms
+[2026-08-07T21:23:34.871Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 1082ms
+[2026-08-07T21:23:35.114Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 242ms
+[2026-08-07T21:24:41.461Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 100ms
+[2026-08-07T21:24:41.644Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-07T21:24:41.844Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 122ms
+[2026-08-07T21:24:41.919Z] GET /api/verification/6a7584351caf87501b00b4a7/documents | Controller: /api/verification | Status: 401 | FAILED | 0ms
+[2026-08-07T21:26:08.785Z] GET /api/users?page=1&limit=20&role=TEACHER | Controller: /api/users | Status: 200 | SUCCESS | 203ms
+[2026-08-07T21:26:11.947Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 219ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development

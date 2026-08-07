@@ -110,15 +110,41 @@ router.get(
         query.verificationStatus = status;
       }
 
+      // Exclude verificationData.documents: they are base64 data URIs that can
+      // be hundreds of KB each and would make this list response many MB.
+      // The documents are loaded per teacher via GET /verification/:userId.
       const [users, total] = await Promise.all([
         User.find(query)
-          .select("name email phone avatarUrl verificationStatus verificationData verificationNotes verifiedAt createdAt")
+          .select(
+            "name email phone avatarUrl verificationStatus verificationNotes verifiedAt createdAt " +
+              "verificationData.experience verificationData.curriculum verificationData.bio"
+          )
           .sort("-createdAt")
           .skip(skip)
           .limit(limitNum)
           .lean(),
         User.countDocuments(query),
       ]);
+
+      // Count documents server-side with $size so the payloads never leave Mongo
+      const counts = await User.aggregate([
+        { $match: query },
+        {
+          $project: {
+            documentsCount: {
+              $size: { $ifNull: ["$verificationData.documents", []] },
+            },
+          },
+        },
+      ]);
+
+      const countById = new Map(
+        counts.map((u: any) => [String(u._id), u.documentsCount || 0])
+      );
+
+      for (const u of users as any[]) {
+        u.documentsCount = countById.get(String(u._id)) || 0;
+      }
 
       res.json({
         success: true,
@@ -132,6 +158,46 @@ router.get(
       });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching verification requests", error: error.message });
+    }
+  }
+);
+
+// Admin fetches one teacher's verification documents.
+// Kept separate from the list so the heavy base64 payloads are only
+// transferred when an admin actually opens a submission.
+router.get(
+  "/:userId/documents",
+  auth,
+  requireRole("ADMIN"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const userId = String(req.params.userId);
+
+      if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+        res.status(400).json({ message: "Invalid user ID format" });
+        return;
+      }
+
+      const user = await User.findById(userId)
+        .select("name email verificationData.documents")
+        .lean();
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      res.json({
+        success: true,
+        data: {
+          documents: (user as any).verificationData?.documents || [],
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        message: "Error fetching verification documents",
+        error: error.message,
+      });
     }
   }
 );

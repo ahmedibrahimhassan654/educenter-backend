@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed": "tsx src/seed.ts",
-    "seed:curriculum": "tsx src/scripts/seedCurriculum.ts"
+    "seed:curriculum": "tsx src/scripts/seedCurriculum.ts",
+    "migrate:docs": "tsx src/scripts/migrateVerificationDocs.ts"
   },
   "keywords": [],
   "author": "",

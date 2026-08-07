@@ -81,10 +81,15 @@ router.get(
       const limitNum = parseInt(limit as string) || 20;
       const skip = (pageNum - 1) * limitNum;
 
-      // Execute query - select only needed fields
+      // Execute query - select only needed fields.
+      // verificationData.documents holds base64 data URIs that can be hundreds
+      // of KB each, so the list excludes them and they are fetched per user.
       const [users, total] = await Promise.all([
         User.find(query)
-          .select("_id name email phone role avatarUrl verificationStatus verificationData createdAt updatedAt")
+          .select(
+            "_id name email phone role avatarUrl verificationStatus createdAt updatedAt " +
+              "verificationData.experience verificationData.curriculum verificationData.bio"
+          )
           .sort(sort as string)
           .skip(skip)
           .limit(limitNum)
@@ -146,7 +151,29 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const user = await User.findById(req.params.id).select("-__v").lean();
+      const userId = String(req.params.id);
+
+      if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+        res.status(400).json({ message: "Invalid user ID format" });
+        return;
+      }
+
+      const requester = req.user!;
+      const isAdmin = requester.role === "ADMIN";
+      const isSelf = requester._id.toString() === userId;
+      // A parent may read the profiles of their own linked children
+      const isOwnChild =
+        requester.role === "PARENT" &&
+        (requester.students || []).some((id) => id.toString() === userId);
+
+      if (!isAdmin && !isSelf && !isOwnChild) {
+        res.status(403).json({
+          message: "Forbidden: You can only view your own profile",
+        });
+        return;
+      }
+
+      const user = await User.findById(userId).select("-__v").lean();
       if (!user) {
         res.status(404).json({ message: "User not found" });
         return;

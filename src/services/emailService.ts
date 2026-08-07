@@ -136,6 +136,25 @@ export const sendPasswordResetEmail = async (
 };
 
 /**
+ * Send a one-time password reset code
+ */
+export const sendPasswordResetOtpEmail = async (
+  userName: string,
+  userEmail: string,
+  code: string,
+  minutes: number
+): Promise<boolean> => {
+  const html = getPasswordResetOtpTemplate(userName, code, minutes);
+
+  return sendEmail({
+    to: userEmail,
+    subject: `رمز إعادة تعيين كلمة المرور: ${code} - إديو سنتر`,
+    html,
+    text: `رمز إعادة تعيين كلمة المرور الخاص بك هو ${code}. صالح لمدة ${minutes} دقائق.`,
+  });
+};
+
+/**
  * Send account deletion email
  */
 export const sendAccountDeletionEmail = async (
@@ -547,6 +566,45 @@ const getPasswordResetTemplate = (name: string, link: string) => `
 
       <p style="font-size: 14px; color: #6B7280;">هذا الرابط صالح لمدة ساعة واحدة فقط.</p>
       <p style="font-size: 14px; color: #6B7280;">إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد.</p>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} إديو سنتر. جميع الحقوق محفوظة.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+const getPasswordResetOtpTemplate = (
+  name: string,
+  code: string,
+  minutes: number
+) => `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${baseStyles}
+</head>
+<body>
+  <div class="container">
+    <div class="header" style="background: linear-gradient(135deg, #DC2626, #EF4444);">
+      <h1>🔐 رمز إعادة تعيين كلمة المرور</h1>
+    </div>
+    <div class="content">
+      <h2>مرحباً ${name}!</h2>
+      <p>تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بك. استخدم الرمز التالي لمتابعة العملية:</p>
+
+      <div style="text-align: center; margin: 32px 0;">
+        <div style="display: inline-block; background-color: #F9FAFB; border: 2px dashed #DC2626; border-radius: 12px; padding: 20px 32px;">
+          <span style="font-family: 'Courier New', Courier, monospace; font-size: 40px; font-weight: bold; letter-spacing: 12px; color: #DC2626; direction: ltr; display: inline-block;">${code}</span>
+        </div>
+      </div>
+
+      <p style="font-size: 14px; color: #6B7280;">هذا الرمز صالح لمدة ${minutes} دقائق فقط.</p>
+      <p style="font-size: 14px; color: #6B7280;">لا تشارك هذا الرمز مع أي شخص. فريق إديو سنتر لن يطلب منك هذا الرمز أبداً.</p>
+      <p style="font-size: 14px; color: #6B7280;">إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد بأمان.</p>
     </div>
     <div class="footer">
       <p>© ${new Date().getFullYear()} إديو سنتر. جميع الحقوق محفوظة.</p>

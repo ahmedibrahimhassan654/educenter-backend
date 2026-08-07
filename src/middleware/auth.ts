@@ -6,6 +6,7 @@ import { User, IUser } from "../models/User";
 
 export interface AuthRequest extends Request {
   user?: IUser;
+  claims?: jwt.JwtPayload;
 }
 
 const SUPABASE_URL = config.supabaseUrl;
@@ -117,13 +118,22 @@ export const auth = async (
       return;
     }
 
-    // Find user by supabaseId
-    const user = await User.findOne({ supabaseId: decoded.sub });
+    req.claims = decoded;
+
+    // Find user by supabaseId.
+    // verificationData.documents holds base64 data URIs (hundreds of KB each)
+    // and this runs on every authenticated request, so never load them here.
+    // Routes that need the documents query for them explicitly.
+    const user = await User.findOne({ supabaseId: decoded.sub }).select(
+      "-verificationData.documents"
+    );
 
     if (!user) {
       // Link an existing account created before Supabase signup
       if (decoded.email) {
-        const userByEmail = await User.findOne({ email: decoded.email });
+        const userByEmail = await User.findOne({
+          email: decoded.email,
+        }).select("-verificationData.documents");
         if (userByEmail) {
           userByEmail.supabaseId = decoded.sub;
           await userByEmail.save();
