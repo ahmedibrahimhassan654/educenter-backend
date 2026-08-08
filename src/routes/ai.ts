@@ -3,6 +3,7 @@ import multer from "multer";
 import { auth, AuthRequest } from "./../middleware/auth";
 import { requireRole } from "./../middleware/rbac";
 import { aiRateLimiter, aiHeavyRateLimiter } from "./../middleware/aiRateLimiter";
+import { cache } from "../services/cache";
 import {
   streamChat,
   generateQuestions,
@@ -46,6 +47,13 @@ router.get("/contents", async (req: AuthRequest, res: Response): Promise<void> =
     const limitNum = Math.min(parseInt(limit as string) || 20, 50);
     const skip = (pageNum - 1) * limitNum;
 
+    const cacheKey = `ai:contents:${userId}:${pageNum}:${limitNum}:${type || "all"}`;
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.json(cached);
+      return;
+    }
+
     const query: any = { userId };
     if (type === "DOCUMENT" || type === "VIDEO_TRANSCRIPT") {
       query.type = type;
@@ -61,7 +69,7 @@ router.get("/contents", async (req: AuthRequest, res: Response): Promise<void> =
       AIContent.countDocuments(query),
     ]);
 
-    res.json({
+    const response = {
       success: true,
       data: contents,
       pagination: {
@@ -70,7 +78,9 @@ router.get("/contents", async (req: AuthRequest, res: Response): Promise<void> =
         total,
         pages: Math.ceil(total / limitNum),
       },
-    });
+    };
+    cache.set(cacheKey, response, 60);
+    res.json(response);
   } catch (error: any) {
     console.error("Error fetching AI contents:", error);
     res.status(500).json({ message: "Error fetching contents", error: error.message });
@@ -112,7 +122,8 @@ router.delete("/contents/:id", async (req: AuthRequest, res: Response): Promise<
 
     await GeneratedContent.deleteMany({ contentId: id, userId });
 
-    res.json({ success: true, message: "تم حذف المحتوى بنجاح" });
+    cache.deleteByPattern(`ai:contents:${userId}:*`);
+      res.json({ success: true, message: "تم حذف المحتوى بنجاح" });
   } catch (error: any) {
     console.error("Error deleting AI content:", error);
     res.status(500).json({ message: "Error deleting content", error: error.message });
@@ -464,7 +475,8 @@ router.delete("/chat-history/:id", async (req: AuthRequest, res: Response): Prom
       return;
     }
 
-    res.json({ success: true, message: "تم حذف المحادثة بنجاح" });
+    cache.deleteByPattern(`ai:chat-history:${userId}:*`);
+      res.json({ success: true, message: "تم حذف المحادثة بنجاح" });
   } catch (error: any) {
     console.error("Error deleting chat:", error);
     res.status(500).json({ message: "Error deleting chat", error: error.message });
@@ -764,7 +776,8 @@ router.delete("/generated/:id", async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    res.json({ success: true, message: "تم حذف المحتوى المُنشأ بنجاح" });
+    cache.deleteByPattern(`ai:generated:${userId}:*`);
+      res.json({ success: true, message: "تم حذف المحتوى المُنشأ بنجاح" });
   } catch (error: any) {
     console.error("Error deleting generated content:", error);
     res.status(500).json({ message: "Error deleting content", error: error.message });

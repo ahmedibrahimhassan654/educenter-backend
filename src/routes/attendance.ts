@@ -3,6 +3,7 @@ import { Attendance } from "../models/Attendance";
 import { Session } from "../models/Session";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -12,10 +13,18 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const cacheKey = `attendance:${req.params.sessionId}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        res.json(cached);
+        return;
+      }
+
       const attendance = await Attendance.find({
         sessionId: req.params.sessionId,
       }).populate("studentId", "name email phone");
 
+      cache.set(cacheKey, attendance, 60);
       res.json(attendance);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching attendance", error: error.message });
@@ -114,6 +123,7 @@ router.get(
         late: attendance.filter((a) => a.status === "LATE").length,
       };
 
+      cache.set(`attendance:summary:${studentId}`, summary, 60);
       res.json(summary);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching attendance summary", error: error.message });

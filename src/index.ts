@@ -4,6 +4,9 @@ import "./config/env";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
+import mongoSanitize from "express-mongo-sanitize";
+import hpp from "hpp";
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
@@ -17,7 +20,11 @@ import notificationRoutes from "./routes/notifications";
 import verificationRoutes from "./routes/verification";
 import aiRoutes from "./routes/ai";
 import settingsRoutes from "./routes/settings";
+import { cache } from "./services/cache";
+import { auth } from "./middleware/auth";
+import { requireRole } from "./middleware/rbac";
 import { errorHandler } from "./middleware/errorHandler";
+import { securityLogger } from "./utils/securityLogger";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,9 +57,25 @@ app.use(
     credentials: true,
   })
 );
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: isDevelopment ? false : undefined,
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: true,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    noSniff: true,
+    xssFilter: true,
+  })
+);
+app.use(compression()); // Compress all responses
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Security: sanitize inputs against NoSQL injection and parameter pollution
+app.use(mongoSanitize());
+app.use(hpp());
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -75,6 +98,11 @@ app.use((req, res, next) => {
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Cache stats (admin only)
+app.get("/api/admin/cache-stats", auth, requireRole("ADMIN"), (req: any, res: any) => {
+  res.json(cache.getStats());
 });
 
 // Routes

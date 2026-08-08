@@ -9,6 +9,7 @@ import {
   getNotificationSettings,
   updateNotificationSettings,
 } from "../services/notificationService";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -24,18 +25,27 @@ router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
     const userId = req.user!._id;
     const { page = "1", limit = "20", unreadOnly = "false" } = req.query;
 
+    const cacheKey = `notifications:${userId}:${page}:${limit}:${unreadOnly}`;
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.json(cached);
+      return;
+    }
+
     const result = await getUserNotifications(userId, {
       page: parseInt(page as string),
       limit: parseInt(limit as string),
       unreadOnly: unreadOnly === "true",
     });
 
-    res.json({
+    const response = {
       success: true,
       data: result.notifications,
       pagination: result.pagination,
       unreadCount: result.unreadCount,
-    });
+    };
+    cache.set(cacheKey, response, 15); // Short TTL for notifications
+    res.json(response);
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching notifications", error: error.message });
   }
@@ -48,12 +58,17 @@ router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
 router.get("/unread-count", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!._id;
+    const cacheKey = `notifications:unread:${userId}`;
+    const cached = cache.get(cacheKey);
+    if (cached) { res.json(cached); return; }
     const result = await getUserNotifications(userId, { limit: 1 });
     
-    res.json({
+    const response = {
       success: true,
       unreadCount: result.unreadCount,
-    });
+    };
+    cache.set(cacheKey, response, 15);
+    res.json(response);
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching unread count", error: error.message });
   }
@@ -73,7 +88,8 @@ router.put("/:id/read", async (req: AuthRequest, res: Response): Promise<void> =
       return;
     }
 
-    res.json({ success: true, message: "Notification marked as read" });
+    cache.deleteByPattern(`notifications:${userId}:*`);
+      res.json({ success: true, message: "Notification marked as read" });
   } catch (error: any) {
     res.status(500).json({ message: "Error marking notification as read", error: error.message });
   }
@@ -111,7 +127,8 @@ router.delete("/:id", async (req: AuthRequest, res: Response): Promise<void> => 
       return;
     }
 
-    res.json({ success: true, message: "Notification deleted" });
+    cache.deleteByPattern(`notifications:${userId}:*`);
+      res.json({ success: true, message: "Notification deleted" });
   } catch (error: any) {
     res.status(500).json({ message: "Error deleting notification", error: error.message });
   }

@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { EducationalStage, IStage, IGrade, ISubject, ITerm } from "../models/EducationalStage";
 import { AuthRequest } from "../middleware/auth";
+import { cache } from "../services/cache";
 
 /**
  * Curriculum Controller
@@ -115,6 +116,9 @@ export const getStageById = async (req: AuthRequest, res: Response): Promise<voi
     const stage = await findStageById(req.params.stageId, res);
     if (!stage) return;
 
+        cache.delete("curriculum:all");
+        cache.delete("curriculum:all");
+        cache.delete("curriculum:all");
     res.json({ success: true, data: stage });
   } catch (error: any) {
     res.status(500).json({
@@ -369,6 +373,7 @@ export const updateGrade = async (req: AuthRequest, res: Response): Promise<void
       message: "تم تحديث الصف الدراسي بنجاح",
       data: stage,
     });
+    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -418,6 +423,7 @@ export const deleteGrade = async (req: AuthRequest, res: Response): Promise<void
         terms: deletedTerms,
       },
     });
+    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -522,6 +528,7 @@ export const updateSubject = async (req: AuthRequest, res: Response): Promise<vo
       message: "تم تحديث المادة الدراسية بنجاح",
       data: stage,
     });
+    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -677,6 +684,7 @@ export const updateTerm = async (req: AuthRequest, res: Response): Promise<void>
       message: "تم تحديث الترم بنجاح",
       data: stage,
     });
+    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -725,6 +733,7 @@ export const deleteTerm = async (req: AuthRequest, res: Response): Promise<void>
         code: term.code,
       },
     });
+    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,

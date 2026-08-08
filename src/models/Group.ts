@@ -74,6 +74,7 @@ const groupSchema = new Schema<IGroup>(
       {
         type: Schema.Types.ObjectId,
         ref: "User",
+        index: true,
       },
     ],
   },
@@ -103,5 +104,20 @@ const groupSchema = new Schema<IGroup>(
     },
   }
 );
+
+// Virtual for students count (without loading full array)
+groupSchema.virtual("studentsCount").get(function () {
+  return this.students ? this.students.length : 0;
+});
+
+// Ensure virtuals are included in toJSON/toObject
+groupSchema.set("toJSON", { virtuals: true });
+groupSchema.set("toObject", { virtuals: true });
+
+// Compound indexes for common query patterns
+// Note: students field already has index: true in schema definition
+groupSchema.index({ teacherId: 1, createdAt: -1 }); // Teacher's groups sorted by date
+groupSchema.index({ stage: 1, grade: 1 }); // Filter by stage + grade
+groupSchema.index({ subject: 1 }); // Filter by subject
 
 export const Group = mongoose.model<IGroup>("Group", groupSchema);

@@ -3,6 +3,7 @@ import multer from "multer";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { cache } from "../services/cache";
 import { config } from "../config/env";
 import {
   createSignedUrls,
@@ -106,12 +107,14 @@ router.get(
         return;
       }
 
-      res.json({
+      const response = {
         verificationStatus: user.verificationStatus,
         verificationData: user.verificationData,
         verificationNotes: user.verificationNotes,
         verifiedAt: user.verifiedAt,
-      });
+      };
+      cache.set(`verification:status:${req.user!._id}`, response, 60);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching verification status", error: error.message });
     }
@@ -126,6 +129,13 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { status = "SUBMITTED", page = "1", limit = "20" } = req.query;
+
+      const cacheKey = `verification:pending:${status}:${page}:${limit}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        res.json(cached);
+        return;
+      }
 
       const pageNum = parseInt(page as string) || 1;
       const limitNum = parseInt(limit as string) || 20;
@@ -176,7 +186,7 @@ router.get(
         u.documentsCount = countById.get(String(u._id)) || 0;
       }
 
-      res.json({
+      const response = {
         success: true,
         data: users,
         pagination: {
@@ -185,7 +195,9 @@ router.get(
           total,
           pages: Math.ceil(total / limitNum),
         },
-      });
+      };
+      cache.set(cacheKey, response, 60);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching verification requests", error: error.message });
     }
@@ -267,6 +279,9 @@ router.put(
 
       await user.save();
 
+      cache.deleteByPattern("verification:pending:*");
+      cache.delete(`verification:status:${req.user!._id}`);
+      cache.delete(`user:${req.user!._id}`);
       res.json({
         success: true,
         message: "تم تحديث البيانات بنجاح",
@@ -479,6 +494,9 @@ router.put(
 
       await user.save();
 
+      cache.deleteByPattern("verification:pending:*");
+      cache.delete(`user:${userId}`);
+      cache.delete(`verification:status:${userId}`);
       res.json({
         success: true,
         message: "Teacher verified successfully",

@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { EducationalStage } from "../models/EducationalStage";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -9,10 +10,17 @@ const router = Router();
 // PUBLIC ROUTES (for browsing)
 // ==========================================
 
-// Get all stages with grades and subjects
+// Get all stages with grades and subjects (cached for 1 hour)
 router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const cacheKey = "curriculum:all";
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.json(cached);
+      return;
+    }
     const stages = await EducationalStage.find().sort({ "grades.level": 1 });
+    cache.set(cacheKey, stages, 3600); // 1 hour
     res.json(stages);
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching stages", error: error.message });
@@ -22,11 +30,15 @@ router.get("/", async (req: AuthRequest, res: Response): Promise<void> => {
 // Get single stage by ID
 router.get("/:id", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const cacheKey = `curriculum:stage:${req.params.id}`;
+    const cached = cache.get(cacheKey);
+    if (cached) { res.json(cached); return; }
     const stage = await EducationalStage.findById(req.params.id);
     if (!stage) {
       res.status(404).json({ message: "Stage not found" });
       return;
     }
+    cache.set(cacheKey, stage, 3600);
     res.json(stage);
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching stage", error: error.message });
@@ -36,11 +48,15 @@ router.get("/:id", async (req: AuthRequest, res: Response): Promise<void> => {
 // Get stage by key (PRIMARY, PREPARATORY, SECONDARY)
 router.get("/key/:key", async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const cacheKey = `curriculum:stage:key:${req.params.key}`;
+    const cached = cache.get(cacheKey);
+    if (cached) { res.json(cached); return; }
     const stage = await EducationalStage.findOne({ key: req.params.key.toUpperCase() });
     if (!stage) {
       res.status(404).json({ message: "Stage not found" });
       return;
     }
+    cache.set(cacheKey, stage, 3600);
     res.json(stage);
   } catch (error: any) {
     res.status(500).json({ message: "Error fetching stage", error: error.message });

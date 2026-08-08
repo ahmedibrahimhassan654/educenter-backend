@@ -3,6 +3,7 @@ import { Session } from "../models/Session";
 import { Group } from "../models/Group";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -12,7 +13,19 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { groupId } = req.query;
+      const { groupId, page = "1", limit = "20" } = req.query;
+      const pageNum = Math.max(1, parseInt(page as string) || 1);
+      const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20));
+      const skip = (pageNum - 1) * limitNum;
+
+      // Build cache key
+      const cacheKey = `sessions:${req.user!.role}:${req.user!._id}:${groupId || "all"}:${pageNum}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        res.json(cached);
+        return;
+      }
+
       let sessions;
 
       if (req.user!.role === "TEACHER") {
@@ -20,7 +33,9 @@ router.get(
         if (groupId) query.groupId = groupId;
         sessions = await Session.find(query)
           .populate("groupId", "title subject")
-          .sort("-date");
+          .sort("-date")
+          .skip(skip)
+          .limit(limitNum);
       } else if (req.user!.role === "STUDENT") {
         const groups = await Group.find({ students: req.user!._id });
         const groupIds = groups.map((g) => g._id);
@@ -28,17 +43,23 @@ router.get(
         if (groupId) query.groupId = groupId;
         sessions = await Session.find(query)
           .populate("groupId", "title subject")
-          .sort("-date");
+          .sort("-date")
+          .skip(skip)
+          .limit(limitNum);
       } else {
         const query: any = {};
         if (groupId) query.groupId = groupId;
         sessions = await Session.find(query)
           .populate("groupId", "title subject")
           .populate("teacherId", "name")
-          .sort("-date");
+          .sort("-date")
+          .skip(skip)
+          .limit(limitNum);
       }
 
-      res.json(sessions);
+      const response = { success: true, data: sessions };
+      cache.set(cacheKey, response, 30);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching sessions", error: error.message });
     }
@@ -95,6 +116,7 @@ router.get(
         return;
       }
 
+      cache.set(`session:${req.params.id}`, session, 60);
       res.json(session);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching session", error: error.message });

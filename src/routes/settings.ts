@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -11,6 +12,12 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const cacheKey = "settings:public";
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        res.json(cached);
+        return;
+      }
       const settings = await Settings.findOne().sort("-createdAt").lean();
       if (!settings) {
         res.json({
@@ -30,12 +37,14 @@ router.get(
         });
         return;
       }
-      res.json({
+      const response = {
         defaultPricePerLecture: settings.defaultPricePerLecture,
         maxStudentsPerGroup: settings.maxStudentsPerGroup,
         platformFeePercentage: settings.platformFeePercentage,
         socialLinks: settings.socialLinks,
-      });
+      };
+      cache.set(cacheKey, response, 300); // 5 minutes
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({
         message: "Error fetching settings",
@@ -124,6 +133,7 @@ router.put(
 
       settings.updatedBy = req.user!._id;
       await settings.save();
+      cache.delete("settings:public"); // Invalidate cache
       res.json(settings);
     } catch (error: any) {
       res.status(500).json({

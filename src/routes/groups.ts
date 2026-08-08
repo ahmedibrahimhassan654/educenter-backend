@@ -5,42 +5,133 @@ import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { createNotification } from "../services/notificationService";
+import { cache } from "../services/cache";
 
 const router = Router();
 
-// Get all groups (filtered by teacher or student)
+// Get all groups (filtered by teacher or student) with pagination
 router.get(
   "/",
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { explore } = req.query;
-      let groups;
+      const { explore, page = "1", limit = "20" } = req.query;
+      const pageNum = Math.max(1, parseInt(page as string) || 1);
+      const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20));
+      const skip = (pageNum - 1) * limitNum;
+
+      let filter: any = {};
       
-      // If explore=true, return all groups (for explore page)
-      if (explore === "true") {
-        groups = await Group.find()
-          .populate("teacherId", "name email phone verificationData verificationStatus")
-          .populate("students", "name email phone")
-          .sort("-createdAt");
-      } else if (req.user!.role === "TEACHER") {
-        groups = await Group.find({ teacherId: req.user!._id })
-          .populate("teacherId", "name email phone verificationData verificationStatus")
-          .populate("students", "name email phone")
-          .sort("-createdAt");
-      } else if (req.user!.role === "STUDENT") {
-        groups = await Group.find({ students: req.user!._id })
-          .populate("teacherId", "name email phone verificationData verificationStatus")
-          .sort("-createdAt");
-      } else {
-        groups = await Group.find()
-          .populate("teacherId", "name email phone verificationData verificationStatus")
-          .populate("students", "name email phone")
-          .sort("-createdAt");
+      if (explore !== "true") {
+        if (req.user!.role === "TEACHER") {
+          filter.teacherId = req.user!._id;
+        } else if (req.user!.role === "STUDENT") {
+          filter.students = req.user!._id;
+        }
       }
-      res.json(groups);
+
+      // Use Promise.all for parallel execution
+      // Include students as ObjectIds only (not populated) for count
+      const [groups, total] = await Promise.all([
+        Group.find(filter)
+          .populate("teacherId", "name email phone verificationStatus")
+          .sort("-createdAt")
+          .skip(skip)
+          .limit(limitNum)
+          .lean(),
+        Group.countDocuments(filter),
+      ]);
+
+      // Add studentsCount from the ObjectIds array
+      const groupsWithCount = groups.map((g: any) => ({
+        ...g,
+        studentsCount: g.students?.length || 0,
+        students: undefined, // Don't send student ObjectIds to client
+      }));
+
+      res.json({
+        data: groups,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          pages: Math.ceil(total / limitNum),
+        },
+      });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching groups", error: error.message });
+    }
+  }
+);
+
+// Admin: Get all groups with teacher info
+router.get(
+  "/admin/all",
+  auth,
+  requireRole("ADMIN"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const groups = await Group.find()
+        .populate("teacherId", "name email phone verificationStatus")
+        .sort("-createdAt")
+        .lean();
+
+      // Add studentsCount without sending full students array
+      const groupsWithCount = groups.map((g: any) => ({
+        ...g,
+        studentsCount: g.students?.length || 0,
+        students: undefined,
+      }));
+
+      cache.set("admin:groups:all", groupsWithCount, 30);
+      res.json({
+        success: true,
+        data: groupsWithCount,
+        total: groupsWithCount.length,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching groups", error: error.message });
+    }
+  }
+);
+
+// Get teacher's group stats (for dashboard)
+router.get(
+  "/stats",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const stats = await Group.aggregate([
+        { $match: { teacherId: req.user!._id } },
+        {
+          $group: {
+            _id: null,
+            totalGroups: { $sum: 1 },
+            totalStudents: { $sum: { $size: { $ifNull: ["$students", []] } } },
+            totalEarnings: {
+              $sum: {
+                $multiply: [
+                  { $ifNull: ["$totalSessionPrice", 0] },
+                  { $size: { $ifNull: ["$students", []] } },
+                ],
+              },
+            },
+          },
+        },
+      ]);
+
+      const result = stats[0] || { totalGroups: 0, totalStudents: 0, totalEarnings: 0 };
+      res.json({
+        success: true,
+        data: {
+          totalGroups: result.totalGroups,
+          totalStudents: result.totalStudents,
+          totalEarnings: result.totalEarnings,
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching stats", error: error.message });
     }
   }
 );
@@ -90,6 +181,9 @@ router.post(
         });
       }
 
+      cache.deleteByPattern("groups:list:*");
+      cache.deleteByPattern("groups:stats:*");
+      cache.deleteByPattern("admin:groups:*");
       res.status(201).json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error creating group", error: error.message });
@@ -174,6 +268,7 @@ router.get(
         res.status(404).json({ message: "Group not found" });
         return;
       }
+      cache.set(`group:${req.params.id}`, group, 60);
       res.json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching group", error: error.message });
@@ -237,6 +332,10 @@ router.delete(
       }
 
       await Group.findByIdAndDelete(req.params.id);
+      cache.delete(`group:${req.params.id}`);
+      cache.deleteByPattern("groups:list:*");
+      cache.deleteByPattern("groups:stats:*");
+      cache.deleteByPattern("admin:groups:*");
       res.json({ message: "Group deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: "Error deleting group", error: error.message });

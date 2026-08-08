@@ -122,4 +122,7 @@ userSchema.pre("save" as any, async function (this: IUser) {
   }
 });
 
+// Compound index for admin filtering (email and linkingCode already indexed via unique: true)
+userSchema.index({ role: 1, verificationStatus: 1 });
+
 export const User = mongoose.model<IUser>("User", userSchema);

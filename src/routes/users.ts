@@ -8,6 +8,7 @@ import {
   sendAccountDeletionEmail,
   sendCredentialsEmail,
 } from "../services/emailService";
+import { cache } from "../services/cache";
 
 const router = Router();
 
@@ -97,7 +98,7 @@ router.get(
         User.countDocuments(query),
       ]);
 
-      res.json({
+      const response = {
         success: true,
         data: users,
         pagination: {
@@ -106,7 +107,9 @@ router.get(
           total,
           pages: Math.ceil(total / limitNum),
         },
-      });
+      };
+      cache.set(`users:list:${page}:${limit}:${search}:${role}`, response, 30);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching users", error: error.message });
     }
@@ -129,7 +132,7 @@ router.get(
           User.countDocuments({ role: "ADMIN" }),
         ]);
 
-      res.json({
+      const response = {
         success: true,
         data: {
           total,
@@ -138,7 +141,9 @@ router.get(
           parents,
           admins,
         },
-      });
+      };
+      cache.set("users:stats", response, 60);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching stats", error: error.message });
     }
@@ -178,7 +183,9 @@ router.get(
         res.status(404).json({ message: "User not found" });
         return;
       }
-      res.json({ success: true, data: user });
+      const response = { success: true, data: user };
+      cache.set(`user:${userId}`, response, 120);
+      res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching user", error: error.message });
     }
