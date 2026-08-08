@@ -588,3 +588,1149 @@ Environment: development
 MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
 Server running on port 5000
 Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ enable debugging { debug: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T22:24:01.244Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 200 | SUCCESS | 2530ms
+[2026-08-07T22:24:29.291Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 214ms
+[2026-08-07T22:24:29.525Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 229ms
+[2026-08-07T22:24:29.679Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 224ms
+[2026-08-07T22:24:29.725Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 198ms
+[2026-08-07T22:24:29.945Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 219ms
+[2026-08-07T22:24:34.848Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 440ms
+[2026-08-07T22:24:35.667Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 723ms
+[2026-08-07T22:24:37.231Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 2297ms
+[2026-08-07T22:24:37.520Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 2582ms
+[2026-08-07T22:24:37.918Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 395ms
+[2026-08-07T22:24:45.076Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 114ms
+[2026-08-07T22:24:45.190Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 109ms
+[2026-08-07T22:24:45.384Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 218ms
+[2026-08-07T22:24:45.681Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 509ms
+[2026-08-07T22:24:46.105Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 422ms
+[2026-08-07T22:26:30.846Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 130ms
+[2026-08-07T22:26:31.243Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 200 | SUCCESS | 368ms
+[2026-08-07T22:26:31.550Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 200 | SUCCESS | 302ms
+[2026-08-07T22:26:31.654Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 400 | FAILED | 99ms
+[2026-08-07T22:26:31.763Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 400 | FAILED | 98ms
+[2026-08-07T22:26:31.877Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 400 | FAILED | 109ms
+[2026-08-07T22:26:32.008Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 400 | FAILED | 127ms
+[2026-08-07T22:26:32.126Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T22:26:58.666Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 403 | FAILED | 1014ms
+[2026-08-07T22:26:58.754Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 401 | FAILED | 1ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T23:24:11.063Z] GET /api/curriculum | Controller: /api/curriculum | Status: 200 | SUCCESS | 454ms
+[2026-08-07T23:24:11.194Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 606ms
+[2026-08-07T23:24:11.477Z] GET /api/curriculum | Controller: /api/curriculum | Status: 200 | SUCCESS | 394ms
+[2026-08-07T23:24:16.022Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T23:24:16.131Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T23:24:16.459Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 204ms
+[2026-08-07T23:24:16.464Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 199ms
+[2026-08-07T23:24:16.707Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 199ms
+[2026-08-07T23:24:32.749Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 126ms
+[2026-08-07T23:24:36.822Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T23:24:53.465Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 5125ms
+[2026-08-07T23:25:07.993Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 834ms
+[2026-08-07T23:25:28.887Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T23:25:28.988Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 99ms
+[2026-08-07T23:25:29.346Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 254ms
+[2026-08-07T23:25:29.365Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 277ms
+[2026-08-07T23:25:29.575Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 224ms
+[2026-08-07T23:25:33.707Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 1267ms
+[2026-08-07T23:25:47.357Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 146ms
+[2026-08-07T23:25:49.637Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 162ms
+[2026-08-07T23:25:54.387Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 109ms
+[2026-08-07T23:26:06.080Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 7792ms
+[2026-08-07T23:26:06.153Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 124ms
+[2026-08-07T23:26:06.832Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 305ms
+[2026-08-07T23:26:10.493Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 103ms
+[2026-08-07T23:26:10.608Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 113ms
+[2026-08-07T23:26:11.012Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-07T23:26:11.530Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 656ms
+[2026-08-07T23:26:11.532Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 662ms
+[2026-08-07T23:26:12.538Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 1006ms
+[2026-08-07T23:26:15.263Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 237ms
+[2026-08-07T23:26:15.486Z] GET /api/curriculum | Controller: /api/curriculum | Status: 200 | SUCCESS | 455ms
+[2026-08-07T23:26:15.679Z] GET /api/curriculum | Controller: /api/curriculum | Status: 200 | SUCCESS | 192ms
+[2026-08-07T23:26:18.398Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+[2026-08-07T23:26:18.663Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 162ms
+[2026-08-07T23:26:30.162Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T23:27:01.912Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 635ms
+[2026-08-07T23:27:35.888Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 400 | FAILED | 102ms
+[2026-08-07T23:27:36.021Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 400 | FAILED | 98ms
+[2026-08-07T23:27:36.218Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 400 | FAILED | 168ms
+[2026-08-07T23:27:36.331Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 403 | FAILED | 103ms
+[2026-08-07T23:27:36.340Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 401 | FAILED | 1ms
+[2026-08-07T23:27:36.927Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 581ms
+[2026-08-07T23:27:51.506Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 482ms
+[2026-08-07T23:29:55.737Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 92ms
+[2026-08-07T23:29:55.748Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T23:34:43.443Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 1914ms
+[2026-08-07T23:35:35.341Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 490ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (12) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T23:41:53.306Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 2075ms
+[2026-08-07T23:43:05.621Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 99ms
+[2026-08-07T23:43:06.581Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 128ms
+[2026-08-07T23:43:23.500Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 110ms
+[2026-08-07T23:43:28.691Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+[2026-08-07T23:43:29.209Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T23:43:32.513Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T23:43:41.786Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 120ms
+[2026-08-07T23:43:41.789Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 115ms
+[2026-08-07T23:44:59.735Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 6410ms
+[2026-08-07T23:45:04.849Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 613ms
+[2026-08-07T23:45:10.188Z] POST /api/verification/upload-document | Controller: /api/verification | Status: 200 | SUCCESS | 850ms
+[2026-08-07T23:45:17.125Z] POST /api/verification/submit | Controller: /api/verification | Status: 200 | SUCCESS | 336ms
+[2026-08-07T23:45:17.960Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 103ms
+[2026-08-07T23:45:23.362Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 109ms
+[2026-08-07T23:45:29.198Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 111ms
+[2026-08-07T23:45:35.167Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 217ms
+[2026-08-07T23:45:35.382Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 211ms
+[2026-08-07T23:45:35.842Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 888ms
+[2026-08-07T23:45:36.044Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 199ms
+[2026-08-07T23:45:38.152Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 210ms
+[2026-08-07T23:45:38.381Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 228ms
+[2026-08-07T23:45:58.583Z] PUT /api/users/6a7661afcfe3585c6696a5d5 | Controller: /api/users | Status: 200 | SUCCESS | 423ms
+[2026-08-07T23:46:09.323Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 214ms
+[2026-08-07T23:46:27.873Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 1002ms
+[2026-08-07T23:46:28.325Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 446ms
+[2026-08-07T23:46:35.452Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 460ms
+[2026-08-07T23:46:35.455Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 467ms
+[2026-08-07T23:46:35.839Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 383ms
+[2026-08-07T23:46:35.844Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 386ms
+[2026-08-07T23:46:43.398Z] GET /api/verification/6a7661afcfe3585c6696a5d5/documents | Controller: /api/verification | Status: 200 | SUCCESS | 832ms
+[2026-08-07T23:47:01.855Z] PUT /api/verification/6a7661afcfe3585c6696a5d5/approve | Controller: /api/verification | Status: 200 | SUCCESS | 665ms
+[2026-08-07T23:47:02.334Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 472ms
+[2026-08-07T23:47:05.190Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[2026-08-07T23:47:05.192Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T23:47:07.437Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 205ms
+[2026-08-07T23:47:07.439Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 211ms
+[2026-08-07T23:47:07.749Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 306ms
+[2026-08-07T23:47:07.750Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 311ms
+[2026-08-07T23:47:16.921Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 318ms
+[2026-08-07T23:47:17.165Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 244ms
+[2026-08-07T23:47:23.594Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 643ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-07T23:51:01.442Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 500ms
+[2026-08-07T23:51:01.446Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 485ms
+[2026-08-07T23:51:03.646Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 271ms
+[2026-08-07T23:51:03.903Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 253ms
+[2026-08-07T23:51:04.201Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 834ms
+[2026-08-07T23:51:04.456Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 254ms
+[2026-08-07T23:51:07.181Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 224ms
+[2026-08-07T23:51:14.306Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 313ms
+[2026-08-07T23:51:14.617Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 310ms
+[2026-08-07T23:51:16.077Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 317ms
+[2026-08-07T23:51:20.179Z] GET /api/verification/6a7661afcfe3585c6696a5d5/documents | Controller: /api/verification | Status: 200 | SUCCESS | 724ms
+[2026-08-07T23:52:25.723Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 560ms
+[2026-08-07T23:52:26.446Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 720ms
+[2026-08-07T23:52:27.638Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 401 | FAILED | 1ms
+[2026-08-07T23:52:27.645Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 401 | FAILED | 0ms
+[2026-08-07T23:52:27.656Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 1642ms
+[2026-08-07T23:52:27.668Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 1657ms
+[2026-08-07T23:52:28.075Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 418ms
+[2026-08-07T23:52:32.182Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 2185ms
+[2026-08-07T23:52:32.659Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 471ms
+[2026-08-07T23:54:02.528Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 837ms
+[2026-08-07T23:55:28.822Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 405ms
+[2026-08-07T23:55:28.825Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 382ms
+[2026-08-07T23:55:50.978Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 106ms
+[2026-08-07T23:56:00.150Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 116ms
+[2026-08-07T23:56:10.443Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 100ms
+[2026-08-07T23:56:15.984Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 101ms
+[2026-08-07T23:57:20.046Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 125ms
+[2026-08-07T23:57:40.330Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-07T23:58:35.444Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 116ms
+[2026-08-07T23:58:40.484Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 132ms
+[2026-08-07T23:58:43.324Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 100ms
+[2026-08-07T23:58:54.082Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 141ms
+[2026-08-07T23:58:54.416Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-07T23:58:59.635Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 111ms
+[2026-08-07T23:59:05.275Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 98ms
+[2026-08-08T00:04:37.224Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 523ms
+[2026-08-08T00:04:37.328Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-08T00:05:10.966Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 2798ms
+[2026-08-08T00:05:12.442Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 4266ms
+[2026-08-08T00:05:12.442Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 4269ms
+[2026-08-08T00:05:12.787Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 341ms
+[2026-08-08T00:05:12.805Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 362ms
+[2026-08-08T00:05:26.080Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 540ms
+[2026-08-08T00:05:27.263Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 1182ms
+[2026-08-08T00:05:29.447Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 691ms
+[2026-08-08T00:05:41.734Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-08T00:06:01.797Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[2026-08-08T00:06:06.823Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[2026-08-08T00:06:22.830Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-08T00:06:22.949Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 115ms
+[2026-08-08T00:06:24.854Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 554ms
+[2026-08-08T00:06:28.724Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 230ms
+[2026-08-08T00:06:29.204Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 200ms
+[2026-08-08T00:06:29.206Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 206ms
+[2026-08-08T00:06:29.719Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 505ms
+[2026-08-08T00:06:29.720Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 503ms
+[2026-08-08T00:06:39.844Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 208ms
+[2026-08-08T00:06:40.038Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 193ms
+[2026-08-08T00:06:42.956Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 214ms
+[2026-08-08T00:06:54.687Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 322ms
+[2026-08-08T00:06:55.012Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 323ms
+[2026-08-08T00:06:56.480Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 300ms
+[2026-08-08T00:06:59.263Z] GET /api/verification/6a7661afcfe3585c6696a5d5/documents | Controller: /api/verification | Status: 200 | SUCCESS | 515ms
+[2026-08-08T00:07:18.520Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 480ms
+[2026-08-08T00:07:18.782Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 260ms
+[2026-08-08T00:07:21.668Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 198ms
+[2026-08-08T00:07:21.675Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 219ms
+[2026-08-08T00:07:21.886Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 210ms
+[2026-08-08T00:07:25.146Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 210ms
+[2026-08-08T00:07:25.159Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 220ms
+[2026-08-08T00:07:25.360Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 199ms
+[2026-08-08T00:07:25.361Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 214ms
+[2026-08-08T00:07:36.045Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 210ms
+[2026-08-08T00:07:36.239Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 193ms
+[2026-08-08T00:07:47.741Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-08T00:07:47.750Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-08T00:08:31.605Z] POST /api/auth/change-password | Controller: /api/auth | Status: 200 | SUCCESS | 1058ms
+[2026-08-08T00:08:40.435Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 204ms
+[2026-08-08T00:08:40.439Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 206ms
+[2026-08-08T00:08:40.636Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 200ms
+[2026-08-08T00:08:40.636Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 196ms
+[2026-08-08T00:08:57.806Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 126ms
+[2026-08-08T00:08:57.807Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 131ms
+[2026-08-08T00:09:05.718Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-08T00:09:12.644Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 98ms
+[2026-08-08T00:09:17.853Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 98ms
+[2026-08-08T00:09:30.414Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 105ms
+[2026-08-08T00:09:30.522Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 107ms
+[2026-08-08T00:09:30.819Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 215ms
+[2026-08-08T00:09:30.819Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 212ms
+[2026-08-08T00:09:30.820Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 211ms
+[2026-08-08T00:09:31.017Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 196ms
+[2026-08-08T00:09:31.018Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 195ms
+[2026-08-08T00:09:39.160Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 200ms
+[2026-08-08T00:09:39.355Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 194ms
+[2026-08-08T00:09:42.357Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 846ms
+[2026-08-08T00:10:44.028Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 197ms
+[2026-08-08T00:10:44.227Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 198ms
+[2026-08-08T00:10:48.479Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 561ms
+[2026-08-08T00:14:13.489Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 104ms
+[2026-08-08T00:14:16.503Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 112ms
+[2026-08-08T00:14:35.929Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 103ms
+[2026-08-08T00:14:36.059Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 108ms
+[2026-08-08T00:14:36.630Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 193ms
+[2026-08-08T00:14:36.634Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 189ms
+[2026-08-08T00:14:36.872Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 199ms
+[2026-08-08T00:14:56.089Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 501ms
+[2026-08-08T00:14:56.206Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 115ms
+[2026-08-08T00:14:56.493Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 229ms
+[2026-08-08T00:14:56.505Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 244ms
+[2026-08-08T00:14:56.718Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 220ms
+[2026-08-08T00:23:53.548Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 201ms
+[2026-08-08T00:23:53.738Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 189ms
+[2026-08-08T00:27:54.486Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 382ms
+[2026-08-08T00:27:54.601Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 112ms
+[2026-08-08T00:27:55.063Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 184ms
+[2026-08-08T00:27:55.078Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 208ms
+[2026-08-08T00:27:55.279Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 206ms
+JWT verification failed: jwt malformed
+[2026-08-08T00:31:09.637Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 401 | FAILED | 2ms
+JWT verification failed: jwt malformed
+[2026-08-08T00:31:09.969Z] PUT /api/verification/my-details | Controller: /api/verification | Status: 401 | FAILED | 1ms
+[2026-08-08T00:31:55.946Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 698ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ override existing { override: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-08T00:46:47.310Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 524ms
+[2026-08-08T00:46:47.413Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 100ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-08T00:47:01.249Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 525ms
+[2026-08-08T00:47:01.353Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 272ms
+[2026-08-08T00:47:01.564Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 209ms
+[2026-08-08T00:47:01.831Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 744ms
+[2026-08-08T00:47:02.082Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 248ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-08T00:47:16.626Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 2356ms
+[2026-08-08T00:47:17.562Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 931ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ override existing { override: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-08T00:47:52.293Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 589ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ override existing { override: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:256:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:256:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:256:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:257:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ override existing { override: true }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:257:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:257:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+Warning: Environment variable GROQ_API_KEY is not set
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:6:30)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:673:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:725:22)
+    at parseOptions (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:802:16)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\express-rate-limit\dist\index.cjs:884:18)
+    at rateLimit (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:20:35)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\middleware\aiRateLimiter.ts:32:2)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465
+      throw new Errors.OpenAIError(
+            ^
+
+OpenAIError: Missing credentials. Please pass an `apiKey`, `workloadIdentity`, `adminAPIKey`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+    at new OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\openai\src\client.ts:465:13)
+    at OpenAI (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:4:14)
+    at Object.<anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\aiService.ts:257:23)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object.transformer (D:\transfered folder\courses\projects\educenter\educenter-backend\node_modules\tsx\dist\register-CRHZwkwo.cjs:9:3339)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1617:12)
+    at require (node:internal/modules/helpers:153:16)
+
+Node.js v24.18.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Warning: Environment variable GROQ_API_KEY is not set
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+Warning: Environment variable GROQ_API_KEY is not set
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (13) from .env // tip: ⌘ suppress logs { quiet: true }
+Warning: Environment variable GROQ_API_KEY is not set
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[2026-08-08T01:15:17.923Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 1146ms
+[2026-08-08T01:15:18.037Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 97ms
+[2026-08-08T01:15:40.983Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 448ms
+[2026-08-08T01:15:41.037Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 726ms
+[2026-08-08T01:15:41.258Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 274ms
+[2026-08-08T01:15:41.545Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 1006ms
+[2026-08-08T01:15:41.742Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 192ms
+[2026-08-08T01:15:49.202Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 309ms
+[2026-08-08T01:15:49.508Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 305ms
+[2026-08-08T01:15:51.958Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 289ms
+[2026-08-08T01:15:57.680Z] GET /api/verification/6a7584351caf87501b00b4a7/documents | Controller: /api/verification | Status: 200 | SUCCESS | 708ms
+[2026-08-08T01:16:52.842Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 96ms
+[2026-08-08T01:16:52.942Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 92ms
+[2026-08-08T01:17:51.067Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 149ms
+[2026-08-08T01:17:51.292Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 223ms
+[2026-08-08T01:18:08.687Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 94ms
+[2026-08-08T01:18:08.740Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 195ms
+[2026-08-08T01:18:08.752Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 202ms
+[2026-08-08T01:18:08.932Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 179ms
+[2026-08-08T01:18:30.797Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 90ms
+[2026-08-08T01:18:30.888Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 90ms
+[2026-08-08T01:18:36.269Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 202ms
+[2026-08-08T01:18:36.583Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 225ms
+[2026-08-08T01:18:36.784Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 199ms
+[2026-08-08T01:18:37.139Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 778ms
+[2026-08-08T01:18:37.368Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 228ms
+[2026-08-08T01:18:42.276Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 201ms
+[2026-08-08T01:18:42.464Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 187ms
+[2026-08-08T01:18:45.868Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 188ms
+[2026-08-08T01:19:03.493Z] PUT /api/users/6a7661afcfe3585c6696a5d5 | Controller: /api/users | Status: 200 | SUCCESS | 373ms
+[2026-08-08T01:19:19.170Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 789ms
+[2026-08-08T01:19:19.786Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 615ms
+[2026-08-08T01:19:20.766Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 335ms
+[2026-08-08T01:19:23.082Z] GET /api/verification/6a7661afcfe3585c6696a5d5/documents | Controller: /api/verification | Status: 200 | SUCCESS | 511ms
+[2026-08-08T01:20:49.222Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 1ms
+[2026-08-08T02:26:53.908Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 974ms
+[2026-08-08T02:26:54.003Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 88ms
+[2026-08-08T02:27:34.020Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 771ms
+[2026-08-08T02:27:34.486Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 896ms
+[2026-08-08T02:27:34.501Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 908ms
+[2026-08-08T02:27:34.715Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 228ms
+[2026-08-08T02:27:35.235Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 733ms
+[2026-08-08T02:27:37.147Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 184ms
+[2026-08-08T02:27:37.336Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 188ms
+[2026-08-08T02:27:44.784Z] GET /api/groups/teacher/6a7661afcfe3585c6696a5d5/summary | Controller: /api/groups | Status: 200 | SUCCESS | 220ms
+[2026-08-08T02:27:52.439Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 550ms
+[2026-08-08T02:27:52.770Z] GET /api/admin/curriculum | Controller: /api/admin/curriculum | Status: 200 | SUCCESS | 329ms
+[2026-08-08T02:29:22.911Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 187ms
+[2026-08-08T02:29:22.928Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 200ms
+[2026-08-08T02:29:23.115Z] GET /api/notifications?limit=50 | Controller: /api/notifications | Status: 200 | SUCCESS | 185ms
+[2026-08-08T02:29:32.042Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 184ms
+[2026-08-08T02:29:32.046Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 185ms
+[2026-08-08T02:29:32.234Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 188ms
+[2026-08-08T02:29:32.238Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 190ms
+[2026-08-08T02:29:44.177Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 280ms
+[2026-08-08T02:29:44.447Z] GET /api/verification/pending?status=SUBMITTED | Controller: /api/verification | Status: 200 | SUCCESS | 267ms
+[2026-08-08T02:29:45.347Z] GET /api/verification/pending?status=VERIFIED | Controller: /api/verification | Status: 200 | SUCCESS | 280ms
+[2026-08-08T02:29:48.124Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 179ms
+[2026-08-08T02:29:48.397Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 266ms
+[2026-08-08T02:30:43.927Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 92ms
+[2026-08-08T02:30:44.073Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 146ms
+[2026-08-08T02:30:46.284Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 186ms
+[2026-08-08T02:30:46.347Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 241ms
+[2026-08-08T02:30:46.439Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 337ms
+[2026-08-08T02:30:46.551Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 203ms
+[2026-08-08T02:30:46.756Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 317ms
+[2026-08-08T02:31:01.813Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 213ms
+[2026-08-08T02:31:01.992Z] GET /api/notifications/settings | Controller: /api/notifications | Status: 200 | SUCCESS | 178ms
+[2026-08-08T02:31:39.922Z] GET /api/verification/my-documents | Controller: /api/verification | Status: 200 | SUCCESS | 709ms
+[2026-08-08T02:36:38.372Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 96ms
+[2026-08-08T02:36:48.822Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 198ms
+[2026-08-08T02:36:48.917Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 295ms
+[2026-08-08T02:36:49.017Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 194ms
+[2026-08-08T02:36:49.210Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 292ms
+[2026-08-08T02:36:56.679Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 767ms
+[2026-08-08T02:36:56.863Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 183ms
+Error processing document: TypeError: parse is not a function
+    at parsePdf (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\contentParser.ts:32:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\routes\ai.ts:164:24)
+[2026-08-08T02:37:44.186Z] POST /api/ai/process-document | Controller: /api/ai | Status: 500 | FAILED | 16354ms
+Error processing document: Error: Unsupported document type for parsing: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    at parseDocument (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\contentParser.ts:67:9)
+    at <anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\routes\ai.ts:164:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-08-08T02:38:52.131Z] POST /api/ai/process-document | Controller: /api/ai | Status: 500 | FAILED | 289ms
+[2026-08-08T02:44:28.699Z] POST /api/ai/process-document | Controller: /api/ai | Status: 200 | SUCCESS | 292ms
+[2026-08-08T02:45:27.306Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 197ms
+[2026-08-08T02:45:27.309Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 196ms
+[2026-08-08T02:45:27.501Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 191ms
+[2026-08-08T02:45:33.509Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 145ms
+[2026-08-08T02:45:33.615Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 99ms
+[2026-08-08T02:45:33.989Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 194ms
+[2026-08-08T02:45:34.002Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 203ms
+[2026-08-08T02:45:34.202Z] GET /api/users?limit=5&sort=-createdAt | Controller: /api/users | Status: 200 | SUCCESS | 198ms
+[2026-08-08T02:45:34.536Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 92ms
+[2026-08-08T02:45:34.631Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 782ms
+[2026-08-08T02:45:34.652Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 102ms
+[2026-08-08T02:45:34.840Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 203ms
+[2026-08-08T02:45:34.990Z] GET /api/notifications?limit=10 | Controller: /api/notifications | Status: 200 | SUCCESS | 193ms
+[2026-08-08T02:45:35.005Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 193ms
+[2026-08-08T02:45:35.202Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 196ms
+[2026-08-08T02:50:25.360Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 21ms
+[2026-08-08T02:50:26.177Z] GET /favicon.ico | Controller: N/A | Status: 404 | FAILED | 34ms
+[2026-08-08T02:50:31.134Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 1ms
+[2026-08-08T02:54:17.405Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 626ms
+[2026-08-08T02:54:17.412Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 639ms
+[2026-08-08T02:54:17.632Z] GET /api/users?page=1&limit=20 | Controller: /api/users | Status: 200 | SUCCESS | 226ms
+[2026-08-08T02:54:17.635Z] GET /api/users/stats | Controller: /api/users | Status: 200 | SUCCESS | 221ms
+[2026-08-08T02:54:22.860Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 94ms
+[2026-08-08T02:54:24.384Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 162ms
+[2026-08-08T02:54:34.728Z] DELETE /api/ai/contents/6a7696bb8a9526dbeceac694 | Controller: /api/ai | Status: 200 | SUCCESS | 345ms
+[2026-08-08T02:54:37.494Z] DELETE /api/ai/contents/6a7696688a9526dbeceac693 | Controller: /api/ai | Status: 200 | SUCCESS | 271ms
+[2026-08-08T02:54:47.964Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 289ms
+[2026-08-08T02:54:48.237Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 272ms
+[2026-08-08T02:55:04.520Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 91ms
+[2026-08-08T03:05:24.728Z] GET /api/auth/me | Controller: /api/auth | Status: 200 | SUCCESS | 554ms
+[2026-08-08T03:05:24.979Z] GET /api/groups | Controller: /api/groups | Status: 200 | SUCCESS | 817ms
+[2026-08-08T03:05:46.525Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 182ms
+[2026-08-08T03:05:46.712Z] GET /api/sessions | Controller: /api/sessions | Status: 200 | SUCCESS | 186ms
+[2026-08-08T03:06:00.165Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 509ms
+[2026-08-08T03:06:00.542Z] GET /api/ai/contents?limit=50 | Controller: /api/ai | Status: 200 | SUCCESS | 376ms
+Error processing document: TypeError: parse is not a function
+    at parsePdf (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\contentParser.ts:32:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\routes\ai.ts:164:24)
+[2026-08-08T03:06:23.448Z] POST /api/ai/process-document | Controller: /api/ai | Status: 500 | FAILED | 443ms
+Error processing document: TypeError: parse is not a function
+    at parsePdf (D:\transfered folder\courses\projects\educenter\educenter-backend\src\services\contentParser.ts:32:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (D:\transfered folder\courses\projects\educenter\educenter-backend\src\routes\ai.ts:164:24)
+[2026-08-08T03:06:44.156Z] POST /api/ai/process-document | Controller: /api/ai | Status: 500 | FAILED | 252ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ override existing { override: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ suppress logs { quiet: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+◇ injected env (14) from .env // tip: ⌘ override existing { override: true }
+MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
+Server running on port 5000
+Environment: development

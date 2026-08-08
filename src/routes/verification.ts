@@ -1,9 +1,39 @@
 import { Router, Response } from "express";
+import multer from "multer";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
+import { config } from "../config/env";
+import {
+  createSignedUrls,
+  DOCUMENTS_BUCKET,
+  SIGNED_URL_TTL_SECONDS,
+} from "../services/storageService";
 
 const router = Router();
+
+const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024; // 5 MB, matches the storage bucket
+
+const ALLOWED_DOCUMENT_TYPES: Record<string, string> = {
+  "application/pdf": "pdf",
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+};
+
+// Files are held in memory briefly, then streamed to Supabase Storage.
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_DOCUMENT_BYTES, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_DOCUMENT_TYPES[file.mimetype]) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("UNSUPPORTED_FILE_TYPE"));
+  },
+});
 
 // Teacher submits verification form
 router.post(
@@ -162,6 +192,200 @@ router.get(
   }
 );
 
+// Teacher updates their own descriptive details.
+// Only experience and bio are editable here: curriculum and documents are what
+// the admin actually reviewed, so changing those must go through the
+// verification flow rather than silently altering an approved profile.
+router.put(
+  "/my-details",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { experience, bio } = req.body;
+
+      if (experience === undefined && bio === undefined) {
+        res.status(400).json({ message: "لا توجد بيانات للتحديث" });
+        return;
+      }
+
+      if (experience !== undefined && typeof experience !== "string") {
+        res.status(400).json({ message: "صيغة الخبرة غير صالحة" });
+        return;
+      }
+
+      if (bio !== undefined && typeof bio !== "string") {
+        res.status(400).json({ message: "صيغة السيرة الذاتية غير صالحة" });
+        return;
+      }
+
+      if (typeof experience === "string" && experience.length > 500) {
+        res.status(400).json({ message: "الخبرة يجب ألا تتجاوز ٥٠٠ حرف" });
+        return;
+      }
+
+      if (typeof bio === "string" && bio.length > 2000) {
+        res.status(400).json({ message: "السيرة الذاتية يجب ألا تتجاوز ٢٠٠٠ حرف" });
+        return;
+      }
+
+      const user = await User.findById(req.user!._id).select(
+        "-verificationData.documents"
+      );
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      // Preserve curriculum; documents were excluded from the query above and
+      // must not be overwritten with undefined
+      const current = user.verificationData || {};
+
+      user.set("verificationData.experience",
+        experience !== undefined ? experience.trim() : current.experience || ""
+      );
+      user.set("verificationData.bio",
+        bio !== undefined ? bio.trim() : current.bio || ""
+      );
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: "تم تحديث البيانات بنجاح",
+        data: {
+          experience: user.verificationData?.experience || "",
+          bio: user.verificationData?.bio || "",
+        },
+      });
+    } catch (error: any) {
+      console.error("Error updating teacher details:", error);
+      res.status(500).json({
+        message: "Error updating details",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Teacher uploads a verification document.
+// The upload goes through the API rather than straight from the browser so it
+// can use the service key: the storage bucket has no RLS policy allowing
+// end-user writes. Routing it here also means the server owns the storage path,
+// so a teacher can never write into another teacher's folder.
+router.post(
+  "/upload-document",
+  auth,
+  requireRole("TEACHER"),
+  (req: AuthRequest, res: Response) => {
+    upload.single("file")(req as any, res as any, async (uploadError: any) => {
+      if (uploadError) {
+        if (uploadError.message === "UNSUPPORTED_FILE_TYPE") {
+          res.status(400).json({
+            message: "نوع الملف غير مدعوم. المسموح: PDF, PNG, JPG, WEBP",
+          });
+          return;
+        }
+        if (uploadError.code === "LIMIT_FILE_SIZE") {
+          res.status(400).json({
+            message: "حجم الملف يجب أن يكون أقل من ٥ ميجابايت",
+          });
+          return;
+        }
+        res.status(400).json({ message: "تعذر قراءة الملف" });
+        return;
+      }
+
+      const file = (req as any).file;
+      if (!file) {
+        res.status(400).json({ message: "لم يتم إرسال أي ملف" });
+        return;
+      }
+
+      try {
+        const extension = ALLOWED_DOCUMENT_TYPES[file.mimetype];
+        const docType = String((req.body as any)?.docType || "document").replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        );
+        const path = `verification/${req.user!._id}/${docType || "document"}-${Date.now()}.${extension}`;
+
+        const response = await fetch(
+          `${config.supabaseUrl}/storage/v1/object/documents/${path}`,
+          {
+            method: "POST",
+            headers: {
+              apikey: config.supabaseSecretKey,
+              Authorization: `Bearer ${config.supabaseSecretKey}`,
+              "Content-Type": file.mimetype,
+              "cache-control": "3600",
+            },
+            body: new Uint8Array(file.buffer),
+          }
+        );
+
+        if (!response.ok) {
+          console.error(
+            `Storage upload failed (${response.status}):`,
+            await response.text()
+          );
+          res.status(502).json({ message: "تعذر رفع الملف. حاول مرة أخرى." });
+          return;
+        }
+
+        // The bucket is private, so store the path rather than a URL.
+        // Readable links are signed on demand when documents are fetched.
+        res.json({
+          success: true,
+          data: {
+            url: path,
+            name: file.originalname,
+            type: file.mimetype,
+          },
+        });
+      } catch (error: any) {
+        console.error("Error uploading document:", error);
+        res.status(500).json({ message: "تعذر رفع الملف. حاول مرة أخرى." });
+      }
+    });
+  }
+);
+
+// Teacher fetches their own verification documents.
+// GET /auth/me strips documents to keep every authenticated request small, so
+// this route exists to load them on demand. Reads req.user._id directly, so a
+// teacher can only ever retrieve their own files.
+router.get(
+  "/my-documents",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const user = await User.findById(req.user!._id)
+        .select("verificationData.documents")
+        .lean();
+
+      const stored = (user as any)?.verificationData?.documents || [];
+      const signed = await createSignedUrls(stored);
+
+      res.json({
+        success: true,
+        data: {
+          documents: signed.map((item) => item.url).filter(Boolean),
+          expiresIn: SIGNED_URL_TTL_SECONDS,
+        },
+      });
+    } catch (error: any) {
+      console.error("Error fetching own documents:", error);
+      res.status(500).json({
+        message: "Error fetching documents",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Admin fetches one teacher's verification documents.
 // Kept separate from the list so the heavy base64 payloads are only
 // transferred when an admin actually opens a submission.
@@ -187,10 +411,14 @@ router.get(
         return;
       }
 
+      const stored = (user as any).verificationData?.documents || [];
+      const signed = await createSignedUrls(stored);
+
       res.json({
         success: true,
         data: {
-          documents: (user as any).verificationData?.documents || [],
+          documents: signed.map((item) => item.url).filter(Boolean),
+          expiresIn: SIGNED_URL_TTL_SECONDS,
         },
       });
     } catch (error: any) {

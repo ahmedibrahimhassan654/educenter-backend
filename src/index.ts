@@ -15,6 +15,7 @@ import adminCurriculumRoutes from "./routes/adminCurriculum";
 import emailRoutes from "./routes/emails";
 import notificationRoutes from "./routes/notifications";
 import verificationRoutes from "./routes/verification";
+import aiRoutes from "./routes/ai";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -90,6 +91,9 @@ app.use("/api/emails", emailRoutes);
 
 // Verification routes
 app.use("/api/verification", verificationRoutes);
+
+// AI routes
+app.use("/api/ai", aiRoutes);
 
 // Error handler
 app.use(errorHandler);
