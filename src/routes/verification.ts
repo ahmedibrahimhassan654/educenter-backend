@@ -192,19 +192,16 @@ router.get(
   }
 );
 
-// Teacher updates their own descriptive details.
-// Only experience and bio are editable here: curriculum and documents are what
-// the admin actually reviewed, so changing those must go through the
-// verification flow rather than silently altering an approved profile.
+// Teacher updates their own descriptive details including curriculum.
 router.put(
   "/my-details",
   auth,
   requireRole("TEACHER"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { experience, bio } = req.body;
+      const { experience, bio, curriculum } = req.body;
 
-      if (experience === undefined && bio === undefined) {
+      if (experience === undefined && bio === undefined && curriculum === undefined) {
         res.status(400).json({ message: "لا توجد بيانات للتحديث" });
         return;
       }
@@ -229,6 +226,23 @@ router.put(
         return;
       }
 
+      if (curriculum !== undefined) {
+        if (!Array.isArray(curriculum)) {
+          res.status(400).json({ message: "صيغة المناهج غير صالحة" });
+          return;
+        }
+        if (curriculum.length === 0) {
+          res.status(400).json({ message: "يرجى تحديد مادة واحدة على الأقل" });
+          return;
+        }
+        for (const entry of curriculum) {
+          if (typeof entry !== "string" || !entry.includes(":")) {
+            res.status(400).json({ message: "صيغة أحد المناهج غير صالحة" });
+            return;
+          }
+        }
+      }
+
       const user = await User.findById(req.user!._id).select(
         "-verificationData.documents"
       );
@@ -238,8 +252,6 @@ router.put(
         return;
       }
 
-      // Preserve curriculum; documents were excluded from the query above and
-      // must not be overwritten with undefined
       const current = user.verificationData || {};
 
       user.set("verificationData.experience",
@@ -249,6 +261,10 @@ router.put(
         bio !== undefined ? bio.trim() : current.bio || ""
       );
 
+      if (curriculum !== undefined) {
+        user.set("verificationData.curriculum", curriculum);
+      }
+
       await user.save();
 
       res.json({
@@ -257,6 +273,7 @@ router.put(
         data: {
           experience: user.verificationData?.experience || "",
           bio: user.verificationData?.bio || "",
+          curriculum: user.verificationData?.curriculum || [],
         },
       });
     } catch (error: any) {

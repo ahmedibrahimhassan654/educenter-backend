@@ -1,6 +1,7 @@
 import { Router, Response } from "express";
 import { Group } from "../models/Group";
 import { User } from "../models/User";
+import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { createNotification } from "../services/notificationService";
@@ -51,15 +52,28 @@ router.post(
   requireRole("TEACHER"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { title, subject, grade, googleMeetLink, scheduleDays } = req.body;
+      const { title, subject, grade, stage, googleMeetLink, scheduleDays } = req.body;
+
+      // Fetch current settings defaults
+      const settings = await Settings.findOne().sort("-createdAt").lean();
+      const pricePerLecture = settings?.defaultPricePerLecture ?? 50;
+      const platformFeePct = settings?.platformFeePercentage ?? 15;
+      const maxStudents = settings?.maxStudentsPerGroup ?? 20;
+      const platformFee = Math.round((pricePerLecture * platformFeePct) / 100);
+      const teacherShare = pricePerLecture - platformFee;
 
       const group = await Group.create({
         teacherId: req.user!._id,
         title,
         subject,
         grade,
+        stage,
         googleMeetLink,
         scheduleDays,
+        totalSessionPrice: pricePerLecture,
+        priceTeacherShare: teacherShare,
+        platformFee: platformFee,
+        maxStudentsPerGroup: maxStudents,
       });
 
       // Notify all admins about new group
@@ -100,7 +114,7 @@ router.get(
 
       const groups = await Group.find({ teacherId })
         .select(
-          "title subject grade stage scheduleDays totalSessionPrice priceTeacherShare students createdAt"
+          "title subject grade stage scheduleDays totalSessionPrice priceTeacherShare maxStudentsPerGroup students createdAt"
         )
         .sort("-createdAt")
         .lean();
@@ -114,6 +128,7 @@ router.get(
         scheduleDays: group.scheduleDays || [],
         totalSessionPrice: group.totalSessionPrice,
         priceTeacherShare: group.priceTeacherShare,
+        maxStudentsPerGroup: group.maxStudentsPerGroup || 20,
         studentsCount: group.students?.length || 0,
         createdAt: group.createdAt,
       }));
@@ -185,11 +200,12 @@ router.put(
         return;
       }
 
-      const { title, subject, grade, googleMeetLink, scheduleDays } = req.body;
+      const { title, subject, grade, stage, googleMeetLink, scheduleDays } = req.body;
 
       if (title) group.title = title;
       if (subject) group.subject = subject;
       if (grade) group.grade = grade;
+      if (stage) group.stage = stage;
       if (googleMeetLink !== undefined) group.googleMeetLink = googleMeetLink;
       if (scheduleDays) group.scheduleDays = scheduleDays;
 
@@ -250,6 +266,12 @@ router.post(
 
       if (group.students.includes(studentId)) {
         res.status(409).json({ message: "Student already in group" });
+        return;
+      }
+
+      const maxStudents = group.maxStudentsPerGroup || 20;
+      if (group.students.length >= maxStudents) {
+        res.status(409).json({ message: "Group has reached maximum capacity" });
         return;
       }
 

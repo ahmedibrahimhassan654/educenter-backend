@@ -5,9 +5,11 @@ export interface IGroup extends Document {
   title: string;
   subject: string;
   grade: string;
+  stage: string;
   priceTeacherShare: number;
   platformFee: number;
   totalSessionPrice: number;
+  maxStudentsPerGroup: number;
   googleMeetLink: string;
   scheduleDays: string[];
   students: mongoose.Types.ObjectId[];
@@ -54,6 +56,11 @@ const groupSchema = new Schema<IGroup>(
       type: Number,
       default: 60,
     },
+    maxStudentsPerGroup: {
+      type: Number,
+      default: 20,
+      min: 1,
+    },
     googleMeetLink: {
       type: String,
       trim: true,
@@ -75,7 +82,7 @@ const groupSchema = new Schema<IGroup>(
     toJSON: {
       virtuals: true,
       versionKey: false,
-      transform: (_doc, ret) => {
+      transform: (_doc, ret: Record<string, unknown>) => {
         if (ret._id) {
           ret.id = ret._id;
           delete ret._id;
@@ -86,7 +93,7 @@ const groupSchema = new Schema<IGroup>(
     toObject: {
       virtuals: true,
       versionKey: false,
-      transform: (_doc, ret) => {
+      transform: (_doc, ret: Record<string, unknown>) => {
         if (ret._id) {
           ret.id = ret._id;
           delete ret._id;
