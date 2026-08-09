@@ -14,7 +14,7 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const cacheKey = `attendance:${req.params.sessionId}`;
-      const cached = cache.get(cacheKey);
+      const cached = await cache.get(cacheKey);
       if (cached) {
         res.json(cached);
         return;
@@ -24,7 +24,7 @@ router.get(
         sessionId: req.params.sessionId,
       }).populate("studentId", "name email phone");
 
-      cache.set(cacheKey, attendance, 60);
+      await cache.set(cacheKey, attendance, 60);
       res.json(attendance);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching attendance", error: error.message });
@@ -123,7 +123,7 @@ router.get(
         late: attendance.filter((a) => a.status === "LATE").length,
       };
 
-      cache.set(`attendance:summary:${studentId}`, summary, 60);
+      await cache.set(`attendance:summary:${studentId}`, summary, 60);
       res.json(summary);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching attendance summary", error: error.message });

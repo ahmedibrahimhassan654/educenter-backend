@@ -113,7 +113,7 @@ router.get(
         verificationNotes: user.verificationNotes,
         verifiedAt: user.verifiedAt,
       };
-      cache.set(`verification:status:${req.user!._id}`, response, 60);
+      await cache.set(`verification:status:${req.user!._id}`, response, 60);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching verification status", error: error.message });
@@ -131,7 +131,7 @@ router.get(
       const { status = "SUBMITTED", page = "1", limit = "20" } = req.query;
 
       const cacheKey = `verification:pending:${status}:${page}:${limit}`;
-      const cached = cache.get(cacheKey);
+      const cached = await cache.get(cacheKey);
       if (cached) {
         res.json(cached);
         return;
@@ -196,7 +196,7 @@ router.get(
           pages: Math.ceil(total / limitNum),
         },
       };
-      cache.set(cacheKey, response, 60);
+      await cache.set(cacheKey, response, 60);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching verification requests", error: error.message });
@@ -279,9 +279,9 @@ router.put(
 
       await user.save();
 
-      cache.deleteByPattern("verification:pending:*");
-      cache.delete(`verification:status:${req.user!._id}`);
-      cache.delete(`user:${req.user!._id}`);
+      await cache.deleteByPattern("verification:pending:*");
+      await cache.delete(`verification:status:${req.user!._id}`);
+      await cache.delete(`user:${req.user!._id}`);
       res.json({
         success: true,
         message: "تم تحديث البيانات بنجاح",
@@ -494,9 +494,9 @@ router.put(
 
       await user.save();
 
-      cache.deleteByPattern("verification:pending:*");
-      cache.delete(`user:${userId}`);
-      cache.delete(`verification:status:${userId}`);
+      await cache.deleteByPattern("verification:pending:*");
+      await cache.delete(`user:${userId}`);
+      await cache.delete(`verification:status:${userId}`);
       res.json({
         success: true,
         message: "Teacher verified successfully",

@@ -71,23 +71,41 @@ router.get(
   requireRole("ADMIN"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const groups = await Group.find()
-        .populate("teacherId", "name email phone verificationStatus")
-        .sort("-createdAt")
-        .lean();
+      const {
+        page = "1",
+        limit = "20",
+      } = req.query;
 
-      // Add studentsCount without sending full students array
+      const pageNum = Math.max(1, parseInt(page as string) || 1);
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit as string) || 20));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [groups, total] = await Promise.all([
+        Group.find()
+          .populate("teacherId", "name email phone verificationStatus")
+          .sort("-createdAt")
+          .skip(skip)
+          .limit(limitNum)
+          .lean(),
+        Group.countDocuments(),
+      ]);
+
       const groupsWithCount = groups.map((g: any) => ({
         ...g,
         studentsCount: g.students?.length || 0,
         students: undefined,
       }));
 
-      cache.set("admin:groups:all", groupsWithCount, 30);
+      await cache.set(`admin:groups:all:${pageNum}:${limitNum}`, groupsWithCount, 30);
       res.json({
         success: true,
         data: groupsWithCount,
-        total: groupsWithCount.length,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          pages: Math.ceil(total / limitNum),
+        },
       });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching groups", error: error.message });
@@ -181,9 +199,9 @@ router.post(
         });
       }
 
-      cache.deleteByPattern("groups:list:*");
-      cache.deleteByPattern("groups:stats:*");
-      cache.deleteByPattern("admin:groups:*");
+      await cache.deleteByPattern("groups:list:*");
+      await cache.deleteByPattern("groups:stats:*");
+      await cache.deleteByPattern("admin:groups:*");
       res.status(201).json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error creating group", error: error.message });
@@ -268,7 +286,7 @@ router.get(
         res.status(404).json({ message: "Group not found" });
         return;
       }
-      cache.set(`group:${req.params.id}`, group, 60);
+      await cache.set(`group:${req.params.id}`, group, 60);
       res.json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching group", error: error.message });
@@ -332,10 +350,10 @@ router.delete(
       }
 
       await Group.findByIdAndDelete(req.params.id);
-      cache.delete(`group:${req.params.id}`);
-      cache.deleteByPattern("groups:list:*");
-      cache.deleteByPattern("groups:stats:*");
-      cache.deleteByPattern("admin:groups:*");
+      await cache.delete(`group:${req.params.id}`);
+      await cache.deleteByPattern("groups:list:*");
+      await cache.deleteByPattern("groups:stats:*");
+      await cache.deleteByPattern("admin:groups:*");
       res.json({ message: "Group deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: "Error deleting group", error: error.message });

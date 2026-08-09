@@ -1,6 +1,7 @@
 import { config } from "../config/env";
 
 export const DOCUMENTS_BUCKET = "documents";
+export const AVATARS_BUCKET = "avatars";
 
 // Long enough for an admin to review a submission, short enough that a leaked
 // link stops working quickly.
@@ -90,4 +91,75 @@ export async function createSignedUrls(
       url: await createSignedUrl(item, expiresIn),
     }))
   );
+}
+
+/**
+ * Upload a file to Supabase Storage
+ */
+export async function uploadFile(
+  filePath: string,
+  buffer: Buffer,
+  contentType: string
+): Promise<boolean> {
+  try {
+    const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
+    const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+    
+    const response = await fetch(
+      `${config.supabaseUrl}/storage/v1/object/${bucket}/${path}`,
+      {
+        method: "POST",
+        headers: {
+          apikey: config.supabaseSecretKey,
+          Authorization: `Bearer ${config.supabaseSecretKey}`,
+          "Content-Type": contentType,
+        },
+        body: buffer,
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`Failed to upload ${filePath} (${response.status}):`, await response.text());
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    return false;
+  }
+}
+
+/**
+ * Delete a file from Supabase Storage
+ */
+export async function deleteFile(filePath: string): Promise<boolean> {
+  try {
+    const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
+    const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+    
+    const response = await fetch(
+      `${config.supabaseUrl}/storage/v1/object/${bucket}/${path}`,
+      {
+        method: "DELETE",
+        headers: {
+          apikey: config.supabaseSecretKey,
+          Authorization: `Bearer ${config.supabaseSecretKey}`,
+        },
+      }
+    );
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return false;
+  }
+}
+
+/**
+ * Get public URL for a file in Supabase Storage
+ */
+export function getPublicUrl(filePath: string): string {
+  const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
+  const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+  return `${config.supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 }

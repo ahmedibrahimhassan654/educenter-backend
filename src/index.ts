@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import connectDB from "./config/db";
@@ -55,6 +56,8 @@ app.use(
       return callback(new Error(`Origin not allowed by CORS: ${origin}`));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type", "Accept"],
   })
 );
 app.use(
@@ -72,6 +75,7 @@ app.use(
 app.use(compression()); // Compress all responses
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Security: sanitize inputs against NoSQL injection and parameter pollution
 app.use(mongoSanitize());

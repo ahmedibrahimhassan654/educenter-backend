@@ -1,4 +1,6 @@
 import { Router, Response } from "express";
+import bcrypt from "bcryptjs";
+import multer from "multer";
 import { User } from "../models/User";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
@@ -9,33 +11,24 @@ import {
   sendCredentialsEmail,
 } from "../services/emailService";
 import { cache } from "../services/cache";
+import { uploadFile, deleteFile, getPublicUrl } from "../services/storageService";
 
 const router = Router();
 
-async function getSupabaseUserId(email: string): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `${config.supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${config.supabaseSecretKey}`,
-          apikey: config.supabaseSecretKey,
-        },
-      }
-    );
-    if (response.ok) {
-      const data = (await response.json()) as { users: { id: string; email: string }[] };
-      if (data.users && data.users.length > 0) {
-        // Find exact email match (API may return partial matches)
-        const exactMatch = data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-        return exactMatch ? exactMatch.id : null;
-      }
+const BCRYPT_ROUNDS = 12;
+
+// Multer config for avatar uploads (max 2MB, images only)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"));
     }
-  } catch {
-    // User doesn't exist
-  }
-  return null;
-}
+  },
+});
 
 // Get all users with filtering, search, and pagination (admin only)
 router.get(
@@ -108,7 +101,7 @@ router.get(
           pages: Math.ceil(total / limitNum),
         },
       };
-      cache.set(`users:list:${page}:${limit}:${search}:${role}`, response, 30);
+      await cache.set(`users:list:${page}:${limit}:${search}:${role}`, response, 30);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching users", error: error.message });
@@ -142,7 +135,7 @@ router.get(
           admins,
         },
       };
-      cache.set("users:stats", response, 60);
+      await cache.set("users:stats", response, 60);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching stats", error: error.message });
@@ -184,7 +177,7 @@ router.get(
         return;
       }
       const response = { success: true, data: user };
-      cache.set(`user:${userId}`, response, 120);
+      await cache.set(`user:${userId}`, response, 120);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching user", error: error.message });
@@ -219,71 +212,15 @@ router.post(
         ? password
         : generatePassword();
 
-      // Check if user already exists in Supabase
-      let supabaseUserId = await getSupabaseUserId(email.toLowerCase());
+      // Hash password
+      const passwordHash = await bcrypt.hash(userPassword, BCRYPT_ROUNDS);
 
-      if (supabaseUserId) {
-        console.log(`✅ Supabase user already exists: ${supabaseUserId}`);
-        
-        // Check if MongoDB user already exists with this supabaseId
-        const existingBySupabaseId = await User.findOne({ supabaseId: supabaseUserId });
-        if (existingBySupabaseId) {
-          console.log(`⚠️ MongoDB user already exists: ${existingBySupabaseId.email} (${existingBySupabaseId._id})`);
-          res.status(409).json({ 
-            message: "User already exists in system",
-            existingUser: {
-              id: existingBySupabaseId._id,
-              email: existingBySupabaseId.email,
-              name: existingBySupabaseId.name,
-              role: existingBySupabaseId.role
-            }
-          });
-          return;
-        }
-      } else {
-        // Create Supabase auth user
-        const supabaseUrl = `${config.supabaseUrl}/auth/v1/admin/users`;
-        console.log(`🔗 Creating Supabase user at: ${supabaseUrl}`);
-
-        const supabaseResponse = await fetch(supabaseUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: config.supabaseSecretKey,
-            Authorization: `Bearer ${config.supabaseSecretKey}`,
-          },
-          body: JSON.stringify({
-            email: email.toLowerCase(),
-            password: userPassword,
-            email_confirm: true,
-            user_metadata: {
-              name,
-              phone,
-              role: role.toUpperCase(),
-            },
-          }),
-        });
-
-        if (supabaseResponse.ok) {
-          const supabaseUser = await supabaseResponse.json();
-          supabaseUserId = supabaseUser.id;
-          console.log(`✅ Supabase auth user created: ${supabaseUserId}`);
-        } else {
-          const errorBody = await supabaseResponse.text();
-          console.error(`❌ Supabase user creation FAILED (HTTP ${supabaseResponse.status}):`, errorBody);
-          res.status(400).json({
-            message: "Failed to create auth account in Supabase. Check backend logs.",
-          });
-          return;
-        }
-      }
-
-      // Create MongoDB user with the real Supabase user ID
+      // Create MongoDB user
       const user = await User.create({
-        supabaseId: supabaseUserId,
         name,
         email: email.toLowerCase(),
         phone,
+        passwordHash,
         role: role.toUpperCase(),
       });
 
@@ -463,11 +400,72 @@ router.get(
       const { Group } = require("../models/Group");
       const groups = await Group.find({ teacherId: req.user!._id });
       const studentIds = groups.flatMap((g: any) => g.students);
-      const uniqueStudentIds = [...new Set(studentIds)];
-      const students = await User.find({ _id: { $in: uniqueStudentIds } }).select("-__v");
+      const uniqueStudentIds = [...new Set(studentIds.map((id: any) => id.toString()))];
+      const students = await User.find({ _id: { $in: uniqueStudentIds } } as any).select("-__v");
       res.json(students);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching students", error: error.message });
+    }
+  }
+);
+
+// Upload avatar (authenticated user)
+router.post(
+  "/upload-avatar",
+  auth,
+  upload.single("avatar"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      if (!req.file) {
+        res.status(400).json({ message: "No file uploaded" });
+        return;
+      }
+
+      const userId = req.user!._id.toString();
+      const fileExt = req.file.originalname.split(".").pop() || "jpg";
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Upload to Supabase Storage
+      const uploadResult = await uploadFile(filePath, req.file.buffer, req.file.mimetype);
+      if (!uploadResult) {
+        res.status(500).json({ message: "Failed to upload avatar" });
+        return;
+      }
+
+      // Get public URL
+      const publicUrl = getPublicUrl(filePath);
+
+      // Update user profile with new avatar URL
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { avatarUrl: publicUrl },
+        { new: true }
+      ).select("-passwordHash -verificationData.documents");
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      res.json({
+        success: true,
+        avatarUrl: publicUrl,
+        user,
+      });
+    } catch (error: any) {
+      console.error("Avatar upload error:", error);
+      if (error instanceof multer.MulterError) {
+        if (error.code === "LIMIT_FILE_SIZE") {
+          res.status(400).json({ message: "File size must be less than 2MB" });
+          return;
+        }
+      }
+      if (error.message === "Only image files are allowed") {
+        res.status(400).json({ message: "Only image files are allowed" });
+        return;
+      }
+      res.status(500).json({ message: "Error uploading avatar", error: error.message });
     }
   }
 );

@@ -20,7 +20,7 @@ router.get(
 
       // Build cache key
       const cacheKey = `sessions:${req.user!.role}:${req.user!._id}:${groupId || "all"}:${pageNum}`;
-      const cached = cache.get(cacheKey);
+      const cached = await cache.get(cacheKey);
       if (cached) {
         res.json(cached);
         return;
@@ -58,7 +58,7 @@ router.get(
       }
 
       const response = { success: true, data: sessions };
-      cache.set(cacheKey, response, 30);
+      await cache.set(cacheKey, response, 30);
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching sessions", error: error.message });
@@ -116,7 +116,7 @@ router.get(
         return;
       }
 
-      cache.set(`session:${req.params.id}`, session, 60);
+      await cache.set(`session:${req.params.id}`, session, 60);
       res.json(session);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching session", error: error.message });

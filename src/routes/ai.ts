@@ -48,7 +48,7 @@ router.get("/contents", async (req: AuthRequest, res: Response): Promise<void> =
     const skip = (pageNum - 1) * limitNum;
 
     const cacheKey = `ai:contents:${userId}:${pageNum}:${limitNum}:${type || "all"}`;
-    const cached = cache.get(cacheKey);
+    const cached = await cache.get(cacheKey);
     if (cached) {
       res.json(cached);
       return;
@@ -79,7 +79,7 @@ router.get("/contents", async (req: AuthRequest, res: Response): Promise<void> =
         pages: Math.ceil(total / limitNum),
       },
     };
-    cache.set(cacheKey, response, 60);
+    await cache.set(cacheKey, response, 60);
     res.json(response);
   } catch (error: any) {
     console.error("Error fetching AI contents:", error);
@@ -122,7 +122,7 @@ router.delete("/contents/:id", async (req: AuthRequest, res: Response): Promise<
 
     await GeneratedContent.deleteMany({ contentId: id, userId });
 
-    cache.deleteByPattern(`ai:contents:${userId}:*`);
+    await cache.deleteByPattern(`ai:contents:${userId}:*`);
       res.json({ success: true, message: "تم حذف المحتوى بنجاح" });
   } catch (error: any) {
     console.error("Error deleting AI content:", error);
@@ -475,7 +475,7 @@ router.delete("/chat-history/:id", async (req: AuthRequest, res: Response): Prom
       return;
     }
 
-    cache.deleteByPattern(`ai:chat-history:${userId}:*`);
+    await cache.deleteByPattern(`ai:chat-history:${userId}:*`);
       res.json({ success: true, message: "تم حذف المحادثة بنجاح" });
   } catch (error: any) {
     console.error("Error deleting chat:", error);
@@ -776,7 +776,7 @@ router.delete("/generated/:id", async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    cache.deleteByPattern(`ai:generated:${userId}:*`);
+    await cache.deleteByPattern(`ai:generated:${userId}:*`);
       res.json({ success: true, message: "تم حذف المحتوى المُنشأ بنجاح" });
   } catch (error: any) {
     console.error("Error deleting generated content:", error);

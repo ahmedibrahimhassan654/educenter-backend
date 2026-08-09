@@ -1,7 +1,14 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import { Request } from "express";
 
 const AI_WINDOW_MS = 60 * 60 * 1000;
+
+function ipKeyGenerator(ip: string): string {
+  if (ip.includes(":")) {
+    return ip.split(":").slice(0, 4).join(":");
+  }
+  return ip;
+}
 
 export const aiRateLimiter = rateLimit({
   windowMs: AI_WINDOW_MS,

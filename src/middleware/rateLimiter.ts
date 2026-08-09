@@ -1,4 +1,4 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import { Request } from "express";
 
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
@@ -6,8 +6,15 @@ const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 /**
  * Key on IP + submitted email so one attacker cannot lock out every account
  * from a single address, and one address cannot be hammered from many IPs.
- * ipKeyGenerator normalises IPv6 addresses to a subnet (required in v8).
  */
+function ipKeyGenerator(ip: string): string {
+  // Normalize IPv6 to subnet (required in v8)
+  if (ip.includes(":")) {
+    return ip.split(":").slice(0, 4).join(":");
+  }
+  return ip;
+}
+
 function ipAndEmailKey(req: Request): string {
   const email = String(req.body?.email || "").toLowerCase().trim();
   return `${ipKeyGenerator(req.ip || "")}:${email}`;
@@ -58,5 +65,25 @@ export const changePasswordLimiter = rateLimit({
   },
   message: {
     message: "لقد تجاوزت عدد المحاولات المسموح بها. حاول مرة أخرى بعد ١٥ دقيقة.",
+  },
+});
+
+/** Login attempts - stricter limit */
+export const loginLimiter = rateLimit({
+  ...common,
+  limit: 10,
+  keyGenerator: ipAndEmailKey,
+  message: {
+    message: "لقد تجاوزت عدد محاولات تسجيل الدخول. حاول مرة أخرى بعد ١٥ دقيقة.",
+  },
+});
+
+/** Registration attempts - prevent spam signups */
+export const registerLimiter = rateLimit({
+  ...common,
+  limit: 5,
+  keyGenerator: (req: Request) => ipKeyGenerator(req.ip || ""),
+  message: {
+    message: "لقد تجاوزت عدد محاولات التسجيل. حاول مرة أخرى بعد ١٥ دقيقة.",
   },
 });

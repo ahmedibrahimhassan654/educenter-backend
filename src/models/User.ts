@@ -8,10 +8,10 @@ export interface IVerificationData {
 }
 
 export interface IUser extends Document {
-  supabaseId: string;
   name: string;
   email: string;
   phone: string;
+  passwordHash: string;
   avatarUrl?: string;
   role: "TEACHER" | "STUDENT" | "PARENT" | "ADMIN";
   parentId?: mongoose.Types.ObjectId;
@@ -38,12 +38,6 @@ const verificationDataSchema = new Schema<IVerificationData>(
 
 const userSchema = new Schema<IUser>(
   {
-    supabaseId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
     name: {
       type: String,
       required: true,
@@ -60,6 +54,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    passwordHash: {
+      type: String,
+      required: true,
     },
     avatarUrl: {
       type: String,

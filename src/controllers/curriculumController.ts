@@ -116,9 +116,6 @@ export const getStageById = async (req: AuthRequest, res: Response): Promise<voi
     const stage = await findStageById(req.params.stageId, res);
     if (!stage) return;
 
-        cache.delete("curriculum:all");
-        cache.delete("curriculum:all");
-        cache.delete("curriculum:all");
     res.json({ success: true, data: stage });
   } catch (error: any) {
     res.status(500).json({
@@ -135,7 +132,7 @@ export const getStageById = async (req: AuthRequest, res: Response): Promise<voi
  */
 export const getStageByKey = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const stage = await EducationalStage.findOne({ key: req.params.key.toUpperCase() });
+    const stage = await EducationalStage.findOne({ key: req.params.key.toUpperCase() } as any);
     if (!stage) {
       res.status(404).json({ success: false, message: "المرحلة الدراسية غير موجودة" });
       return;
@@ -368,12 +365,12 @@ export const updateGrade = async (req: AuthRequest, res: Response): Promise<void
 
     await stage.save();
 
+    await cache.delete("curriculum:all");
     res.json({
       success: true,
       message: "تم تحديث الصف الدراسي بنجاح",
       data: stage,
     });
-    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -414,6 +411,7 @@ export const deleteGrade = async (req: AuthRequest, res: Response): Promise<void
     stage.grades.splice(gradeIndex, 1);
     await stage.save();
 
+    await cache.delete("curriculum:all");
     res.json({
       success: true,
       message: "تم حذف الصف الدراسي وجميع البيانات المرتبطة به بنجاح",
@@ -423,7 +421,6 @@ export const deleteGrade = async (req: AuthRequest, res: Response): Promise<void
         terms: deletedTerms,
       },
     });
-    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -523,12 +520,12 @@ export const updateSubject = async (req: AuthRequest, res: Response): Promise<vo
 
     await stage.save();
 
+    await cache.delete("curriculum:all");
     res.json({
       success: true,
       message: "تم تحديث المادة الدراسية بنجاح",
       data: stage,
     });
-    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -679,12 +676,12 @@ export const updateTerm = async (req: AuthRequest, res: Response): Promise<void>
 
     await stage.save();
 
+    await cache.delete("curriculum:all");
     res.json({
       success: true,
       message: "تم تحديث الترم بنجاح",
       data: stage,
     });
-    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -725,6 +722,7 @@ export const deleteTerm = async (req: AuthRequest, res: Response): Promise<void>
     subject.terms.splice(termIndex, 1);
     await stage.save();
 
+    await cache.delete("curriculum:all");
     res.json({
       success: true,
       message: "تم حذف الترم بنجاح",
@@ -733,7 +731,6 @@ export const deleteTerm = async (req: AuthRequest, res: Response): Promise<void>
         code: term.code,
       },
     });
-    cache.delete("curriculum:all");
   } catch (error: any) {
     res.status(500).json({
       success: false,

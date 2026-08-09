@@ -13,7 +13,7 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const cacheKey = "settings:public";
-      const cached = cache.get(cacheKey);
+      const cached = await cache.get(cacheKey);
       if (cached) {
         res.json(cached);
         return;
@@ -43,7 +43,7 @@ router.get(
         platformFeePercentage: settings.platformFeePercentage,
         socialLinks: settings.socialLinks,
       };
-      cache.set(cacheKey, response, 300); // 5 minutes
+      await cache.set(cacheKey, response, 300); // 5 minutes
       res.json(response);
     } catch (error: any) {
       res.status(500).json({
@@ -133,7 +133,7 @@ router.put(
 
       settings.updatedBy = req.user!._id;
       await settings.save();
-      cache.delete("settings:public"); // Invalidate cache
+      await cache.delete("settings:public"); // Invalidate cache
       res.json(settings);
     } catch (error: any) {
       res.status(500).json({
