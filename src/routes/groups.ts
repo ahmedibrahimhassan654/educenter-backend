@@ -9,6 +9,57 @@ import { cache } from "../services/cache";
 
 const router = Router();
 
+function timeToMinutes(timeStr: string): number {
+  const trimmed = timeStr.trim();
+  const [hours, minutes] = trimmed.split(":").map(Number);
+  return (hours || 0) * 60 + (minutes || 0);
+}
+
+function checkScheduleConflicts(
+  newSlots: string[],
+  teacherId: string,
+  excludeGroupId?: string
+): string | null {
+  const normalizedNew = newSlots.map((s) => s.trim());
+  const seen = new Set<string>();
+  for (const slot of normalizedNew) {
+    if (seen.has(slot)) {
+      return `تعارض في الموعد: "${slot}" مكرر داخل نفس المجموعة`;
+    }
+    seen.add(slot);
+  }
+
+  const query: any = { teacherId };
+  if (excludeGroupId) {
+    query._id = { $ne: excludeGroupId };
+  }
+
+  const conflictingGroup = Group.findOne(query, { scheduleDays: 1, title: 1 }).lean();
+  if (conflictingGroup && (conflictingGroup as any).scheduleDays) {
+    const existingSlots = (conflictingGroup as any).scheduleDays.map((s: string) => s.trim());
+
+    for (const newSlot of normalizedNew) {
+      const [newDay, newTime] = newSlot.split(" ");
+      const newMinutes = timeToMinutes(newTime);
+
+      for (const existingSlot of existingSlots) {
+        const [existingDay, existingTime] = existingSlot.split(" ");
+        if (newDay !== existingDay) continue;
+
+        const existingMinutes = timeToMinutes(existingTime);
+        const diff = Math.abs(newMinutes - existingMinutes);
+
+        if (diff < 120) {
+          const existingTimeFormatted = existingTime;
+          return `يجب أن يكون الفارق بين الحصص في نفس اليوم ساعتين على الأقل. الموعد "${newTime}" قريب جداً من "${existingTimeFormatted}" في مجموعة "${(conflictingGroup as any).title}"`;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 // Get all groups (filtered by teacher or student) with pagination
 router.get(
   "/",
@@ -163,6 +214,17 @@ router.post(
     try {
       const { title, subject, grade, stage, googleMeetLink, scheduleDays } = req.body;
 
+      if (!scheduleDays || !Array.isArray(scheduleDays) || scheduleDays.length === 0) {
+        res.status(400).json({ message: "يرجى إضافة موعد حصة واحد على الأقل" });
+        return;
+      }
+
+      const conflict = checkScheduleConflicts(scheduleDays, req.user!._id.toString());
+      if (conflict) {
+        res.status(400).json({ message: conflict });
+        return;
+      }
+
       // Fetch current settings defaults
       const settings = await Settings.findOne().sort("-createdAt").lean();
       const pricePerLecture = settings?.defaultPricePerLecture ?? 50;
@@ -314,6 +376,18 @@ router.put(
       }
 
       const { title, subject, grade, stage, googleMeetLink, scheduleDays } = req.body;
+
+      if (scheduleDays) {
+        if (!Array.isArray(scheduleDays) || scheduleDays.length === 0) {
+          res.status(400).json({ message: "يرجى إضافة موعد حصة واحد على الأقل" });
+          return;
+        }
+        const conflict = checkScheduleConflicts(scheduleDays, req.user!._id.toString(), group._id.toString());
+        if (conflict) {
+          res.status(400).json({ message: conflict });
+          return;
+        }
+      }
 
       if (title) group.title = title;
       if (subject) group.subject = subject;
