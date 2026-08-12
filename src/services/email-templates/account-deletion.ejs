@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إشعار حذف الحساب - إديو سنتر</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f3f4f6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); max-width: 600px; width: 100%;">
+          <%- include('partials/header', { icon: "⚠️", title: "إشعار حذف الحساب", subtitle: "إديو سنتر", headerColor: "#dc2626", headerColorEnd: "#ef4444" }) %>
+          <tr>
+            <td style="padding: 40px;">
+              <div style="text-align: center; margin-bottom: 32px;">
+                <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">مرحباً <%= name %></h2>
+                <p style="color: #4b5563; margin: 0; font-size: 18px; line-height: 1.7;">نود إعلامك بأنه تم حذف حسابك من منصة إديو سنتر بواسطة مدير النظام.</p>
+              </div>
+              <div style="background-color: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 24px; margin: 32px 0;">
+                <h3 style="color: #991b1b; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">ما يعني هذا:</h3>
+                <ul style="color: #7f1d1d; margin: 0; padding: 0 0 0 20px; font-size: 16px; line-height: 1.8;">
+                  <li>لن تتمكن من تسجيل الدخول إلى حسابك</li>
+                  <li>تم حذف جميع بياناتك من النظام</li>
+                  <li>لن تتمكن من الوصول إلى أي محتوى مرتبط بحسابك</li>
+                </ul>
+              </div>
+              <p style="color: #4b5563; margin: 0 0 16px 0; font-size: 18px; line-height: 1.7;">إذا كنت تعتقد أن هذا الخطأ، يرجى التواصل مع فريق الدعم الفني.</p>
+              <div style="background-color: #f9fafb; border-radius: 12px; padding: 24px; text-align: center; margin: 32px 0;">
+                <p style="color: #6b7280; margin: 0 0 8px 0; font-size: 14px;">للتواصل مع الدعم الفني</p>
+                <p style="color: #4f46e5; margin: 0; font-size: 18px; font-weight: 600;">support@educenter.com</p>
+              </div>
+            </td>
+          </tr>
+          <%- include('partials/footer') %>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,11 +1,17 @@
-import { Router, Response } from "express";
+import { Router, Response, NextFunction } from "express";
 import { Group } from "../models/Group";
 import { User } from "../models/User";
+import { GroupInvitation } from "../models/GroupInvitation";
 import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { createNotification } from "../services/notificationService";
 import { cache } from "../services/cache";
+import {
+  sendGroupInvitationEmail,
+  sendCredentialsEmail,
+} from "../services/emailService";
+import bcrypt from "bcryptjs";
 
 const router = Router();
 
@@ -338,7 +344,11 @@ router.get(
 router.get(
   "/:id",
   auth,
-  async (req: AuthRequest, res: Response): Promise<void> => {
+  async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    // Skip non-ObjectId params (e.g. /invitations) so they match their own routes
+    if (!/^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+      return next();
+    }
     try {
       const group = await Group.findById(req.params.id)
         .populate("teacherId", "name email phone verificationData verificationStatus")
@@ -435,7 +445,7 @@ router.delete(
   }
 );
 
-// Add student to group
+// Add student to group - creates invitation for existing student
 router.post(
   "/:id/students",
   auth,
@@ -455,6 +465,17 @@ router.post(
         return;
       }
 
+      const existingInvitation = await GroupInvitation.findOne({
+        groupId: group._id,
+        studentId,
+        status: "PENDING",
+      });
+
+      if (existingInvitation) {
+        res.status(409).json({ message: "Student already has a pending invitation for this group" });
+        return;
+      }
+
       if (group.students.includes(studentId)) {
         res.status(409).json({ message: "Student already in group" });
         return;
@@ -466,12 +487,335 @@ router.post(
         return;
       }
 
-      group.students.push(studentId);
-      await group.save();
+      const student = await User.findById(studentId);
+      if (!student) {
+        res.status(404).json({ message: "Student not found" });
+        return;
+      }
 
-      res.json(group);
+      const invitation = await GroupInvitation.create({
+        groupId: group._id,
+        studentId,
+        teacherId: group.teacherId,
+        status: "PENDING",
+        stage: student.stage || group.stage || "",
+        grade: student.grade || group.grade || "",
+        subject: group.subject,
+      });
+
+      const teacher = await User.findById(group.teacherId).select("name");
+      const loginUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/login`;
+
+      if (teacher) {
+        sendGroupInvitationEmail(
+          student.name,
+          student.email,
+          group.title,
+          group.subject,
+          teacher.name,
+          group.scheduleDays || [],
+          loginUrl,
+          undefined,
+          student.stage || group.stage || "",
+          student.grade || group.grade || ""
+        ).catch((err) => console.error("Failed to send group invitation email:", err));
+      }
+
+      await createNotification({
+        userId: student._id,
+        title: "دعوة لمجموعة جديدة",
+        message: `تمت إضافة ${student.name} إلى مجموعة ${group.title} - في انتظار الموافقة`,
+        type: "INFO",
+        category: "GROUP",
+        link: "/student/invitations",
+      });
+
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "دعوة مجموعة جديدة",
+          message: `المعلم ${teacher?.name || "غير معروف"} أرسل دعوة للطالب ${student.name} للانضمام إلى مجموعة ${group.title}`,
+          type: "INFO",
+          category: "GROUP",
+          link: "/admin",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: invitation,
+        message: "Invitation sent successfully",
+      });
     } catch (error: any) {
       res.status(500).json({ message: "Error adding student", error: error.message });
+    }
+  }
+);
+
+// Create student and add to group (teacher only)
+router.post(
+  "/:id/students/create",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { name, email, phone, stage, grade } = req.body;
+      const group = await Group.findById(req.params.id);
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (!name || !email || !phone) {
+        res.status(400).json({ message: "Name, email, and phone are required" });
+        return;
+      }
+
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        res.status(409).json({ message: "Email already exists" });
+        return;
+      }
+
+      const maxStudents = group.maxStudentsPerGroup || 20;
+      if (group.students.length >= maxStudents) {
+        res.status(409).json({ message: "Group has reached maximum capacity" });
+        return;
+      }
+
+      const password = generatePassword();
+      const passwordHash = await bcrypt.hash(password, 12);
+
+      const student = await User.create({
+        name,
+        email: email.toLowerCase(),
+        phone,
+        passwordHash,
+        role: "STUDENT",
+        stage: stage || group.stage || "",
+        grade: grade || group.grade || "",
+      });
+
+      const invitation = await GroupInvitation.create({
+        groupId: group._id,
+        studentId: student._id,
+        teacherId: group.teacherId,
+        status: "PENDING",
+        stage: stage || group.stage || "",
+        grade: grade || group.grade || "",
+        subject: group.subject,
+        password,
+      });
+
+      const teacher = await User.findById(group.teacherId).select("name");
+      const loginUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/login`;
+
+      if (teacher) {
+        sendGroupInvitationEmail(
+          student.name,
+          student.email,
+          group.title,
+          group.subject,
+          teacher.name,
+          group.scheduleDays || [],
+          loginUrl,
+          password,
+          stage || group.stage || "",
+          grade || group.grade || ""
+        ).catch((err) => console.error("Failed to send group invitation email:", err));
+      }
+
+      await createNotification({
+        userId: student._id,
+        title: "دعوة لمجموعة جديدة",
+        message: `تم إنشاء حسابك وإضافتك إلى مجموعة ${group.title} - في انتظار الموافقة`,
+        type: "SUCCESS",
+        category: "GROUP",
+        link: "/student/invitations",
+      });
+
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "دعوة مجموعة جديدة",
+          message: `المعلم ${teacher?.name || "غير معروف"} أنشأ حساب للطالب ${student.name} وأرسل دعوة للانضمام إلى مجموعة ${group.title}`,
+          type: "INFO",
+          category: "GROUP",
+          link: "/admin",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: student,
+        generatedPassword: password,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating student", error: error.message });
+    }
+  }
+);
+
+// Get student's invitations (student only)
+router.get(
+  "/invitations",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const invitations = await GroupInvitation.find({ studentId: req.user!._id })
+        .populate("groupId", "title subject grade stage scheduleDays totalSessionPrice")
+        .populate("teacherId", "name email")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      res.json({ success: true, data: invitations });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching invitations", error: error.message });
+    }
+  }
+);
+
+// Accept invitation (student only)
+router.post(
+  "/invitations/:id/accept",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const invitation = await GroupInvitation.findById(req.params.id);
+
+      if (!invitation) {
+        res.status(404).json({ message: "Invitation not found" });
+        return;
+      }
+
+      if (invitation.studentId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (invitation.status !== "PENDING") {
+        res.status(400).json({ message: "Invitation has already been processed" });
+        return;
+      }
+
+      const group = await Group.findById(invitation.groupId);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (!group.students.includes(invitation.studentId)) {
+        group.students.push(invitation.studentId);
+        await group.save();
+      }
+
+      await User.findByIdAndUpdate(invitation.studentId, {
+        $addToSet: { groups: group._id, stage: invitation.stage, grade: invitation.grade },
+      });
+
+      invitation.status = "ACCEPTED";
+      await invitation.save();
+
+      const student = await User.findById(invitation.studentId).select("name");
+      const teacher = await User.findById(invitation.teacherId).select("name");
+
+      if (teacher) {
+        await createNotification({
+          userId: invitation.teacherId,
+          title: "تم قبول الدعوة",
+          message: `الطالب ${student?.name || "غير معروف"} قبل دعوة الانضمام إلى مجموعة ${group.title}`,
+          type: "SUCCESS",
+          category: "GROUP",
+          link: `/teacher/groups/${group._id}`,
+        });
+      }
+
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "تم قبول دعوة مجموعة",
+          message: `الطالب ${student?.name || "غير معروف"} قبل دعوة الانضمام إلى مجموعة ${group.title}`,
+          type: "INFO",
+          category: "GROUP",
+          link: "/admin",
+        });
+      }
+
+      res.json({ success: true, message: "Invitation accepted", data: invitation });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error accepting invitation", error: error.message });
+    }
+  }
+);
+
+// Reject invitation (student only)
+router.post(
+  "/invitations/:id/reject",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const invitation = await GroupInvitation.findById(req.params.id);
+
+      if (!invitation) {
+        res.status(404).json({ message: "Invitation not found" });
+        return;
+      }
+
+      if (invitation.studentId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (invitation.status !== "PENDING") {
+        res.status(400).json({ message: "Invitation has already been processed" });
+        return;
+      }
+
+      invitation.status = "REJECTED";
+      await invitation.save();
+
+      const group = await Group.findById(invitation.groupId);
+      const student = await User.findById(invitation.studentId).select("name");
+      const teacher = await User.findById(invitation.teacherId).select("name");
+
+      if (teacher) {
+        await createNotification({
+          userId: invitation.teacherId,
+          title: "تم رفض الدعوة",
+          message: `الطالب ${student?.name || "غير معروف"} رفض دعوة الانضمام إلى مجموعة ${group?.title || "غير معروف"}`,
+          type: "WARNING",
+          category: "GROUP",
+          link: "/teacher/groups",
+        });
+      }
+
+      const admins = await User.find({ role: "ADMIN" });
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin._id,
+          title: "تم رفض دعوة مجموعة",
+          message: `الطالب ${student?.name || "غير معروف"} رفض دعوة الانضمام إلى مجموعة ${group?.title || "غير معروف"}`,
+          type: "INFO",
+          category: "GROUP",
+          link: "/admin",
+        });
+      }
+
+      res.json({ success: true, message: "Invitation rejected", data: invitation });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error rejecting invitation", error: error.message });
     }
   }
 );
@@ -500,6 +844,8 @@ router.delete(
       );
       await group.save();
 
+      await User.findByIdAndUpdate(req.params.studentId, { $pull: { groups: group._id } });
+
       res.json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error removing student", error: error.message });
@@ -508,3 +854,12 @@ router.delete(
 );
 
 export default router;
+
+function generatePassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%";
+  let password = "";
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}

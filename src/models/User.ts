@@ -16,7 +16,10 @@ export interface IUser extends Document {
   role: "TEACHER" | "STUDENT" | "PARENT" | "ADMIN";
   parentId?: mongoose.Types.ObjectId;
   students: mongoose.Types.ObjectId[];
+  groups: mongoose.Types.ObjectId[];
   linkingCode?: string;
+  stage?: string;
+  grade?: string;
   // Verification fields (for teachers)
   verificationStatus: "PENDING" | "SUBMITTED" | "VERIFIED" | "REJECTED";
   verificationData?: IVerificationData;
@@ -78,10 +81,25 @@ const userSchema = new Schema<IUser>(
         ref: "User",
       },
     ],
+    groups: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Group",
+        index: true,
+      },
+    ],
     linkingCode: {
       type: String,
       unique: true,
       sparse: true,
+    },
+    stage: {
+      type: String,
+      trim: true,
+    },
+    grade: {
+      type: String,
+      trim: true,
     },
     // Verification fields
     verificationStatus: {
@@ -122,5 +140,6 @@ userSchema.pre("save" as any, async function (this: IUser) {
 
 // Compound index for admin filtering (email and linkingCode already indexed via unique: true)
 userSchema.index({ role: 1, verificationStatus: 1 });
+userSchema.index({ role: 1, stage: 1, grade: 1 });
 
 export const User = mongoose.model<IUser>("User", userSchema);

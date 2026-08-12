@@ -159,7 +159,6 @@ router.get(
       const requester = req.user!;
       const isAdmin = requester.role === "ADMIN";
       const isSelf = requester._id.toString() === userId;
-      // A parent may read the profiles of their own linked children
       const isOwnChild =
         requester.role === "PARENT" &&
         (requester.students || []).some((id) => id.toString() === userId);
@@ -181,6 +180,38 @@ router.get(
       res.json(response);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching user", error: error.message });
+    }
+  }
+);
+
+// Update current user's profile
+router.put(
+  "/me",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.user!._id.toString();
+      const { name, phone, stage, grade, avatarUrl } = req.body;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      if (name) user.name = name;
+      if (phone !== undefined) user.phone = phone;
+      if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+      if (stage !== undefined) user.stage = stage;
+      if (grade !== undefined) user.grade = grade;
+
+      await user.save();
+
+      const updatedUser = await User.findById(userId).select("-__v").lean();
+      res.json({ success: true, data: updatedUser });
+    } catch (error: any) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Error updating user", error: error.message });
     }
   }
 );
