@@ -8,33 +8,31 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
-import connectDB from "./config/db";
-import authRoutes from "./routes/auth";
-import userRoutes from "./routes/users";
-import groupRoutes from "./routes/groups";
-import sessionRoutes from "./routes/sessions";
-import attendanceRoutes from "./routes/attendance";
-import curriculumRoutes from "./routes/curriculum";
-import adminCurriculumRoutes from "./routes/adminCurriculum";
-import emailRoutes from "./routes/emails";
-import notificationRoutes from "./routes/notifications";
-import verificationRoutes from "./routes/verification";
-import aiRoutes from "./routes/ai";
-import settingsRoutes from "./routes/settings";
-import { cache } from "./services/cache";
-import { auth } from "./middleware/auth";
-import { requireRole } from "./middleware/rbac";
-import { errorHandler } from "./middleware/errorHandler";
-import { securityLogger } from "./utils/securityLogger";
+import connectDB from "../config/db";
+import authRoutes from "../routes/auth";
+import userRoutes from "../routes/users";
+import groupRoutes from "../routes/groups";
+import sessionRoutes from "../routes/sessions";
+import attendanceRoutes from "../routes/attendance";
+import curriculumRoutes from "../routes/curriculum";
+import adminCurriculumRoutes from "../routes/adminCurriculum";
+import emailRoutes from "../routes/emails";
+import notificationRoutes from "../routes/notifications";
+import verificationRoutes from "../routes/verification";
+import aiRoutes from "../routes/ai";
+import settingsRoutes from "../routes/settings";
+import { cache } from "../services/cache";
+import { auth } from "../middleware/auth";
+import { requireRole } from "../middleware/rbac";
+import { errorHandler } from "../middleware/errorHandler";
+import { securityLogger } from "../utils/securityLogger";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Disable ETags: a 304 Not Modified sends an empty body, which breaks
-// clients that expect JSON on every request
+// Disable ETags
 app.set("etag", false);
 
-// Allowed origins: configured frontend URL, plus any localhost port in development
+// Allowed origins
 const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
   .split(",")
   .map((origin) => origin.trim())
@@ -47,7 +45,6 @@ const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow non-browser clients (curl, server-to-server) with no Origin header
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       if (isDevelopment && localhostPattern.test(origin)) {
@@ -72,40 +69,45 @@ app.use(
     xssFilter: true,
   })
 );
-app.use(compression()); // Compress all responses
+app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Security: sanitize inputs against NoSQL injection and parameter pollution
+// Security
 app.use(mongoSanitize());
 app.use(hpp());
 
-// Database connection middleware (critical for serverless / cold starts)
+// Database connection - initialize once at module load for serverless
+let dbConnected = false;
+const ensureDbConnected = async () => {
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+};
+
 app.use(async (req, res, next) => {
   try {
-    await connectDB();
+    await ensureDbConnected();
     next();
   } catch (err) {
     next(err);
   }
 });
 
-// Request logging middleware
+// Request logging
 app.use((req, res, next) => {
   const startTime = Date.now();
-
   res.on("finish", () => {
     const duration = Date.now() - startTime;
     const status = res.statusCode;
     const statusText = status >= 400 ? "FAILED" : "SUCCESS";
     const timestamp = new Date().toISOString();
-
     console.log(
       `[${timestamp}] ${req.method} ${req.originalUrl} | Controller: ${req.baseUrl || "N/A"} | Status: ${status} | ${statusText} | ${duration}ms`
     );
   });
-
   next();
 });
 
@@ -143,22 +145,5 @@ app.use("/api/ai", aiRoutes);
 // Error handler
 app.use(errorHandler);
 
-// Start server (only for local development)
-if (!process.env.VERCEL) {
-  const startServer = async () => {
-    try {
-      await connectDB();
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-        console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-      });
-    } catch (error) {
-      console.error("Failed to start server:", error);
-      process.exit(1);
-    }
-  };
-
-  startServer();
-}
-
+// Export for Vercel serverless
 export default app;
