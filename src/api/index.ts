@@ -1,5 +1,5 @@
 // Must be first: populates process.env before any module reads it at import time
-import "./config/env";
+import "../config/env";
 
 import express from "express";
 import cors from "cors";
