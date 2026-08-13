@@ -33,3 +33,4 @@ nul
 
 # Docker
 docker-compose.override.yml
+.vercel

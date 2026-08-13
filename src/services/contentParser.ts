@@ -1,4 +1,4 @@
-import { PDFParse } from "pdf-parse";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.js";
 
 const ALLOWED_DOCUMENT_TYPES: Record<string, string> = {
   "application/pdf": "pdf",
@@ -27,13 +27,21 @@ export interface ParsedContent {
 }
 
 export async function parsePdf(buffer: Buffer): Promise<ParsedContent> {
-  const parser = new PDFParse({ data: buffer });
-  const textResult = await parser.getText();
-  const infoResult = await parser.getInfo();
+  GlobalWorkerOptions.workerSrc = "";
+
+  const doc = await getDocument({ data: buffer }).promise;
+  const pages: string[] = [];
+
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items.map((item: any) => item.str).join(" ");
+    pages.push(pageText);
+  }
 
   return {
-    text: textResult.text.trim(),
-    pageCount: infoResult.total,
+    text: pages.join("\n").trim(),
+    pageCount: doc.numPages,
     fileType: "pdf",
   };
 }
