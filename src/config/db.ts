@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
+let isConnected = false;
+
 const connectDB = async (): Promise<void> => {
+  if (isConnected || mongoose.connection.readyState >= 1) {
+    return;
+  }
+
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI as string, {
       maxPoolSize: 50,
@@ -8,11 +14,14 @@ const connectDB = async (): Promise<void> => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
+    isConnected = true;
     console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log(`Connection pool size: 50`);
   } catch (error) {
-    console.error(`Error: ${error}`);
-    process.exit(1);
+    console.error(`MongoDB connection error: ${error}`);
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 

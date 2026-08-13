@@ -290,4 +290,76 @@ ${content.slice(0, 15000)}`;
   return response.choices[0]?.message?.content || "";
 }
 
+export async function generateTeacherProfile(
+  rawExperience: string,
+  rawBio: string,
+  subjects: string[],
+  language: string = "ar"
+): Promise<{ experience: string; bio: string }> {
+  const langInstruction = language === "ar" ? "باللغة العربية" : "in English";
+
+  const subjectsText =
+    subjects.length > 0
+      ? subjects.join("، ")
+      : "غير محدد (المعلم لم يختر مناهج بعد)";
+
+  const prompt = `أنت كاتب محتوى خبير في المنصات التعليمية. لديك بيانات أولية لمعلم يسجل حسابه على منصة "إديو سنتر" التعليمية في مصر.
+مهمتك: صياغة نصّين احترافيين وجذابين يكتبهما المعلم في ملفه التعريفي، بحيث يعكسان خبرته وشخصيته بأسلوب مقنع وواثق.
+
+المناهج التي يدرّسها المعلم: ${subjectsText}
+
+الخبرة التعليمية (كما كتبها المعلم - قد تكون مختصرة أو أولية):
+"""
+${rawExperience || "لا يوجد"}
+"""
+
+النبذة التعريفية (كما كتبها المعلم - قد تكون فارغة):
+"""
+${rawBio || "لا يوجد"}
+"""
+
+تعليمات:
+- اكتب النصين ${langInstruction} باللهجة المصرية الطبيعية المناسبة لمنصة تعليمية.
+- اجعل "الخبرة التعليمية" غنية بالتفاصيل العملية (سنوات الخبرة، المراحل/المواد، أسلوب التدريس، الإنجازات) حتى لو كانت المدخلات قليلة — استنتج بمنطقية من المناهج المختارة.
+- اجعل "النبذة التعريفية" قصيرة وودّية تخاطب الطلاب وأولياء الأمور وتبرز شغف المعلم.
+- لا تخترع معلومات شخصية محددة (أسماء، أرقام هواتف، مدارس بعينها)؛ اكتفِ بصياغة عامة قابلة للتخصيص.
+- أرجع الرد حصرياً كـ JSON بالصيغة التالية دون أي نص إضافي:
+{
+  "experience": "النص المحسّن للخبرة",
+  "bio": "النص المحسّن للنبذة"
+}`;
+
+  const response = await groq.chat.completions.create({
+    model: config.groqChatModel,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an expert educational copywriter. Always respond with valid JSON only.",
+      },
+      { role: "user", content: prompt },
+    ],
+    temperature: 0.7,
+    max_tokens: config.maxAiTokens,
+    response_format: { type: "json_object" },
+  });
+
+  const raw = response.choices[0]?.message?.content || "{}";
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      experience:
+        typeof parsed.experience === "string" && parsed.experience.trim()
+          ? parsed.experience.trim()
+          : rawExperience,
+      bio:
+        typeof parsed.bio === "string" && parsed.bio.trim()
+          ? parsed.bio.trim()
+          : rawBio,
+    };
+  } catch {
+    return { experience: rawExperience, bio: rawBio };
+  }
+}
+
 export { groq };

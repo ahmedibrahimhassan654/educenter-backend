@@ -172,7 +172,7 @@ router.post(
         path: "/",
       });
 
-      res.json({ user: userResponse });
+      res.json({ user: userResponse, token });
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Error logging in", error: error.message, stack: error.stack });

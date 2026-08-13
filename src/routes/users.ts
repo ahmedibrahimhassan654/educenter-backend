@@ -81,7 +81,7 @@ router.get(
       const [users, total] = await Promise.all([
         User.find(query)
           .select(
-            "_id name email phone role avatarUrl verificationStatus createdAt updatedAt " +
+            "_id name email phone role avatarUrl verificationStatus createdAt updatedAt stage grade " +
               "verificationData.experience verificationData.curriculum verificationData.bio"
           )
           .sort(sort as string)
@@ -223,7 +223,7 @@ router.post(
   requireRole("ADMIN"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { name, email, phone, role, password } = req.body;
+      const { name, email, phone, role, password, stage, grade } = req.body;
 
       // Validate required fields
       if (!name || !email || !phone || !role) {
@@ -253,6 +253,8 @@ router.post(
         phone,
         passwordHash,
         role: role.toUpperCase(),
+        stage: stage || "",
+        grade: grade || "",
       });
 
       // Send credentials email
@@ -307,7 +309,7 @@ router.put(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { name, email, phone, role, avatarUrl } = req.body;
+      const { name, email, phone, role, avatarUrl, stage, grade } = req.body;
       const userId = req.params.id;
       const requestingUserId = req.user!._id.toString();
       const isAdmin = req.user!.role === "ADMIN";
@@ -350,6 +352,8 @@ router.put(
       if (name) user.name = name;
       if (phone !== undefined) user.phone = phone;
       if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+      if (stage !== undefined) user.stage = stage;
+      if (grade !== undefined) user.grade = grade;
 
       // Only admin can change role
       if (role && isAdmin) {

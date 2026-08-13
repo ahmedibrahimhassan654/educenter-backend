@@ -155,3 +155,36 @@ export const sendGroupInvitationEmail = async (
   });
   return sendEmail({ to: studentEmail, subject: `تمت إضافتك لمجموعة ${groupTitle} - إديو سنتر`, html });
 };
+
+export const sendStudentGroupWelcomeEmail = async (
+  studentName: string,
+  studentEmail: string,
+  password: string,
+  groupTitle: string,
+  subject: string,
+  teacherName: string,
+  scheduleDays: string[],
+  stage: string,
+  grade: string,
+  loginUrl: string
+): Promise<boolean> => {
+  const scheduleText = scheduleDays.length > 0 ? scheduleDays.join("، ") : "غير محدد";
+
+  const html = await renderTemplate("student-group-welcome", {
+    studentName,
+    studentEmail,
+    password,
+    groupTitle,
+    subject,
+    teacherName,
+    scheduleText,
+    stage,
+    grade,
+    loginUrl,
+  });
+  return sendEmail({
+    to: studentEmail,
+    subject: `مرحباً بك في إديو سنتر - حسابك ومجموعتك ${groupTitle}`,
+    html,
+  });
+};

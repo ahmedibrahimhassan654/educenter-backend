@@ -81,6 +81,16 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(hpp());
 
+// Database connection middleware (critical for serverless / cold starts)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Request logging middleware
 app.use((req, res, next) => {
   const startTime = Date.now();
@@ -137,14 +147,22 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-    });
+    if (!process.env.VERCEL) {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      });
+    } else {
+      console.log("Vercel serverless environment detected. App exported successfully.");
+    }
   } catch (error) {
     console.error("Failed to start server:", error);
-    process.exit(1);
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
   }
 };
 
 startServer();
+
+export default app;

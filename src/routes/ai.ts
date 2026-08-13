@@ -10,6 +10,7 @@ import {
   generateSummary,
   generateFlashcards,
   generateStudyNotes,
+  generateTeacherProfile,
   countTokens,
 } from "../services/aiService";
 import { parseDocument, isAllowedDocumentType, chunkText } from "../services/contentParser";
@@ -408,6 +409,45 @@ router.post("/chat/start", aiRateLimiter, async (req: AuthRequest, res: Response
     res.status(500).json({ message: "Error starting chat", error: error.message });
   }
 });
+
+router.post(
+  "/teacher-profile",
+  aiRateLimiter,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const {
+        experience = "",
+        bio = "",
+        subjects = [],
+        language = "ar",
+      } = req.body as {
+        experience?: string;
+        bio?: string;
+        subjects?: string[];
+        language?: string;
+      };
+
+      if (!Array.isArray(subjects)) {
+        res.status(400).json({ message: "subjects must be an array" });
+        return;
+      }
+
+      const profile = await generateTeacherProfile(
+        String(experience || ""),
+        String(bio || ""),
+        subjects.map((s) => String(s)),
+        language
+      );
+
+      res.json({ success: true, data: profile });
+    } catch (error: any) {
+      console.error("Error generating teacher profile:", error);
+      res
+        .status(500)
+        .json({ message: "تعذر إنشاء المحتوى", error: error.message });
+    }
+  }
+);
 
 router.get("/chat-history", async (req: AuthRequest, res: Response): Promise<void> => {
   try {

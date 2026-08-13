@@ -10,6 +10,7 @@ import { cache } from "../services/cache";
 import {
   sendGroupInvitationEmail,
   sendCredentialsEmail,
+  sendStudentGroupWelcomeEmail,
 } from "../services/emailService";
 import bcrypt from "bcryptjs";
 
@@ -618,18 +619,18 @@ router.post(
       const loginUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/login`;
 
       if (teacher) {
-        sendGroupInvitationEmail(
+        sendStudentGroupWelcomeEmail(
           student.name,
           student.email,
+          password,
           group.title,
           group.subject,
           teacher.name,
           group.scheduleDays || [],
-          loginUrl,
-          password,
           stage || group.stage || "",
-          grade || group.grade || ""
-        ).catch((err) => console.error("Failed to send group invitation email:", err));
+          grade || group.grade || "",
+          loginUrl
+        ).catch((err) => console.error("Failed to send student welcome email:", err));
       }
 
       await createNotification({
