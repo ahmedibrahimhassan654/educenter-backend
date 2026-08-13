@@ -2,19 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "src/services/email-templates/**"
-        ]
-      }
+      "src": "dist/api/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/api/index.ts"
+      "dest": "dist/api/index.js"
     }
   ]
 }
