@@ -40,6 +40,7 @@ const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+const previewPattern = /^https?:\/\/([a-z0-9-]+\.)*((vercel\.app)|(netlify\.app))$/;
 
 // Middleware
 app.use(
@@ -48,6 +49,9 @@ app.use(
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       if (isDevelopment && localhostPattern.test(origin)) {
+        return callback(null, true);
+      }
+      if (previewPattern.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`Origin not allowed by CORS: ${origin}`));
