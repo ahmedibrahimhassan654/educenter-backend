@@ -116,6 +116,31 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Root info
+app.get("/", (req, res) => {
+  res.json({
+    name: "Educenter Backend",
+    status: "running",
+    environment: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: "/api/health",
+      docs: "/api",
+      auth: "/api/auth",
+      users: "/api/users",
+      groups: "/api/groups",
+      sessions: "/api/sessions",
+      attendance: "/api/attendance",
+      curriculum: "/api/curriculum",
+      notifications: "/api/notifications",
+      settings: "/api/settings",
+      emails: "/api/emails",
+      verification: "/api/verification",
+      ai: "/api/ai",
+    },
+  });
+});
+
 // Cache stats (admin only)
 app.get("/api/admin/cache-stats", auth, requireRole("ADMIN"), (req: any, res: any) => {
   res.json(cache.getStats());
