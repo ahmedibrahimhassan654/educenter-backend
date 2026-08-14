@@ -1,4 +1,4 @@
-◇ injected env (15) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (15) from .env // tip: ⌘ override existing { override: true }
 Warning: Cannot polyfill `DOMMatrix`, rendering may be broken: "Error: Cannot find module 'canvas'
 Require stack:
 - D:\projects\educenter full stack\educenter-backend\node_modules\pdfjs-dist\legacy\build\pdf.js
@@ -14,6 +14,10 @@ Require stack:
 MongoDB Connected: ac-0ng6elv-shard-00-00.p6z4hlh.mongodb.net
 Server running on port 5001
 Environment: development
-[2026-08-14T02:22:18.100Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 11ms
-[2026-08-14T02:22:18.398Z] GET /api/teachers/public/6a77e5ad7fdcb194b531992f | Controller: /api/teachers | Status: 200 | SUCCESS | 157ms
-[2026-08-14T02:41:45.293Z] GET /api/groups/public/6a77f317ebe4bdcf4dd55e72 | Controller: /api/groups | Status: 200 | SUCCESS | 193ms
+[2026-08-14T13:54:42.813Z] GET /api/health | Controller: N/A | Status: 200 | SUCCESS | 7ms
+🔐 Auth middleware hit: GET /api/groups/6a7d535a39f6a55597e6f3b3/suggested-students
+🔐 No token found in header or cookie
+[2026-08-14T14:03:39.750Z] GET /api/groups/6a7d535a39f6a55597e6f3b3/suggested-students | Controller: /api/groups | Status: 401 | FAILED | 8ms
+🔐 Auth middleware hit: GET /api/groups/6a7d535a39f6a55597e6f3b3/suggested-students
+🔐 No token found in header or cookie
+[2026-08-14T14:03:39.925Z] GET /api/groups/6a7d535a39f6a55597e6f3b3/suggested-students | Controller: /api/groups | Status: 401 | FAILED | 5ms

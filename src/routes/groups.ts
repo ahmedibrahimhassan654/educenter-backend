@@ -844,6 +844,88 @@ router.post(
   }
 );
 
+// Get suggested students for a group (teacher only - must be owner)
+// - With "search": find STUDENT accounts by name/email/phone
+// - Without "search": list all students in the same stage & grade as the group
+// Both exclude students already in the group and flag those with a pending invitation.
+router.get(
+  "/:id/suggested-students",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const { search } = req.query;
+      const query: any = { role: "STUDENT" };
+
+      if (search) {
+        const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const searchRegex = new RegExp(escaped, "i");
+        query.$or = [
+          { name: searchRegex },
+          { email: searchRegex },
+          { phone: searchRegex },
+        ];
+      } else {
+        if (group.stage) query.stage = group.stage;
+        if (group.grade) query.grade = group.grade;
+      }
+
+      const students = await User.find(query)
+        .select("name email phone avatarUrl stage grade")
+        .sort("name")
+        .limit(60)
+        .lean();
+
+      const studentIds = students.map((s: any) => s._id);
+      const pendingInvitations = await GroupInvitation.find({
+        groupId: group._id,
+        studentId: { $in: studentIds },
+        status: "PENDING",
+      })
+        .select("studentId")
+        .lean();
+      const pendingSet = new Set(
+        pendingInvitations.map((p: any) => p.studentId.toString())
+      );
+      const alreadyInGroup = new Set(
+        (group.students || []).map((id: any) => id.toString())
+      );
+
+      const data = students
+        .filter((s: any) => !alreadyInGroup.has(s._id.toString()))
+        .map((s: any) => ({
+          id: s._id,
+          name: s.name,
+          email: s.email,
+          phone: s.phone || "",
+          avatarUrl: s.avatarUrl,
+          stage: s.stage || "",
+          grade: s.grade || "",
+          hasPendingInvitation: pendingSet.has(s._id.toString()),
+        }));
+
+      res.json({ success: true, data });
+    } catch (error: any) {
+      res.status(500).json({
+        message: "Error fetching suggested students",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Get student's invitations (student only)
 router.get(
   "/invitations",
