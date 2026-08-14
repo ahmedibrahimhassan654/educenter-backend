@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { Group } from "../models/Group";
 import { User } from "../models/User";
 import { GroupInvitation } from "../models/GroupInvitation";
@@ -66,6 +66,178 @@ function checkScheduleConflicts(
 
   return null;
 }
+
+// Public group detail by ID (no auth). Declared before "/:id" so ObjectId
+// checks never swallow it. Excludes private data (students list, meet link).
+router.get(
+  "/public/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const group = await Group.findById(id)
+        .populate("teacherId", "name avatarUrl verificationStatus verificationData verifiedAt")
+        .lean();
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const teacher = group.teacherId as any;
+      if (!teacher || teacher.verificationStatus !== "VERIFIED") {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const publicGroup = {
+        id: (group as any)._id,
+        title: group.title,
+        subject: group.subject,
+        grade: group.grade,
+        stage: group.stage,
+        totalSessionPrice: group.totalSessionPrice,
+        maxStudentsPerGroup: group.maxStudentsPerGroup,
+        scheduleDays: group.scheduleDays || [],
+        studentsCount: (group as any).students?.length || 0,
+        createdAt: group.createdAt,
+        updatedAt: group.updatedAt,
+        teacher: {
+          id: teacher._id,
+          name: teacher.name,
+          avatarUrl: teacher.avatarUrl,
+          verificationStatus: teacher.verificationStatus,
+          verifiedAt: teacher.verifiedAt,
+          verificationData: {
+            bio: teacher.verificationData?.bio || "",
+            experience: teacher.verificationData?.experience || "",
+            curriculum: teacher.verificationData?.curriculum || [],
+          },
+        },
+      };
+
+      await cache.set(`public:group:${id}`, publicGroup, 60);
+      res.json(publicGroup);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching group", error: error.message });
+    }
+  }
+);
+
+// Public list of groups (no auth). Only groups from verified teachers appear.
+// Supports stage/grade/subject/search filters + pagination + sorting.
+router.get(
+  "/public",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const {
+        stage,
+        grade,
+        subject,
+        search,
+        sort,
+        page = "1",
+        limit = "20",
+      } = req.query;
+
+      const pageNum = Math.max(1, parseInt(page as string) || 1);
+      const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20));
+      const skip = (pageNum - 1) * limitNum;
+
+      // Only groups from verified teachers
+      const verifiedTeachers = await User.find({
+        role: "TEACHER",
+        verificationStatus: "VERIFIED",
+      }).select("_id").lean();
+      const teacherIds = verifiedTeachers.map((t) => (t as any)._id);
+
+      const filter: any = { teacherId: { $in: teacherIds } };
+      if (stage && stage !== "الكل" && stage !== "all") filter.stage = stage;
+      if (grade && grade !== "all") filter.grade = grade;
+      if (subject && subject !== "all") filter.subject = subject;
+      if (search) {
+        const searchRegex = new RegExp((search as string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+        filter.$or = [
+          { title: searchRegex },
+          { subject: searchRegex },
+          { grade: searchRegex },
+        ];
+      }
+
+      const sortOptions: any = {
+        newest: { createdAt: -1 },
+        cheapest: { totalSessionPrice: 1 },
+        expensive: { totalSessionPrice: -1 },
+      };
+      const sortQuery = sortOptions[sort as string] || sortOptions.newest;
+
+      let rawGroups: any[];
+      if (sort === "full") {
+        // studentsCount is a virtual, so sort by the real students array length
+        const ids = await Group.aggregate([
+          { $match: filter },
+          { $addFields: { _count: { $size: { $ifNull: ["$students", []] } } } },
+          { $sort: { _count: -1, createdAt: -1 } },
+          { $skip: skip },
+          { $limit: limitNum },
+        ]).then((r) => r.map((g) => g._id));
+        const populated = await Group.find({ _id: { $in: ids } })
+          .populate("teacherId", "name avatarUrl verificationStatus verificationData verifiedAt")
+          .lean();
+        const byId = new Map(populated.map((g: any) => [g._id.toString(), g]));
+        rawGroups = ids.map((id) => byId.get(id.toString())).filter(Boolean);
+      } else {
+        rawGroups = await Group.find(filter)
+          .populate("teacherId", "name avatarUrl verificationStatus verificationData verifiedAt")
+          .sort(sortQuery)
+          .skip(skip)
+          .limit(limitNum)
+          .lean();
+      }
+
+      const total = await Group.countDocuments(filter);
+
+      const data = rawGroups.map((g: any) => {
+        const teacher = g.teacherId;
+        return {
+          id: g._id,
+          title: g.title,
+          subject: g.subject,
+          grade: g.grade,
+          stage: g.stage,
+          totalSessionPrice: g.totalSessionPrice,
+          maxStudentsPerGroup: g.maxStudentsPerGroup,
+          scheduleDays: g.scheduleDays || [],
+          studentsCount: g.students?.length || 0,
+          createdAt: g.createdAt,
+          teacher: teacher
+            ? {
+                id: teacher._id,
+                name: teacher.name,
+                avatarUrl: teacher.avatarUrl,
+                verificationStatus: teacher.verificationStatus,
+                verifiedAt: teacher.verifiedAt,
+                verificationData: {
+                  bio: teacher.verificationData?.bio || "",
+                  experience: teacher.verificationData?.experience || "",
+                  curriculum: teacher.verificationData?.curriculum || [],
+                },
+              }
+            : null,
+        };
+      });
+
+      await cache.set(`public:groups:list:${JSON.stringify(req.query)}`, { data, pagination: { page: pageNum, limit: limitNum, total, pages: Math.ceil(total / limitNum) } }, 60);
+      res.json({ data, pagination: { page: pageNum, limit: limitNum, total, pages: Math.ceil(total / limitNum) } });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching groups", error: error.message });
+    }
+  }
+);
 
 // Get all groups (filtered by teacher or student) with pagination
 router.get(

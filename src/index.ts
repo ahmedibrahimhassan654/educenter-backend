@@ -12,6 +12,7 @@ import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import groupRoutes from "./routes/groups";
+import teacherRoutes from "./routes/teachers";
 import sessionRoutes from "./routes/sessions";
 import attendanceRoutes from "./routes/attendance";
 import curriculumRoutes from "./routes/curriculum";
@@ -123,6 +124,7 @@ app.get("/api/admin/cache-stats", auth, requireRole("ADMIN"), (req: any, res: an
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/teachers", teacherRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/curriculum", curriculumRoutes);
