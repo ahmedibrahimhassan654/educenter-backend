@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { Group } from "../models/Group";
 import { User } from "../models/User";
 import { GroupInvitation } from "../models/GroupInvitation";
+import { Purchase } from "../models/Purchase";
 import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
@@ -67,6 +68,41 @@ function checkScheduleConflicts(
   }
 
   return null;
+}
+
+function computeEntitlement(
+  purchases: any[],
+  now: Date = new Date()
+): {
+  remainingCredits: number;
+  monthlyActive: boolean;
+  monthlyExpiresAt: Date | null;
+  hasAccess: boolean;
+} {
+  let remainingCredits = 0;
+  let monthlyActive = false;
+  let monthlyExpiresAt: Date | null = null;
+
+  for (const p of purchases) {
+    if (p.type === "LECTURES") {
+      remainingCredits += p.remainingLectures || 0;
+    } else if (p.type === "MONTHLY") {
+      const exp = p.monthlyExpiresAt ? new Date(p.monthlyExpiresAt) : null;
+      if (exp && exp > now) {
+        monthlyActive = true;
+        if (!monthlyExpiresAt || exp > monthlyExpiresAt) {
+          monthlyExpiresAt = exp;
+        }
+      }
+    }
+  }
+
+  return {
+    remainingCredits,
+    monthlyActive,
+    monthlyExpiresAt,
+    hasAccess: monthlyActive || remainingCredits > 0,
+  };
 }
 
 // Public group detail by ID (no auth). Declared before "/:id" so ObjectId
@@ -538,10 +574,172 @@ router.get(
         res.status(404).json({ message: "Group not found" });
         return;
       }
+
+      if (req.user!.role === "STUDENT") {
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        }).lean();
+        const entitlement = computeEntitlement(purchases);
+        const groupObj = group.toObject() as any;
+        if (!entitlement.hasAccess) {
+          delete groupObj.googleMeetLink;
+        }
+        groupObj.entitlement = entitlement;
+        await cache.set(`group:${req.params.id}`, groupObj, 60);
+        res.json(groupObj);
+        return;
+      }
+
       await cache.set(`group:${req.params.id}`, group, 60);
       res.json(group);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching group", error: error.message });
+    }
+  }
+);
+
+// Purchase lessons in a group (student only, must be a member).
+// LECTURES: one-time pack with remaining credits. MONTHLY: unlimited for 30 days.
+router.post(
+  "/:id/purchases",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { type, lectures } = req.body;
+      const group = await Group.findById(req.params.id);
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (!group.students.some((s) => s.toString() === req.user!._id.toString())) {
+        res.status(403).json({ message: "You must be a member of this group to buy lessons" });
+        return;
+      }
+
+      const unitPrice = group.totalSessionPrice || 0;
+      if (unitPrice <= 0) {
+        res.status(400).json({ message: "Group price is not configured yet" });
+        return;
+      }
+
+      if (type === "LECTURES") {
+        const parsedCount = Math.floor(Number(lectures) || 0);
+        if (parsedCount < 1) {
+          res.status(400).json({ message: "عدد الحصص المطلوب غير صحيح" });
+          return;
+        }
+        const lecturesCount = parsedCount;
+        const purchase = await Purchase.create({
+          groupId: group._id,
+          studentId: req.user!._id,
+          type: "LECTURES",
+          lectures: lecturesCount,
+          remainingLectures: lecturesCount,
+          monthlyExpiresAt: null,
+          unitPrice,
+          amountPaid: lecturesCount * unitPrice,
+          teacherShareTotal: lecturesCount * (group.priceTeacherShare || 0),
+          platformFeeTotal: lecturesCount * (group.platformFee || 0),
+          status: "PAID",
+        });
+        await cache.delete(`group:${group._id}`);
+        res.status(201).json({ success: true, data: purchase });
+        return;
+      }
+
+      if (type === "MONTHLY") {
+        const weekly = (group.scheduleDays || []).length || 1;
+        const lecturesCount = weekly * 4;
+        const now = new Date();
+        const existingActive = await Purchase.findOne({
+          groupId: group._id,
+          studentId: req.user!._id,
+          type: "MONTHLY",
+          monthlyExpiresAt: { $gt: now },
+        });
+        const fromDate = existingActive?.monthlyExpiresAt
+          ? new Date(existingActive.monthlyExpiresAt)
+          : now;
+        const expiresAt = new Date(fromDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+        const purchase = await Purchase.create({
+          groupId: group._id,
+          studentId: req.user!._id,
+          type: "MONTHLY",
+          lectures: lecturesCount,
+          remainingLectures: 0,
+          monthlyExpiresAt: expiresAt,
+          unitPrice,
+          amountPaid: lecturesCount * unitPrice,
+          teacherShareTotal: lecturesCount * (group.priceTeacherShare || 0),
+          platformFeeTotal: lecturesCount * (group.platformFee || 0),
+          status: "PAID",
+        });
+        await cache.delete(`group:${group._id}`);
+        res.status(201).json({ success: true, data: purchase });
+        return;
+      }
+
+      res.status(400).json({ message: "Invalid purchase type" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating purchase", error: error.message });
+    }
+  }
+);
+
+// Get purchases for a group - student sees own, teacher/admin sees all.
+router.get(
+  "/:id/purchases",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      if (req.user!.role === "STUDENT") {
+        if (!group.students.some((s) => s.toString() === req.user!._id.toString())) {
+          res.status(403).json({ message: "You must be a member of this group" });
+          return;
+        }
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        })
+          .sort("-createdAt")
+          .lean();
+        res.json({
+          success: true,
+          data: purchases,
+          entitlement: computeEntitlement(purchases),
+        });
+        return;
+      }
+
+      if (req.user!.role === "TEACHER") {
+        if (group.teacherId.toString() !== req.user!._id.toString()) {
+          res.status(403).json({ message: "Forbidden" });
+          return;
+        }
+      } else if (req.user!.role !== "ADMIN") {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const purchases = await Purchase.find({ groupId: group._id })
+        .populate("studentId", "name email phone")
+        .sort("-createdAt")
+        .lean();
+
+      res.json({ success: true, data: purchases });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching purchases", error: error.message });
     }
   }
 );
@@ -625,7 +823,8 @@ router.delete(
   }
 );
 
-// Add student to group - creates invitation for existing student
+// Add existing student to group - direct add (student views group activities,
+// purchases lessons separately). No student-side acceptance required.
 router.post(
   "/:id/students",
   auth,
@@ -645,18 +844,7 @@ router.post(
         return;
       }
 
-      const existingInvitation = await GroupInvitation.findOne({
-        groupId: group._id,
-        studentId,
-        status: "PENDING",
-      });
-
-      if (existingInvitation) {
-        res.status(409).json({ message: "Student already has a pending invitation for this group" });
-        return;
-      }
-
-      if (group.students.includes(studentId)) {
+      if (group.students.some((s) => s.toString() === String(studentId))) {
         res.status(409).json({ message: "Student already in group" });
         return;
       }
@@ -673,11 +861,21 @@ router.post(
         return;
       }
 
+      if (!group.students.includes(student._id)) {
+        group.students.push(student._id);
+        await group.save();
+      }
+
+      await User.findByIdAndUpdate(student._id, {
+        $addToSet: { groups: group._id },
+        $set: { stage: student.stage || group.stage || "", grade: student.grade || group.grade || "" },
+      });
+
       const invitation = await GroupInvitation.create({
         groupId: group._id,
-        studentId,
+        studentId: student._id,
         teacherId: group.teacherId,
-        status: "PENDING",
+        status: "ACCEPTED",
         stage: student.stage || group.stage || "",
         grade: student.grade || group.grade || "",
         subject: group.subject,
@@ -703,29 +901,34 @@ router.post(
 
       await createNotification({
         userId: student._id,
-        title: "دعوة لمجموعة جديدة",
-        message: `تمت إضافة ${student.name} إلى مجموعة ${group.title} - في انتظار الموافقة`,
-        type: "INFO",
+        title: "تمت إضافتك لمجموعة",
+        message: `تمت إضافتك إلى مجموعة ${group.title} - يمكنك الآن متابعة أنشطة المجموعة`,
+        type: "SUCCESS",
         category: "GROUP",
-        link: "/student/invitations",
+        link: "/student/my-groups",
       });
 
       const admins = await User.find({ role: "ADMIN" });
       for (const admin of admins) {
         await createNotification({
           userId: admin._id,
-          title: "دعوة مجموعة جديدة",
-          message: `المعلم ${teacher?.name || "غير معروف"} أرسل دعوة للطالب ${student.name} للانضمام إلى مجموعة ${group.title}`,
+          title: "طالب جديد في مجموعة",
+          message: `المعلم ${teacher?.name || "غير معروف"} أضاف الطالب ${student.name} إلى مجموعة ${group.title}`,
           type: "INFO",
           category: "GROUP",
           link: "/admin",
         });
       }
 
+      await cache.deleteByPattern("groups:list:*");
+      await cache.deleteByPattern("groups:stats:*");
+      await cache.deleteByPattern("admin:groups:*");
+      await cache.delete(`group:${group._id}`);
+
       res.status(201).json({
         success: true,
         data: invitation,
-        message: "Invitation sent successfully",
+        message: "Student added to group successfully",
       });
     } catch (error: any) {
       res.status(500).json({ message: "Error adding student", error: error.message });
@@ -783,11 +986,21 @@ router.post(
         grade: grade || group.grade || "",
       });
 
+      if (!group.students.includes(student._id)) {
+        group.students.push(student._id);
+        await group.save();
+      }
+
+      await User.findByIdAndUpdate(student._id, {
+        $addToSet: { groups: group._id },
+        $set: { stage: stage || group.stage || "", grade: grade || group.grade || "" },
+      });
+
       const invitation = await GroupInvitation.create({
         groupId: group._id,
         studentId: student._id,
         teacherId: group.teacherId,
-        status: "PENDING",
+        status: "ACCEPTED",
         stage: stage || group.stage || "",
         grade: grade || group.grade || "",
         subject: group.subject,
@@ -814,24 +1027,29 @@ router.post(
 
       await createNotification({
         userId: student._id,
-        title: "دعوة لمجموعة جديدة",
-        message: `تم إنشاء حسابك وإضافتك إلى مجموعة ${group.title} - في انتظار الموافقة`,
+        title: "تمت إضافتك لمجموعة",
+        message: `تم إنشاء حسابك وإضافتك إلى مجموعة ${group.title} - يمكنك الآن متابعة أنشطة المجموعة`,
         type: "SUCCESS",
         category: "GROUP",
-        link: "/student/invitations",
+        link: "/student/my-groups",
       });
 
       const admins = await User.find({ role: "ADMIN" });
       for (const admin of admins) {
         await createNotification({
           userId: admin._id,
-          title: "دعوة مجموعة جديدة",
-          message: `المعلم ${teacher?.name || "غير معروف"} أنشأ حساب للطالب ${student.name} وأرسل دعوة للانضمام إلى مجموعة ${group.title}`,
+          title: "طالب جديد في مجموعة",
+          message: `المعلم ${teacher?.name || "غير معروف"} أنشأ حساب للطالب ${student.name} وأضافه إلى مجموعة ${group.title}`,
           type: "INFO",
           category: "GROUP",
           link: "/admin",
         });
       }
+
+      await cache.deleteByPattern("groups:list:*");
+      await cache.deleteByPattern("groups:stats:*");
+      await cache.deleteByPattern("admin:groups:*");
+      await cache.delete(`group:${group._id}`);
 
       res.status(201).json({
         success: true,
@@ -888,17 +1106,6 @@ router.get(
         .limit(60)
         .lean();
 
-      const studentIds = students.map((s: any) => s._id);
-      const pendingInvitations = await GroupInvitation.find({
-        groupId: group._id,
-        studentId: { $in: studentIds },
-        status: "PENDING",
-      })
-        .select("studentId")
-        .lean();
-      const pendingSet = new Set(
-        pendingInvitations.map((p: any) => p.studentId.toString())
-      );
       const alreadyInGroup = new Set(
         (group.students || []).map((id: any) => id.toString())
       );
@@ -913,7 +1120,6 @@ router.get(
           avatarUrl: s.avatarUrl,
           stage: s.stage || "",
           grade: s.grade || "",
-          hasPendingInvitation: pendingSet.has(s._id.toString()),
         }));
 
       res.json({ success: true, data });
