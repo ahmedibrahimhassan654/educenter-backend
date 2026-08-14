@@ -156,7 +156,12 @@ router.get(
       const teacherIds = verifiedTeachers.map((t) => (t as any)._id);
 
       const filter: any = { teacherId: { $in: teacherIds } };
-      if (stage && stage !== "الكل" && stage !== "all") filter.stage = stage;
+      if (stage && stage !== "الكل" && stage !== "all") {
+        filter.stage = new RegExp(
+          (stage as string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          "i"
+        );
+      }
       if (grade && grade !== "all") filter.grade = grade;
       if (subject && subject !== "all") filter.subject = subject;
       if (search) {
