@@ -10,7 +10,8 @@
     "seed": "tsx src/seed.ts",
     "seed:curriculum": "tsx src/scripts/seedCurriculum.ts",
     "migrate:docs": "tsx src/scripts/migrateVerificationDocs.ts",
-    "normalize:stages": "tsx src/scripts/normalizeStudentStageGrade.ts"
+    "normalize:stages": "tsx src/scripts/normalizeStudentStageGrade.ts",
+    "deploy:vercel": "vercel --prod"
   },
   "keywords": [],
   "author": "",
