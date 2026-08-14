@@ -11,6 +11,8 @@ import {
   sendGroupInvitationEmail,
   sendCredentialsEmail,
   sendStudentGroupWelcomeEmail,
+  sendInvitationAcceptedEmail,
+  sendInvitationRejectedEmail,
 } from "../services/emailService";
 import bcrypt from "bcryptjs";
 
@@ -898,7 +900,8 @@ router.post(
       }
 
       await User.findByIdAndUpdate(invitation.studentId, {
-        $addToSet: { groups: group._id, stage: invitation.stage, grade: invitation.grade },
+        $addToSet: { groups: group._id },
+        $set: { stage: invitation.stage, grade: invitation.grade },
       });
 
       invitation.status = "ACCEPTED";
@@ -916,6 +919,20 @@ router.post(
           category: "GROUP",
           link: `/teacher/groups/${group._id}`,
         });
+
+        try {
+          await sendInvitationAcceptedEmail(
+            teacher.name || "معلم",
+            teacher.email,
+            student?.name || "طالب",
+            group.title,
+            group.subject,
+            `${process.env.FRONTEND_URL || "http://localhost:3000"}/teacher/groups/${group._id}`
+          );
+          console.log(`✅ Acceptance email sent to teacher ${teacher.email}`);
+        } catch (emailError) {
+          console.error("⚠️ Failed to send acceptance email:", emailError);
+        }
       }
 
       const admins = await User.find({ role: "ADMIN" });
@@ -977,6 +994,19 @@ router.post(
           category: "GROUP",
           link: "/teacher/groups",
         });
+
+        try {
+          await sendInvitationRejectedEmail(
+            teacher.name || "معلم",
+            teacher.email,
+            student?.name || "طالب",
+            group?.title || "غير معروف",
+            `${process.env.FRONTEND_URL || "http://localhost:3000"}/teacher/groups`
+          );
+          console.log(`✅ Rejection email sent to teacher ${teacher.email}`);
+        } catch (emailError) {
+          console.error("⚠️ Failed to send rejection email:", emailError);
+        }
       }
 
       const admins = await User.find({ role: "ADMIN" });

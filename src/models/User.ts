@@ -7,6 +7,14 @@ export interface IVerificationData {
   documents?: string[];
 }
 
+export interface IAcademicEntry {
+  stage: string;
+  grade: string;
+  year: string;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -20,6 +28,7 @@ export interface IUser extends Document {
   linkingCode?: string;
   stage?: string;
   grade?: string;
+  academicHistory?: IAcademicEntry[];
   // Verification fields (for teachers)
   verificationStatus: "PENDING" | "SUBMITTED" | "VERIFIED" | "REJECTED";
   verificationData?: IVerificationData;
@@ -35,6 +44,17 @@ const verificationDataSchema = new Schema<IVerificationData>(
     curriculum: [{ type: String, trim: true }],
     bio: { type: String, trim: true },
     documents: [{ type: String }],
+  },
+  { _id: false }
+);
+
+const academicEntrySchema = new Schema<IAcademicEntry>(
+  {
+    stage: { type: String, trim: true },
+    grade: { type: String, trim: true },
+    year: { type: String, trim: true },
+    startDate: { type: Date },
+    endDate: { type: Date },
   },
   { _id: false }
 );
@@ -100,6 +120,10 @@ const userSchema = new Schema<IUser>(
     grade: {
       type: String,
       trim: true,
+    },
+    academicHistory: {
+      type: [academicEntrySchema],
+      default: undefined,
     },
     // Verification fields
     verificationStatus: {

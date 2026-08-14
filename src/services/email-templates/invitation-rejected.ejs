@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تم رفض دعوة المجموعة - إديو سنتر</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f3f4f6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); max-width: 600px; width: 100%;">
+          <%- include('partials/header', { icon: "ℹ️", title: "رفض دعوة المجموعة", subtitle: "إديو سنتر", headerColor: "#d97706", headerColorEnd: "#f59e0b" }) %>
+          <tr>
+            <td style="padding: 40px;">
+              <div style="text-align: center; margin-bottom: 32px;">
+                <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">مرحباً <%= teacherName %>! 👋</h2>
+                <p style="color: #4b5563; margin: 0; font-size: 18px; line-height: 1.7;">نود إعلامك أن الطالب <strong style="color: #d97706;"><%= studentName %></strong> رفض دعوة الانضمام إلى مجموعتك <strong style="color: #d97706;"><%= groupTitle %></strong>.</p>
+              </div>
+              <div style="background-color: #fffbeb; border: 2px solid #fde68a; border-radius: 12px; padding: 24px 32px; margin: 0 40px 32px 40px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #fde68a;">
+                      <span style="color: #6b7280; font-size: 14px; display: block; margin-bottom: 4px;">المجموعة</span>
+                      <span style="color: #111827; font-size: 18px; font-weight: 600; display: block;"><%= groupTitle %></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <span style="color: #6b7280; font-size: 14px; display: block; margin-bottom: 4px;">الطالب</span>
+                      <span style="color: #111827; font-size: 18px; font-weight: 600; display: block;"><%= studentName %></span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div style="text-align: center; margin: 0 40px 40px 40px;">
+                <a href="<%= dashboardUrl %>" style="display: inline-block; background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 18px; font-weight: 700;">الانتقال إلى لوحة التحكم</a>
+              </div>
+            </td>
+          </tr>
+          <%- include('partials/footer') %>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

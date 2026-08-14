@@ -156,6 +156,48 @@ export const sendGroupInvitationEmail = async (
   return sendEmail({ to: studentEmail, subject: `تمت إضافتك لمجموعة ${groupTitle} - إديو سنتر`, html });
 };
 
+export const sendInvitationAcceptedEmail = async (
+  teacherName: string,
+  teacherEmail: string,
+  studentName: string,
+  groupTitle: string,
+  subject: string,
+  dashboardUrl: string
+): Promise<boolean> => {
+  const html = await renderTemplate("invitation-accepted", {
+    teacherName,
+    studentName,
+    groupTitle,
+    subject,
+    dashboardUrl,
+  });
+  return sendEmail({
+    to: teacherEmail,
+    subject: `قبل الطالب ${studentName} دعوة الانضمام إلى ${groupTitle} - إديو سنتر`,
+    html,
+  });
+};
+
+export const sendInvitationRejectedEmail = async (
+  teacherName: string,
+  teacherEmail: string,
+  studentName: string,
+  groupTitle: string,
+  dashboardUrl: string
+): Promise<boolean> => {
+  const html = await renderTemplate("invitation-rejected", {
+    teacherName,
+    studentName,
+    groupTitle,
+    dashboardUrl,
+  });
+  return sendEmail({
+    to: teacherEmail,
+    subject: `رفض الطالب ${studentName} دعوة الانضمام إلى ${groupTitle} - إديو سنتر`,
+    html,
+  });
+};
+
 export const sendStudentGroupWelcomeEmail = async (
   studentName: string,
   studentEmail: string,

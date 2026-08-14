@@ -216,6 +216,57 @@ router.put(
   }
 );
 
+// Advance student stage/grade (student only) - archives current placement
+// into academicHistory, then moves to the new stage/grade.
+router.post(
+  "/me/advance",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.user!._id.toString();
+      const { stage, grade } = req.body;
+
+      if (!stage || !grade) {
+        res.status(400).json({ message: "Stage and grade are required" });
+        return;
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      if (user.stage && user.grade) {
+        const now = new Date();
+        const academicYear = getAcademicYear();
+        const history = (user.academicHistory || []).filter(
+          (entry) => entry.grade !== user.grade || entry.stage !== user.stage
+        );
+        history.push({
+          stage: user.stage,
+          grade: user.grade,
+          year: academicYear,
+          startDate: user.updatedAt || undefined,
+          endDate: now,
+        });
+        user.academicHistory = history;
+      }
+
+      user.stage = stage;
+      user.grade = grade;
+      await user.save();
+
+      const updatedUser = await User.findById(userId).select("-__v").lean();
+      res.json({ success: true, message: "تم ترقية المرحلة الدراسية بنجاح", data: updatedUser });
+    } catch (error: any) {
+      console.error("Error advancing user:", error);
+      res.status(500).json({ message: "Error advancing user", error: error.message });
+    }
+  }
+);
+
 // Create new user (admin only)
 router.post(
   "/",
@@ -301,6 +352,12 @@ function generatePassword(): string {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
+}
+
+function getAcademicYear(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  return now.getMonth() >= 8 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
 }
 
 // Update user (user can update own profile, admin can update any user)
