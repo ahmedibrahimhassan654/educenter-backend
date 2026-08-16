@@ -170,11 +170,28 @@ router.get(
         return;
       }
 
-      const user = await User.findById(userId).select("-__v").lean();
-      if (!user) {
+      const userDoc = await User.findById(userId).select("-__v -passwordHash").lean();
+      if (!userDoc) {
         res.status(404).json({ message: "User not found" });
         return;
       }
+
+      const user = await (async () => {
+        if (userDoc.role === "PARENT") {
+          return await User.findById(userId)
+            .select("-__v -passwordHash")
+            .populate("students", "name email phone avatarUrl stage grade")
+            .lean();
+        }
+        if (userDoc.role === "STUDENT") {
+          return await User.findById(userId)
+            .select("-__v -passwordHash")
+            .populate("parentId", "name email phone avatarUrl")
+            .lean();
+        }
+        return userDoc;
+      })();
+
       const response = { success: true, data: user };
       await cache.set(`user:${userId}`, response, 120);
       res.json(response);
