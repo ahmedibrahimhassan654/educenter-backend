@@ -13,7 +13,8 @@ import {
   generateTeacherProfile,
   countTokens,
 } from "../services/aiService";
-import { parseDocument, isAllowedDocumentType, chunkText } from "../services/contentParser";
+import { parseDocument, isAllowedDocumentType, chunkText, getFileExtension } from "../services/contentParser";
+import { uploadFile, getPublicUrl } from "../services/storageService";
 import { processSupabaseVideoToTranscript } from "../services/videoProcessor";
 import { AIContent } from "../models/AIContent";
 import { ChatHistory } from "../models/ChatHistory";
@@ -158,20 +159,39 @@ router.post(
       }
 
       const userId = req.user!._id;
+      const userIdStr = userId.toString();
       const title = (req.body as any)?.title || file.originalname;
 
       try {
+        const fileExt = getFileExtension(file.mimetype) || "bin";
+        const fileName = `${userIdStr}-${Date.now()}.${fileExt}`;
+        const storagePath = `documents/${fileName}`;
+
+        // Upload the original file to Supabase Storage
+        const uploadOk = await uploadFile(storagePath, file.buffer, file.mimetype);
+        const fileUrl = getPublicUrl(storagePath);
+
         const aiContent = await AIContent.create({
           userId,
           type: "DOCUMENT",
           title,
           sourceType: "UPLOAD",
-          status: "PROCESSING",
+          status: uploadOk ? "PROCESSING" : "ERROR",
+          supabasePath: uploadOk ? storagePath : undefined,
+          error: uploadOk ? undefined : "Failed to upload file to storage",
           metadata: {
             fileType: file.mimetype,
             fileSize: file.size,
           },
         });
+
+        if (!uploadOk) {
+          res.status(500).json({
+            success: false,
+            message: "فشل تحميل الملف إلى التخزين",
+          });
+          return;
+        }
 
         const parsed = await parseDocument(file.buffer, file.mimetype);
 
@@ -191,6 +211,7 @@ router.post(
             status: aiContent.status,
             tokenCount: aiContent.tokenCount,
             pageCount: parsed.pageCount,
+            fileUrl,
             createdAt: aiContent.createdAt,
           },
         });

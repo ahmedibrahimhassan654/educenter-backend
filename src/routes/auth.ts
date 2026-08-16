@@ -190,7 +190,24 @@ router.post(
 
 router.get("/me", auth, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user: any = req.user!.toObject();
+    let query = User.findById(req.user!._id).select(
+      "-verificationData.documents -passwordHash"
+    );
+    if (req.user!.role === "PARENT") {
+      query = query.populate(
+        "students",
+        "name email phone avatarUrl stage grade"
+      );
+    } else if (req.user!.role === "STUDENT") {
+      query = query.populate("parentId", "name email phone avatarUrl");
+    }
+
+    const user: any = (await query)?.toObject();
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
     const documents = user.verificationData?.documents;
 
     if (Array.isArray(documents)) {

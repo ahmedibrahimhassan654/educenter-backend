@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تم رفض طلب الربط - إديو سنتر</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f3f4f6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); max-width: 600px; width: 100%;">
+          <%- include('partials/header', { icon: "ℹ️", title: "تم رفض طلب الربط", subtitle: "إديو سنتر", headerColor: "#d97706", headerColorEnd: "#f59e0b" }) %>
+          <tr>
+            <td style="padding: 40px;">
+              <div style="text-align: center; margin-bottom: 32px;">
+                <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">مرحباً <%= senderName %>! 👋</h2>
+                <p style="color: #4b5563; margin: 0; font-size: 18px; line-height: 1.7;">
+                  نود إعلامك أن <strong style="color: #d97706;"><%= targetName %></strong> رفض طلب ربط الحسابات.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <%- include('partials/footer') %>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

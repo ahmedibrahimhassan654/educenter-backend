@@ -5,7 +5,7 @@ export interface INotification extends Document {
   title: string;
   message: string;
   type: "INFO" | "SUCCESS" | "WARNING" | "ERROR" | "SYSTEM";
-  category: "GENERAL" | "USER" | "PAYMENT" | "GROUP" | "SESSION" | "ATTENDANCE" | "SYSTEM";
+  category: "GENERAL" | "USER" | "PAYMENT" | "GROUP" | "SESSION" | "ATTENDANCE" | "SYSTEM" | "FAMILY";
   isRead: boolean;
   link?: string;
   metadata?: Record<string, any>;
@@ -38,7 +38,7 @@ const notificationSchema = new Schema<INotification>(
     },
     category: {
       type: String,
-      enum: ["GENERAL", "USER", "PAYMENT", "GROUP", "SESSION", "ATTENDANCE", "SYSTEM"],
+      enum: ["GENERAL", "USER", "PAYMENT", "GROUP", "SESSION", "ATTENDANCE", "SYSTEM", "FAMILY"],
       default: "GENERAL",
     },
     isRead: {

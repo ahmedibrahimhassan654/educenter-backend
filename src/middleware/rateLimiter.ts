@@ -87,3 +87,16 @@ export const registerLimiter = rateLimit({
     message: "لقد تجاوزت عدد محاولات التسجيل. حاول مرة أخرى بعد ١٥ دقيقة.",
   },
 });
+
+/** Family invitation sending - prevent spamming other users */
+export const familyInvitationLimiter = rateLimit({
+  ...common,
+  limit: 10,
+  keyGenerator: (req: Request) => {
+    const userId = (req as any).user?._id?.toString();
+    return userId || ipKeyGenerator(req.ip || "");
+  },
+  message: {
+    message: "لقد تجاوزت عدد الدعوات المسموح بها. حاول مرة أخرى بعد ١٥ دقيقة.",
+  },
+});

@@ -1,4 +1,12 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.js";
+import { getDocument, GlobalWorkerOptions, VerbosityLevel } from "pdfjs-dist";
+
+// Suppress non-error warnings from pdfjs-dist (e.g. canvas / DOMMatrix / Path2D
+// polyfill warnings). We only need text extraction, not canvas rendering, so
+// the optional "canvas" dependency is not required.
+// setVerbosityLevel is exported at runtime but not in the TS type declarations.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pdfjsMod = require("pdfjs-dist");
+pdfjsMod.setVerbosityLevel?.(VerbosityLevel.ERRORS);
 
 const ALLOWED_DOCUMENT_TYPES: Record<string, string> = {
   "application/pdf": "pdf",

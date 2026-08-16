@@ -230,3 +230,68 @@ export const sendStudentGroupWelcomeEmail = async (
     html,
   });
 };
+
+const FAMILY_ROLE_LABELS: Record<string, string> = {
+  PARENT: "ولي أمر",
+  STUDENT: "طالب",
+};
+
+export const sendFamilyInvitationEmail = async (
+  targetName: string,
+  targetEmail: string,
+  senderName: string,
+  senderRole: string,
+  loginUrl: string,
+  message?: string
+): Promise<boolean> => {
+  const html = await renderTemplate("family-invitation", {
+    targetName,
+    senderName,
+    senderRoleLabel: FAMILY_ROLE_LABELS[senderRole] || senderRole,
+    loginUrl,
+    message,
+  });
+  return sendEmail({
+    to: targetEmail,
+    subject: `طلب ربط حساب جديد من ${senderName} - إديو سنتر`,
+    html,
+  });
+};
+
+export const sendFamilyInvitationAcceptedEmail = async (
+  senderName: string,
+  senderEmail: string,
+  targetName: string,
+  targetRole: string,
+  dashboardUrl: string
+): Promise<boolean> => {
+  const html = await renderTemplate("family-invitation-accepted", {
+    senderName,
+    targetName,
+    targetRoleLabel: FAMILY_ROLE_LABELS[targetRole] || targetRole,
+    dashboardUrl,
+  });
+  return sendEmail({
+    to: senderEmail,
+    subject: `قبل ${targetName} طلب ربط الحسابات - إديو سنتر`,
+    html,
+  });
+};
+
+export const sendFamilyInvitationRejectedEmail = async (
+  senderName: string,
+  senderEmail: string,
+  targetName: string,
+  targetRole: string
+): Promise<boolean> => {
+  const html = await renderTemplate("family-invitation-rejected", {
+    senderName,
+    targetName,
+    targetRoleLabel: FAMILY_ROLE_LABELS[targetRole] || targetRole,
+  });
+  return sendEmail({
+    to: senderEmail,
+    subject: `رفض ${targetName} طلب ربط الحسابات - إديو سنتر`,
+    html,
+  });
+};

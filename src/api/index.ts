@@ -22,6 +22,7 @@ import notificationRoutes from "../routes/notifications";
 import verificationRoutes from "../routes/verification";
 import aiRoutes from "../routes/ai";
 import settingsRoutes from "../routes/settings";
+import familyRoutes from "../routes/family";
 import { cache } from "../services/cache";
 import { auth } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
@@ -161,6 +162,7 @@ app.use("/api/sessions", sessionRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/curriculum", curriculumRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/family", familyRoutes);
 
 // Admin routes
 app.use("/api/admin/curriculum", adminCurriculumRoutes);
