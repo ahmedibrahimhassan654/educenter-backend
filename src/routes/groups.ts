@@ -7,11 +7,12 @@ import { Purchase } from "../models/Purchase";
 import { Session } from "../models/Session";
 import { Attendance } from "../models/Attendance";
 import { Settings } from "../models/Settings";
+import { Lesson } from "../models/Lesson";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { createNotification } from "../services/notificationService";
 import { cache } from "../services/cache";
-import { uploadFile, getPublicUrl } from "../services/storageService";
+import { uploadFile, deleteFile, getPublicUrl } from "../services/storageService";
 import {
   sendGroupInvitationEmail,
   sendCredentialsEmail,
@@ -35,6 +36,12 @@ const videoUpload = multer({
       cb(new Error("Only video files are allowed"));
     }
   },
+});
+
+// Multer config for lesson attachments (videos, documents, images; max 200MB)
+const lessonUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 200 * 1024 * 1024 },
 });
 
 // Normalize learningPoints into a clean list of non-empty strings
@@ -644,7 +651,7 @@ router.get(
     try {
       const group = await Group.findById(req.params.id)
         .populate("teacherId", "name email phone verificationData verificationStatus")
-        .populate("students", "name email phone");
+        .populate("students", "name email phone avatarUrl stage grade");
 
       if (!group) {
         res.status(404).json({ message: "Group not found" });
@@ -1874,6 +1881,297 @@ router.delete(
 
 export default router;
 
+// ============================================================
+// Lessons
+// ============================================================
+
+// Upload an attachment (video / document) for a lesson (teacher, group owner).
+// Videos go to the group-videos bucket, everything else to documents.
+router.post(
+  "/:id/lessons/upload",
+  auth,
+  requireRole("TEACHER"),
+  lessonUpload.single("file"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (!req.file) {
+        res.status(400).json({ message: "No file uploaded" });
+        return;
+      }
+
+      const userId = req.user!._id.toString();
+      const fileExt = req.file.originalname.split(".").pop() || "bin";
+      const safeExt = fileExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8);
+      const fileName = `${userId}-${Date.now()}.${safeExt}`;
+      const isVideo = req.file.mimetype.startsWith("video/");
+      const filePath = `${isVideo ? "group-videos" : "documents"}/lessons/${fileName}`;
+
+      const uploadResult = await uploadFile(filePath, req.file.buffer, req.file.mimetype);
+      if (!uploadResult) {
+        res.status(500).json({ message: "Failed to upload file" });
+        return;
+      }
+
+      res.json({ success: true, url: getPublicUrl(filePath), mimeType: req.file.mimetype });
+    } catch (error: any) {
+      console.error("Lesson upload error:", error);
+      if (error instanceof multer.MulterError) {
+        if (error.code === "LIMIT_FILE_SIZE") {
+          res.status(400).json({ message: "حجم الملف يجب أن يكون أقل من 200 ميجابايت" });
+          return;
+        }
+      }
+      res.status(500).json({ message: "Error uploading file", error: error.message });
+    }
+  }
+);
+
+// Create a lesson in a group (teacher, group owner).
+// LIVE: meetingLink required. RECORDED: videoUrl. DOCUMENT: documentUrl. LINK: referenceUrl.
+router.post(
+  "/:id/lessons",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { title, description, type, meetingLink, videoUrl, documentUrl, referenceUrl, scheduleDay, scheduleTime } = req.body;
+      const group = await Group.findById(req.params.id);
+
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+      if (!title || !title.trim()) {
+        res.status(400).json({ message: "عنوان الدرس مطلوب" });
+        return;
+      }
+      if (!["LIVE", "RECORDED", "DOCUMENT", "LINK"].includes(type)) {
+        res.status(400).json({ message: "نوع الدرس غير صالح" });
+        return;
+      }
+
+      if (type === "LIVE" && (!meetingLink || !meetingLink.trim())) {
+        res.status(400).json({ message: "رابط اجتماع الدرس المباشر مطلوب" });
+        return;
+      }
+      if (type === "LIVE" && (!scheduleDay || !scheduleTime)) {
+        res.status(400).json({ message: "يرجى اختيار يوم ووقت الحصة من جدول المجموعة" });
+        return;
+      }
+      if (type === "RECORDED" && (!videoUrl || !videoUrl.trim())) {
+        res.status(400).json({ message: "رابط أو ملف الفيديو المسجل مطلوب" });
+        return;
+      }
+      if (type === "DOCUMENT" && (!documentUrl || !documentUrl.trim())) {
+        res.status(400).json({ message: "ملف المستند مطلوب" });
+        return;
+      }
+      if (type === "LINK" && (!referenceUrl || !referenceUrl.trim())) {
+        res.status(400).json({ message: "الرابط المرجعي مطلوب" });
+        return;
+      }
+
+      const lesson = await Lesson.create({
+        groupId: group._id,
+        teacherId: req.user!._id,
+        title: title.trim(),
+        description: description?.trim() || "",
+        type,
+        meetingLink: type === "LIVE" ? meetingLink.trim() : undefined,
+        videoUrl: type === "RECORDED" ? videoUrl.trim() : undefined,
+        documentUrl: type === "DOCUMENT" ? documentUrl.trim() : undefined,
+        referenceUrl: type === "LINK" ? referenceUrl.trim() : undefined,
+        scheduleDay: type === "LIVE" ? scheduleDay.trim() : undefined,
+        scheduleTime: type === "LIVE" ? scheduleTime.trim() : undefined,
+        scheduledAt: type === "LIVE" ? nextScheduledDate(scheduleDay, scheduleTime) : undefined,
+      });
+
+      // Notify enrolled students about the new lesson
+      const students = await User.find({ _id: { $in: group.students } }).select("_id");
+      for (const student of students) {
+        await createNotification({
+          userId: student._id,
+          title: "درس جديد في مجموعتك",
+          message: `تمت إضافة "${lesson.title}" إلى مجموعة ${group.title}`,
+          type: "INFO",
+          category: "GROUP",
+          link: `/student/my-groups/${group._id}`,
+        });
+      }
+
+      await cache.delete(`group:${group._id}`);
+      await cache.deleteByPattern(`lessons:${group._id}:*`);
+
+      res.status(201).json({ success: true, data: lesson });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating lesson", error: error.message });
+    }
+  }
+);
+
+// List lessons of a group (teacher owner or enrolled student).
+router.get(
+  "/:id/lessons",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const isTeacher = group.teacherId.toString() === req.user!._id.toString();
+      const isStudent = (group.students || []).some(
+        (s: any) => s.toString() === req.user!._id.toString()
+      );
+      if (!isTeacher && !isStudent && req.user!.role !== "ADMIN") {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const lessons = await Lesson.find({ groupId: group._id })
+        .sort({ createdAt: -1 })
+        .lean();
+
+      res.json({ success: true, data: lessons });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching lessons", error: error.message });
+    }
+  }
+);
+
+// Update a lesson (teacher, group owner).
+router.put(
+  "/:id/lessons/:lessonId",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { title, description, type, meetingLink, videoUrl, documentUrl, referenceUrl, scheduleDay, scheduleTime } = req.body;
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const lesson = await Lesson.findOne({ _id: req.params.lessonId, groupId: group._id });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const newType = type || lesson.type;
+      if (newType === "LIVE" && meetingLink !== undefined && !meetingLink.trim()) {
+        res.status(400).json({ message: "رابط اجتماع الدرس المباشر مطلوب" });
+        return;
+      }
+      if (newType === "LIVE" && ((scheduleDay !== undefined && !scheduleDay) || (scheduleTime !== undefined && !scheduleTime))) {
+        res.status(400).json({ message: "يرجى اختيار يوم ووقت الحصة من جدول المجموعة" });
+        return;
+      }
+      if (newType === "RECORDED" && videoUrl !== undefined && !videoUrl.trim()) {
+        res.status(400).json({ message: "رابط أو ملف الفيديو المسجل مطلوب" });
+        return;
+      }
+      if (newType === "DOCUMENT" && documentUrl !== undefined && !documentUrl.trim()) {
+        res.status(400).json({ message: "ملف المستند مطلوب" });
+        return;
+      }
+      if (newType === "LINK" && referenceUrl !== undefined && !referenceUrl.trim()) {
+        res.status(400).json({ message: "الرابط المرجعي مطلوب" });
+        return;
+      }
+
+      if (title !== undefined) lesson.title = title.trim();
+      if (description !== undefined) lesson.description = description.trim();
+      if (type !== undefined) lesson.type = newType;
+      if (meetingLink !== undefined) lesson.meetingLink = meetingLink.trim();
+      if (videoUrl !== undefined) lesson.videoUrl = videoUrl.trim();
+      if (documentUrl !== undefined) lesson.documentUrl = documentUrl.trim();
+      if (referenceUrl !== undefined) lesson.referenceUrl = referenceUrl.trim();
+      if (scheduleDay !== undefined) lesson.scheduleDay = scheduleDay.trim();
+      if (scheduleTime !== undefined) lesson.scheduleTime = scheduleTime.trim();
+      if (scheduleDay !== undefined || scheduleTime !== undefined) {
+        lesson.scheduledAt = nextScheduledDate(
+          lesson.scheduleDay || "",
+          lesson.scheduleTime || ""
+        );
+      }
+
+      await lesson.save();
+
+      await cache.delete(`group:${group._id}`);
+      await cache.deleteByPattern(`lessons:${group._id}:*`);
+
+      res.json({ success: true, data: lesson });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating lesson", error: error.message });
+    }
+  }
+);
+
+// Delete a lesson (teacher, group owner).
+router.delete(
+  "/:id/lessons/:lessonId",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const lesson = await Lesson.findOneAndDelete({ _id: req.params.lessonId, groupId: group._id });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      // Best-effort cleanup of the stored attachment file
+      if (lesson.documentUrl || lesson.videoUrl) {
+        const stored = lesson.documentUrl || lesson.videoUrl || "";
+        try {
+          await deleteFile(stored);
+        } catch (e) {
+          console.warn("Failed to delete lesson file:", e);
+        }
+      }
+
+      await cache.delete(`group:${group._id}`);
+      await cache.deleteByPattern(`lessons:${group._id}:*`);
+
+      res.json({ success: true, message: "Lesson deleted" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting lesson", error: error.message });
+    }
+  }
+);
+
 function generatePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%";
   let password = "";
@@ -1881,4 +2179,29 @@ function generatePassword(): string {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
+}
+
+// Compute the next occurrence of an Arabic weekday + "HH:MM" time as a Date.
+const ARABIC_DAY_TO_JS: Record<string, number> = {
+  الأحد: 0,
+  الاثنين: 1,
+  الثلاثاء: 2,
+  الأربعاء: 3,
+  الخميس: 4,
+  الجمعة: 5,
+  السبت: 6,
+};
+
+function nextScheduledDate(day: string, time: string): Date {
+  const target = ARABIC_DAY_TO_JS[day] ?? new Date().getDay();
+  const [hours = 0, minutes = 0] = time.split(":").map(Number);
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(hours || 0, minutes || 0, 0, 0);
+  let diff = (target - next.getDay() + 7) % 7;
+  next.setDate(next.getDate() + diff);
+  if (next.getTime() < now.getTime()) {
+    next.setDate(next.getDate() + 7);
+  }
+  return next;
 }
