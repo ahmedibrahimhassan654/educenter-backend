@@ -1314,12 +1314,40 @@ router.get(
         studentId: req.user!._id,
         initiator: "TEACHER",
       })
-        .populate("groupId", "title subject grade stage scheduleDays totalSessionPrice")
+        .populate("groupId", "title subject grade stage scheduleDays totalSessionPrice students")
         .populate("teacherId", "name email")
         .sort({ createdAt: -1 })
         .lean();
 
-      res.json({ success: true, data: invitations });
+      // A student may have multiple invitation records for the same group
+      // (e.g. re-added after removal). Deduplicate by group keeping the
+      // latest record, and flag whether the student is still a member so
+      // stale "added" records can be shown correctly on the frontend.
+      const studentIdStr = req.user!._id.toString();
+      const seen = new Set<string>();
+      const data: any[] = [];
+      for (const inv of invitations as any[]) {
+        const gid = inv.groupId?._id?.toString();
+        if (!gid || seen.has(gid)) continue;
+        seen.add(gid);
+        const isMember = (inv.groupId?.students || []).some(
+          (s: any) => (s?._id || s)?.toString() === studentIdStr
+        );
+        const { students, ...groupInfo } = inv.groupId || {};
+        data.push({
+          _id: inv._id,
+          groupId: groupInfo,
+          teacherId: inv.teacherId,
+          stage: inv.stage,
+          grade: inv.grade,
+          subject: inv.subject,
+          status: inv.status,
+          createdAt: inv.createdAt,
+          isMember,
+        });
+      }
+
+      res.json({ success: true, data });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching invitations", error: error.message });
     }
