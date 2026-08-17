@@ -11,6 +11,8 @@ export interface IGroup extends Document {
   totalSessionPrice: number;
   maxStudentsPerGroup: number;
   googleMeetLink: string;
+  learningPoints: string[];
+  descriptionVideo: string;
   scheduleDays: string[];
   students: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -62,6 +64,16 @@ const groupSchema = new Schema<IGroup>(
       min: 1,
     },
     googleMeetLink: {
+      type: String,
+      trim: true,
+    },
+    learningPoints: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    descriptionVideo: {
       type: String,
       trim: true,
     },

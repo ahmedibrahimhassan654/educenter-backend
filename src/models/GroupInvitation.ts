@@ -5,6 +5,8 @@ export interface IGroupInvitation extends Document {
   studentId: mongoose.Types.ObjectId;
   teacherId: mongoose.Types.ObjectId;
   status: "PENDING" | "ACCEPTED" | "REJECTED";
+  // Who started the flow: TEACHER = invitation to a student, STUDENT = join request.
+  initiator: "TEACHER" | "STUDENT";
   stage: string;
   grade: string;
   subject: string;
@@ -36,6 +38,11 @@ const groupInvitationSchema = new Schema<IGroupInvitation>(
       type: String,
       enum: ["PENDING", "ACCEPTED", "REJECTED"],
       default: "PENDING",
+    },
+    initiator: {
+      type: String,
+      enum: ["TEACHER", "STUDENT"],
+      default: "TEACHER",
     },
     stage: {
       type: String,

@@ -2,6 +2,7 @@ import { config } from "../config/env";
 
 export const DOCUMENTS_BUCKET = "documents";
 export const AVATARS_BUCKET = "avatars";
+export const GROUP_VIDEOS_BUCKET = "group-videos";
 
 // Long enough for an admin to review a submission, short enough that a leaked
 // link stops working quickly.
@@ -93,6 +94,19 @@ export async function createSignedUrls(
   );
 }
 
+function bucketFor(filePath: string): string {
+  if (filePath.startsWith("avatars/")) return AVATARS_BUCKET;
+  if (filePath.startsWith("group-videos/")) return GROUP_VIDEOS_BUCKET;
+  return DOCUMENTS_BUCKET;
+}
+
+function stripBucketPrefix(filePath: string): string {
+  return filePath
+    .replace(/^avatars\//, "")
+    .replace(/^group-videos\//, "")
+    .replace(/^documents\//, "");
+}
+
 /**
  * Upload a file to Supabase Storage
  */
@@ -102,8 +116,8 @@ export async function uploadFile(
   contentType: string
 ): Promise<boolean> {
   try {
-    const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
-    const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+    const bucket = bucketFor(filePath);
+    const path = stripBucketPrefix(filePath);
     
     const response = await fetch(
       `${config.supabaseUrl}/storage/v1/object/${bucket}/${path}`,
@@ -134,8 +148,8 @@ export async function uploadFile(
  */
 export async function deleteFile(filePath: string): Promise<boolean> {
   try {
-    const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
-    const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+    const bucket = bucketFor(filePath);
+    const path = stripBucketPrefix(filePath);
     
     const response = await fetch(
       `${config.supabaseUrl}/storage/v1/object/${bucket}/${path}`,
@@ -159,7 +173,7 @@ export async function deleteFile(filePath: string): Promise<boolean> {
  * Get public URL for a file in Supabase Storage
  */
 export function getPublicUrl(filePath: string): string {
-  const bucket = filePath.startsWith("avatars/") ? AVATARS_BUCKET : DOCUMENTS_BUCKET;
-  const path = filePath.replace(/^avatars\//, "").replace(/^documents\//, "");
+  const bucket = bucketFor(filePath);
+  const path = stripBucketPrefix(filePath);
   return `${config.supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 }

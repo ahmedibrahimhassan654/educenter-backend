@@ -236,6 +236,41 @@ const FAMILY_ROLE_LABELS: Record<string, string> = {
   STUDENT: "طالب",
 };
 
+export const sendParentGroupWelcomeEmail = async (
+  parentName: string,
+  parentEmail: string,
+  password: string | undefined,
+  studentName: string,
+  groupTitle: string,
+  subject: string,
+  teacherName: string,
+  scheduleDays: string[],
+  stage: string,
+  grade: string,
+  loginUrl: string
+): Promise<boolean> => {
+  const scheduleText = scheduleDays.length > 0 ? scheduleDays.join("، ") : "غير محدد";
+
+  const html = await renderTemplate("parent-group-welcome", {
+    parentName,
+    parentEmail,
+    password,
+    studentName,
+    groupTitle,
+    subject,
+    teacherName,
+    scheduleText,
+    stage,
+    grade,
+    loginUrl,
+  });
+  return sendEmail({
+    to: parentEmail,
+    subject: `تم ربطك كولي أمر - حسابك ومجموعة ${groupTitle} | إديو سنتر`,
+    html,
+  });
+};
+
 export const sendFamilyInvitationEmail = async (
   targetName: string,
   targetEmail: string,
