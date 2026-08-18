@@ -13,13 +13,6 @@ export const SIGNED_URL_TTL_SECONDS = Number(
   process.env.SIGNED_URL_TTL_SECONDS || 15 * 60
 );
 
-// Videos are played back over a longer window (streaming + seeking), so they
-// get a more generous TTL than documents. Capped at Supabase's 7-day max.
-export const VIDEO_SIGNED_URL_TTL_SECONDS = Math.min(
-  Number(process.env.VIDEO_SIGNED_URL_TTL_SECONDS || 2 * 60 * 60),
-  7 * 24 * 60 * 60
-);
-
 const PUBLIC_PREFIX = "/storage/v1/object/public/";
 
 /**
@@ -36,11 +29,22 @@ export function toStoragePath(stored: string): string | null {
     return stored.replace(/^\/+/, "").replace(`${DOCUMENTS_BUCKET}/`, "");
   }
 
-  const index = stored.indexOf(PUBLIC_PREFIX);
-  if (index === -1) return null;
+  const publicIndex = stored.indexOf(PUBLIC_PREFIX);
+  const signMarker = "/storage/v1/object/sign/documents/";
+  const signIndex = stored.indexOf(signMarker);
 
-  const afterPrefix = stored.slice(index + PUBLIC_PREFIX.length);
-  const [bucket, ...rest] = afterPrefix.split("/");
+  let bucket: string;
+  let rest: string[];
+
+  if (publicIndex !== -1) {
+    const afterPrefix = stored.slice(publicIndex + PUBLIC_PREFIX.length);
+    [bucket, ...rest] = afterPrefix.split("/");
+  } else if (signIndex !== -1) {
+    bucket = DOCUMENTS_BUCKET;
+    rest = stored.slice(signIndex + signMarker.length).split("/");
+  } else {
+    return null;
+  }
 
   if (bucket !== DOCUMENTS_BUCKET || rest.length === 0) return null;
 
@@ -101,43 +105,6 @@ async function signObject(
     console.error("Error creating signed URL:", error);
     return null;
   }
-}
-
-/**
- * Create a long-lived signed download URL for a private lesson video so the
- * browser can stream it straight from Supabase instead of through the backend.
- * Returns null for external links, proxy URLs, or signing failures.
- */
-export async function createSignedVideoUrl(
-  storedPathOrUrl: string,
-  expiresIn: number = VIDEO_SIGNED_URL_TTL_SECONDS
-): Promise<string | null> {
-  const path = toStorageVideoPath(storedPathOrUrl);
-  if (!path) return null;
-
-  return signObject(
-    LESSON_VIDEOS_BUCKET,
-    path.replace(`${LESSON_VIDEOS_BUCKET}/`, ""),
-    expiresIn
-  );
-}
-
-/**
- * Create a signed download URL for a private session recording.
- * Returns null for external links or signing failures.
- */
-export async function createSignedSessionRecordingUrl(
-  storedPathOrUrl: string,
-  expiresIn: number = VIDEO_SIGNED_URL_TTL_SECONDS
-): Promise<string | null> {
-  const path = toStorageSessionPath(storedPathOrUrl);
-  if (!path) return null;
-
-  return signObject(
-    SESSION_RECORDINGS_BUCKET,
-    path.replace(`${SESSION_RECORDINGS_BUCKET}/`, ""),
-    expiresIn
-  );
 }
 
 /** Sign a list of stored documents, preserving order. */

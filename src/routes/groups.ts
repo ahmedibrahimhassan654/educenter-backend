@@ -5,6 +5,7 @@ import { Group } from "../models/Group";
 import { User } from "../models/User";
 import { GroupInvitation } from "../models/GroupInvitation";
 import { Purchase } from "../models/Purchase";
+import { LessonAccess } from "../models/LessonAccess";
 import { Session } from "../models/Session";
 import { Attendance } from "../models/Attendance";
 import { Settings } from "../models/Settings";
@@ -18,16 +19,14 @@ import {
   uploadFile,
   deleteFile,
   getPublicUrl,
-  createSignedUrl,
   createSignedUploadUrl,
-  createSignedVideoUrl,
   toStoragePath,
-  isStorageVideoPath,
   toStorageVideoPath,
   toStorageSessionPath,
   toStorageGroupVideoPath,
   isProxyVideoUrl,
   fetchStorageObject,
+  DOCUMENTS_BUCKET,
   LESSON_VIDEOS_BUCKET,
 } from "../services/storageService";
 import {
@@ -106,6 +105,95 @@ function normalizeLessonList(value: unknown, isFile: boolean): string[] {
 // was reached on (so cookies for that host are sent with the media request).
 function lessonVideoProxyUrl(req: AuthRequest, groupId: any, lessonId: any): string {
   return `${req.protocol}://${req.get("host")}/api/groups/${groupId}/lessons/${lessonId}/video`;
+}
+
+// Absolute URL for the authenticated lesson document proxy (?index= selects
+// which document in the folded documents[] array to stream).
+function lessonDocumentProxyUrl(
+  req: AuthRequest,
+  groupId: any,
+  lessonId: any,
+  index: number
+): string {
+  return `${req.protocol}://${req.get("host")}/api/groups/${groupId}/lessons/${lessonId}/document?index=${index}`;
+}
+
+// Apply the authenticated-proxy transform to a lesson object so stored private
+// files are only reachable via authed endpoints. Expects documents[] and
+// referenceLinks[] to already be folded. External links pass through.
+function transformLessonForDelivery(
+  req: AuthRequest,
+  groupId: any,
+  lesson: any
+): any {
+  const baseProxy = lessonVideoProxyUrl(req, groupId, lesson._id);
+  if (lesson.videoUrl && toStorageVideoPath(lesson.videoUrl)) {
+    lesson.videoUrl = baseProxy;
+  }
+  if (
+    lesson.recordedLiveVideoUrl &&
+    toStorageVideoPath(lesson.recordedLiveVideoUrl)
+  ) {
+    lesson.recordedLiveVideoUrl = `${baseProxy}?field=recordedLiveVideoUrl`;
+  }
+  if (lesson.recordedVideoUrl && toStorageVideoPath(lesson.recordedVideoUrl)) {
+    lesson.recordedVideoUrl = `${baseProxy}?field=recordedVideoUrl`;
+  }
+  if (Array.isArray(lesson.documents)) {
+    for (let i = 0; i < lesson.documents.length; i++) {
+      const doc = lesson.documents[i];
+      if (!doc) continue;
+      if (toStoragePath(doc)) {
+        lesson.documents[i] = lessonDocumentProxyUrl(req, groupId, lesson._id, i);
+      }
+    }
+  }
+  if (lesson.documentUrl && toStoragePath(lesson.documentUrl)) {
+    lesson.documentUrl = lessonDocumentProxyUrl(req, groupId, lesson._id, 0);
+  }
+  return lesson;
+}
+
+// Decrement one remaining credit from the student's oldest LECTURES purchase
+// for the group. Returns false when there are no credits left to consume.
+async function consumeLessonCredit(studentId: any, groupId: any): Promise<boolean> {
+  const purchase = await Purchase.findOne({
+    groupId,
+    studentId,
+    type: "LECTURES",
+    remainingLectures: { $gt: 0 },
+  }).sort({ createdAt: 1 });
+  if (!purchase) return false;
+  purchase.remainingLectures = Math.max(
+    0,
+    (purchase.remainingLectures || 0) - 1
+  );
+  await purchase.save();
+  return true;
+}
+
+// True when a value is this platform's authenticated lesson document proxy URL.
+function isDocumentProxyUrl(value: string): boolean {
+  return (
+    typeof value === "string" &&
+    /\/api\/groups\/[^/]+\/lessons\/[^/]+\/document(?:\?|$)/.test(value)
+  );
+}
+
+// True when a stored file value is an external URL that points outside this
+// platform's storage (YouTube, Google Drive, ...). Private lesson videos and
+// documents must live inside our own private buckets, so external links are
+// rejected instead of persisted.
+function isExternalStoredUrl(value: string | undefined): boolean {
+  if (!value) return false;
+  const trimmed = value.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return false;
+  return (
+    !toStorageVideoPath(trimmed) &&
+    !toStoragePath(trimmed) &&
+    !isProxyVideoUrl(trimmed) &&
+    !isDocumentProxyUrl(trimmed)
+  );
 }
 
 function timeToMinutes(timeStr: string): number {
@@ -2109,6 +2197,18 @@ router.post(
         return;
       }
 
+      // Private lesson content must live inside our own buckets; external links
+      // (YouTube, Google Drive, ...) are not allowed for videos or documents.
+      if (isExternalStoredUrl(recordedVideoUrl)) {
+        res.status(400).json({ message: "الروابط الخارجية للفيديوهات غير مسموحة — ارفع الفيديو داخل المنصة" });
+        return;
+      }
+      const incomingDocuments = Array.isArray(documents) ? documents : [];
+      if (incomingDocuments.some((d: string) => isExternalStoredUrl(d))) {
+        res.status(400).json({ message: "الروابط الخارجية للمستندات غير مسموحة — ارفع الملف داخل المنصة" });
+        return;
+      }
+
       const lesson = await Lesson.create({
         groupId: group._id,
         teacherId: req.user!._id,
@@ -2172,40 +2272,72 @@ router.get(
         .sort({ createdAt: -1 })
         .lean();
 
-      // Students only get lesson content once they have an active entitlement
-      // (remaining lectures credits or an active monthly subscription).
+      // Students only get lesson content once they have paid for that specific
+      // lesson (opened it). The list exposes lesson metadata + which lessons
+      // are already unlocked; the content itself is delivered by the
+      // POST /:id/lessons/:lessonId/open endpoint, which consumes one credit.
+      const isPrivileged = isTeacher || req.user!.role === "ADMIN";
       let hasAccess = true;
-      if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
+      let remainingCredits = 0;
+      let monthlyActive = false;
+      if (isStudent && !isPrivileged) {
         const purchases = await Purchase.find({
           groupId: group._id,
           studentId: req.user!._id,
         }).lean();
-        hasAccess = computeEntitlement(purchases).hasAccess;
-        if (!hasAccess) {
-          for (const lesson of lessons) {
-            delete lesson.description;
-            delete lesson.meetingLink;
-            delete lesson.videoUrl;
-            delete lesson.documentUrl;
-            delete lesson.referenceUrl;
-            delete lesson.recordedLiveVideoUrl;
-            delete lesson.recordedVideoUrl;
-            delete lesson.documents;
-            delete lesson.referenceLinks;
-          }
+        const entitlement = computeEntitlement(purchases);
+        hasAccess = entitlement.hasAccess;
+        remainingCredits = entitlement.remainingCredits;
+        monthlyActive = entitlement.monthlyActive;
+
+        const accesses = await LessonAccess.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        })
+          .select("lessonId")
+          .lean();
+        const openedIds = new Set(
+          accesses.map((a) => String((a as any).lessonId))
+        );
+
+        for (const lesson of lessons) {
+          (lesson as any).opened = openedIds.has(String(lesson._id));
+          (lesson as any).hasRecordedVideo = Boolean(
+            lesson.recordedLiveVideoUrl ||
+              lesson.recordedVideoUrl ||
+              lesson.videoUrl
+          );
+          (lesson as any).hasDocuments = Boolean(
+            lesson.documentUrl ||
+              (Array.isArray(lesson.documents) && lesson.documents.length > 0)
+          );
+          (lesson as any).hasLinks = Boolean(
+            lesson.referenceUrl ||
+              (Array.isArray(lesson.referenceLinks) && lesson.referenceLinks.length > 0)
+          );
+          delete lesson.description;
+          delete lesson.meetingLink;
+          delete lesson.videoUrl;
+          delete lesson.documentUrl;
+          delete lesson.referenceUrl;
+          delete lesson.recordedLiveVideoUrl;
+          delete lesson.recordedVideoUrl;
+          delete lesson.documents;
+          delete lesson.referenceLinks;
         }
       }
 
-      // Present a unified shape to clients: every lesson exposes documents[] and
-      // referenceLinks[] (legacy single-value fields are folded into the arrays),
-      // so the frontend never has to special-case old lessons.
-      for (const lesson of lessons) {
-        if (hasAccess) {
-          lesson.documents = Array.isArray(lesson.documents) && lesson.documents.length
-            ? lesson.documents
-            : lesson.documentUrl
-            ? [lesson.documentUrl]
-            : [];
+      // Present a unified shape to privileged clients: every lesson exposes
+      // documents[] and referenceLinks[] (legacy single-value fields are folded
+      // into the arrays), so the frontend never has to special-case old lessons.
+      if (isPrivileged) {
+        for (const lesson of lessons) {
+          lesson.documents =
+            Array.isArray(lesson.documents) && lesson.documents.length
+              ? lesson.documents
+              : lesson.documentUrl
+              ? [lesson.documentUrl]
+              : [];
           lesson.referenceLinks =
             Array.isArray(lesson.referenceLinks) && lesson.referenceLinks.length
               ? lesson.referenceLinks
@@ -2215,53 +2347,130 @@ router.get(
         }
       }
 
-      // For authorized users, private lesson files are delivered through
-      // authenticated endpoints: videos via short-lived signed URLs so the
-      // browser streams them directly from Supabase, documents via signed URLs.
-      // External links pass through unchanged. If signing fails, videos fall
-      // back to the authenticated proxy route.
-      if (hasAccess) {
+      // For authorized users, private lesson files are delivered exclusively
+      // through authenticated endpoints — never via unauthenticated signed or
+      // public URLs. Videos use the video proxy route (?field= selects which
+      // video), documents use the document proxy route (?index= selects which
+      // file). External links pass through unchanged.
+      if (isPrivileged) {
         for (const lesson of lessons) {
-          if (lesson.videoUrl) {
-            const videoPath = toStorageVideoPath(lesson.videoUrl);
-            if (videoPath) {
-              lesson.videoUrl =
-                (await createSignedVideoUrl(lesson.videoUrl)) ??
-                lessonVideoProxyUrl(req, group._id, lesson._id);
-            }
-          }
-          if (lesson.recordedLiveVideoUrl) {
-            const videoPath = toStorageVideoPath(lesson.recordedLiveVideoUrl);
-            if (videoPath) {
-              lesson.recordedLiveVideoUrl =
-                (await createSignedVideoUrl(lesson.recordedLiveVideoUrl)) ??
-                `${lessonVideoProxyUrl(req, group._id, lesson._id)}?field=recordedLiveVideoUrl`;
-            }
-          }
-          if (lesson.recordedVideoUrl) {
-            const videoPath = toStorageVideoPath(lesson.recordedVideoUrl);
-            if (videoPath) {
-              lesson.recordedVideoUrl =
-                (await createSignedVideoUrl(lesson.recordedVideoUrl)) ??
-                `${lessonVideoProxyUrl(req, group._id, lesson._id)}?field=recordedVideoUrl`;
-            }
-          }
-          if (Array.isArray(lesson.documents)) {
-            for (let i = 0; i < lesson.documents.length; i++) {
-              const doc = lesson.documents[i];
-              if (!doc) continue;
-              if (toStoragePath(doc)) {
-                const signed = await createSignedUrl(doc);
-                if (signed) lesson.documents[i] = signed;
-              }
-            }
-          }
+          transformLessonForDelivery(req, group._id, lesson);
         }
       }
 
-      res.json({ success: true, data: lessons, hasAccess });
+      res.json({
+        success: true,
+        data: lessons,
+        hasAccess,
+        remainingCredits,
+        monthlyActive,
+      });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching lessons", error: error.message });
+    }
+  }
+);
+
+// A student opens a lesson. The first time, one LECTURES credit is consumed
+// (unless a monthly subscription is active); the lesson then stays unlocked
+// permanently for that student. The full lesson content — description, live
+// meeting link, recorded videos, documents and reference links — is only
+// returned here, never from the lessons list for students.
+router.post(
+  "/:id/lessons/:lessonId/open",
+  auth,
+  requireRole("STUDENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const isMember = (group.students || []).some(
+        (s: any) => s.toString() === req.user!._id.toString()
+      );
+      if (!isMember) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      }).lean();
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const purchases = await Purchase.find({
+        groupId: group._id,
+        studentId: req.user!._id,
+      }).lean();
+      const entitlement = computeEntitlement(purchases);
+
+      let opened = entitlement.monthlyActive;
+      let consumedCredit = false;
+
+      if (!opened) {
+        const access = await LessonAccess.findOne({
+          lessonId: lesson._id,
+          studentId: req.user!._id,
+        }).lean();
+        if (access) {
+          opened = true;
+        } else if (entitlement.remainingCredits > 0) {
+          const consumed = await consumeLessonCredit(req.user!._id, group._id);
+          if (!consumed) {
+            res.status(402).json({
+              message: "لا توجد حصص متبقية في رصيدك — اشترِ حصصاً لفتح هذا الدرس",
+            });
+            return;
+          }
+          await LessonAccess.create({
+            groupId: group._id,
+            lessonId: lesson._id,
+            studentId: req.user!._id,
+          });
+          opened = true;
+          consumedCredit = true;
+        } else {
+          res.status(402).json({
+            message: "لا توجد حصص متبقية في رصيدك — اشترِ حصصاً لفتح هذا الدرس",
+          });
+          return;
+        }
+      }
+
+      // Fold legacy single-value fields and apply the authenticated proxy
+      // transform so content is delivered exactly like the privileged list.
+      const lessonObj = lesson as any;
+      lessonObj.documents =
+        Array.isArray(lessonObj.documents) && lessonObj.documents.length
+          ? lessonObj.documents
+          : lessonObj.documentUrl
+          ? [lessonObj.documentUrl]
+          : [];
+      lessonObj.referenceLinks =
+        Array.isArray(lessonObj.referenceLinks) && lessonObj.referenceLinks.length
+          ? lessonObj.referenceLinks
+          : lessonObj.referenceUrl
+          ? [lessonObj.referenceUrl]
+          : [];
+      const delivered = transformLessonForDelivery(req, group._id, lessonObj);
+
+      res.json({
+        success: true,
+        data: delivered,
+        opened,
+        consumedCredit,
+        remainingCredits: entitlement.remainingCredits - (consumedCredit ? 1 : 0),
+        monthlyActive: entitlement.monthlyActive,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error opening lesson", error: error.message });
     }
   }
 );
@@ -2354,13 +2563,23 @@ router.get(
         return;
       }
 
-      // Students must hold an active entitlement (paid) to watch.
+      // Students must have opened (paid for) this lesson to watch, or hold an
+      // active monthly subscription. Group-level credits alone are not enough —
+      // opening a lesson consumes one credit and records per-lesson access.
       if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
         const purchases = await Purchase.find({
           groupId: group._id,
           studentId: req.user!._id,
         }).lean();
-        if (!computeEntitlement(purchases).hasAccess) {
+        let allowed = computeEntitlement(purchases).monthlyActive;
+        if (!allowed) {
+          const access = await LessonAccess.findOne({
+            lessonId: req.params.lessonId,
+            studentId: req.user!._id,
+          }).lean();
+          allowed = Boolean(access);
+        }
+        if (!allowed) {
           res.status(402).json({ message: "Payment required" });
           return;
         }
@@ -2422,6 +2641,119 @@ router.get(
       console.error("Lesson video proxy error:", error);
       if (!res.headersSent) {
         res.status(500).json({ message: "Error streaming video" });
+      } else {
+        res.end();
+      }
+    }
+  }
+);
+
+// Stream a lesson document through the API so access is re-checked on every
+// request. Auth is taken from the JWT cookie (works for <a> and <embed> tags
+// in the same browser), and students must belong to the group and hold an
+// active entitlement (paid). ?index= selects a document from the folded
+// documents[] array (legacy documentUrl is included). The object lives in the
+// private documents bucket and is never exposed via a public URL.
+router.get(
+  "/:id/lessons/:lessonId/document",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const isTeacher = group.teacherId.toString() === req.user!._id.toString();
+      const isStudent = (group.students || []).some(
+        (s: any) => s.toString() === req.user!._id.toString()
+      );
+
+      if (!isTeacher && !isStudent && req.user!.role !== "ADMIN") {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      // Students must have opened (paid for) this lesson to view, or hold an
+      // active monthly subscription. Group-level credits alone are not enough —
+      // opening a lesson consumes one credit and records per-lesson access.
+      if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        }).lean();
+        let allowed = computeEntitlement(purchases).monthlyActive;
+        if (!allowed) {
+          const access = await LessonAccess.findOne({
+            lessonId: req.params.lessonId,
+            studentId: req.user!._id,
+          }).lean();
+          allowed = Boolean(access);
+        }
+        if (!allowed) {
+          res.status(402).json({ message: "Payment required" });
+          return;
+        }
+      }
+
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      }).select("documents documentUrl type");
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const docs =
+        Array.isArray(lesson.documents) && lesson.documents.length
+          ? lesson.documents
+          : lesson.documentUrl
+          ? [lesson.documentUrl]
+          : [];
+
+      const index = parseInt(String(req.query.index ?? ""), 10);
+      if (!Number.isInteger(index) || index < 0 || index >= docs.length) {
+        res.status(400).json({ message: "Invalid document index" });
+        return;
+      }
+
+      const stored = docs[index];
+      const path = toStoragePath(stored);
+      if (!path) {
+        res.status(400).json({ message: "Lesson has no stored document" });
+        return;
+      }
+
+      const upstream = await fetchStorageObject(DOCUMENTS_BUCKET, path);
+
+      if (!upstream.body) {
+        res.status(upstream.status).end();
+        return;
+      }
+
+      res.status(upstream.status);
+      res.setHeader(
+        "Content-Type",
+        upstream.headers.get("Content-Type") || "application/octet-stream"
+      );
+      const contentLength = upstream.headers.get("Content-Length");
+      if (contentLength) res.setHeader("Content-Length", contentLength);
+      res.setHeader("Content-Disposition", "inline");
+      res.setHeader("Cache-Control", "private, no-transform, max-age=60");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+
+      const body: any = upstream.body;
+      if (typeof body.getReader === "function") {
+        Readable.fromWeb(body, { highWaterMark: 128 * 1024 }).pipe(res);
+      } else {
+        body.pipe(res);
+      }
+    } catch (error: any) {
+      console.error("Lesson document proxy error:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Error streaming document" });
       } else {
         res.end();
       }
@@ -2563,6 +2895,30 @@ router.put(
         return;
       }
 
+      // Private lesson content must live inside our own buckets; external links
+      // (YouTube, Google Drive, ...) are not allowed for videos or documents.
+      if (isExternalStoredUrl(videoUrl)) {
+        res.status(400).json({ message: "الروابط الخارجية للفيديوهات غير مسموحة — ارفع الفيديو داخل المنصة" });
+        return;
+      }
+      if (isExternalStoredUrl(recordedLiveVideoUrl)) {
+        res.status(400).json({ message: "الروابط الخارجية للفيديوهات غير مسموحة — ارفع الفيديو داخل المنصة" });
+        return;
+      }
+      if (isExternalStoredUrl(recordedVideoUrl)) {
+        res.status(400).json({ message: "الروابط الخارجية للفيديوهات غير مسموحة — ارفع الفيديو داخل المنصة" });
+        return;
+      }
+      if (isExternalStoredUrl(documentUrl)) {
+        res.status(400).json({ message: "الروابط الخارجية للمستندات غير مسموحة — ارفع الملف داخل المنصة" });
+        return;
+      }
+      const incomingDocuments = Array.isArray(documents) ? documents : [];
+      if (incomingDocuments.some((d: string) => isExternalStoredUrl(d))) {
+        res.status(400).json({ message: "الروابط الخارجية للمستندات غير مسموحة — ارفع الملف داخل المنصة" });
+        return;
+      }
+
       if (title !== undefined) lesson.title = title.trim();
       if (description !== undefined) lesson.description = description.trim();
       if (type !== undefined) lesson.type = newType;
@@ -2593,7 +2949,19 @@ router.put(
         }
       }
       if (documents !== undefined) {
-        lesson.documents = normalizeLessonList(documents, true);
+        const currentDocs =
+          Array.isArray(lesson.documents) && lesson.documents.length
+            ? lesson.documents
+            : lesson.documentUrl
+            ? [lesson.documentUrl]
+            : [];
+        // The UI hands back proxy URLs for files it did not re-upload; map them
+        // back to the stored paths so proxy URLs are never persisted.
+        const resolved = (Array.isArray(documents) ? documents : []).map(
+          (d: string, i: number) =>
+            isDocumentProxyUrl(String(d)) && currentDocs[i] ? currentDocs[i] : d
+        );
+        lesson.documents = normalizeLessonList(resolved, true);
       }
       if (referenceLinks !== undefined) {
         lesson.referenceLinks = normalizeLessonList(referenceLinks, false);

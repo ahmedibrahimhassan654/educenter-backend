@@ -9,7 +9,6 @@ import { cache } from "../services/cache";
 import { computeEntitlement } from "../services/entitlement";
 import {
   createSignedUploadUrl,
-  createSignedSessionRecordingUrl,
   fetchStorageObject,
   toStorageSessionPath,
   SESSION_RECORDINGS_BUCKET,
@@ -17,16 +16,11 @@ import {
 
 const router = Router();
 
-/**
- * Replace a session's stored recording path with a long-lived signed URL so
- * the browser streams it directly from Supabase. Returns the new URL, or null
- * when the value is an external link or signing failed (caller keeps the
- * original and can fall back to the proxy).
- */
-async function signSessionVideoUrl(session: any): Promise<string | null> {
-  const stored = session?.supabaseVideoPath || session?.videoUrl || "";
-  if (!toStorageSessionPath(stored)) return null;
-  return createSignedSessionRecordingUrl(stored);
+// Absolute URL for the authenticated session-recording proxy, built from the
+// host the API was reached on (so cookies for that host are sent with the
+// media request). Recordings are private and streamed only through this route.
+function sessionVideoProxyUrl(req: AuthRequest, sessionId: any): string {
+  return `${req.protocol}://${req.get("host")}/api/sessions/${sessionId}/video`;
 }
 
 // Get all sessions (filtered by group or teacher)
@@ -82,8 +76,9 @@ router.get(
       const response = { success: true, data: sessions };
       if (Array.isArray(sessions)) {
         for (const session of sessions) {
-          const signed = await signSessionVideoUrl(session);
-          if (signed) session.supabaseVideoPath = signed;
+          if (toStorageSessionPath(session.supabaseVideoPath || "")) {
+            session.supabaseVideoPath = sessionVideoProxyUrl(req, session._id);
+          }
         }
       }
       await cache.set(cacheKey, response, 30);
@@ -144,8 +139,9 @@ router.get(
         return;
       }
 
-      const signed = await signSessionVideoUrl(session);
-      if (signed) session.supabaseVideoPath = signed;
+      if (toStorageSessionPath(session.supabaseVideoPath || "")) {
+        session.supabaseVideoPath = sessionVideoProxyUrl(req, session._id);
+      }
 
       await cache.set(`session:${req.params.id}`, session, 60);
       res.json(session);
