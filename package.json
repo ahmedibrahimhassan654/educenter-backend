@@ -10,6 +10,7 @@
     "seed": "tsx src/seed.ts",
     "seed:curriculum": "tsx src/scripts/seedCurriculum.ts",
     "migrate:docs": "tsx src/scripts/migrateVerificationDocs.ts",
+    "optimize:videos": "tsx src/scripts/optimizeAllLessonVideos.ts",
     "normalize:stages": "tsx src/scripts/normalizeStudentStageGrade.ts",
     "deploy:vercel": "vercel --prod"
   },
