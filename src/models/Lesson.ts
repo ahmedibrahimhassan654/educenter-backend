@@ -10,6 +10,10 @@ export interface ILesson extends Document {
   videoUrl?: string;
   documentUrl?: string;
   referenceUrl?: string;
+  recordedLiveVideoUrl?: string;
+  recordedVideoUrl?: string;
+  documents?: string[];
+  referenceLinks?: string[];
   scheduleDay?: string;
   scheduleTime?: string;
   scheduledAt?: Date;
@@ -60,6 +64,22 @@ const lessonSchema = new Schema<ILesson>(
     referenceUrl: {
       type: String,
       trim: true,
+    },
+    recordedLiveVideoUrl: {
+      type: String,
+      trim: true,
+    },
+    recordedVideoUrl: {
+      type: String,
+      trim: true,
+    },
+    documents: {
+      type: [String],
+      default: undefined,
+    },
+    referenceLinks: {
+      type: [String],
+      default: undefined,
     },
     scheduleDay: {
       type: String,

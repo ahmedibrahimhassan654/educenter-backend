@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import { Readable } from "stream";
 import multer from "multer";
 import { Group } from "../models/Group";
 import { User } from "../models/User";
@@ -12,7 +13,23 @@ import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { createNotification } from "../services/notificationService";
 import { cache } from "../services/cache";
-import { uploadFile, deleteFile, getPublicUrl } from "../services/storageService";
+import { computeEntitlement } from "../services/entitlement";
+import {
+  uploadFile,
+  deleteFile,
+  getPublicUrl,
+  createSignedUrl,
+  createSignedUploadUrl,
+  createSignedVideoUrl,
+  toStoragePath,
+  isStorageVideoPath,
+  toStorageVideoPath,
+  toStorageSessionPath,
+  toStorageGroupVideoPath,
+  isProxyVideoUrl,
+  fetchStorageObject,
+  LESSON_VIDEOS_BUCKET,
+} from "../services/storageService";
 import {
   sendGroupInvitationEmail,
   sendCredentialsEmail,
@@ -21,6 +38,7 @@ import {
   sendInvitationAcceptedEmail,
   sendInvitationRejectedEmail,
 } from "../services/emailService";
+import { remuxVideoToFaststart } from "../services/videoProcessor";
 import bcrypt from "bcryptjs";
 
 const router = Router();
@@ -51,6 +69,43 @@ function normalizeLearningPoints(value: unknown): string[] {
     .map((p) => (typeof p === "string" ? p.trim() : ""))
     .filter((p) => p.length > 0)
     .slice(0, 20);
+}
+
+// A lesson's stored file value may be a bucket-relative path (uploaded file), a
+// full storage URL from before the private-bucket scheme, or an external link.
+// Normalize the storage shapes to a clean bucket-relative path so we never
+// persist expiring signed URLs or public URLs for private buckets.
+function normalizeStoredUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  const videoPath = toStorageVideoPath(trimmed);
+  if (videoPath) return videoPath;
+  const docPath = toStoragePath(trimmed);
+  if (docPath) return docPath;
+  return trimmed;
+}
+
+// Normalize a list of lesson document/reference-link values into clean,
+// non-empty arrays (max 20 items). Stored files are normalized to stable paths.
+function normalizeLessonList(value: unknown, isFile: boolean): string[] {
+  if (!Array.isArray(value)) return [];
+  const out: string[] = [];
+  for (const entry of value) {
+    if (typeof entry !== "string") continue;
+    const normalized = isFile ? normalizeStoredUrl(entry) : entry.trim();
+    if (!normalized || !normalized.trim()) continue;
+    if (out.includes(normalized)) continue;
+    out.push(normalized);
+    if (out.length >= 20) break;
+  }
+  return out;
+}
+
+// Absolute URL for the authenticated video proxy, built from the host the API
+// was reached on (so cookies for that host are sent with the media request).
+function lessonVideoProxyUrl(req: AuthRequest, groupId: any, lessonId: any): string {
+  return `${req.protocol}://${req.get("host")}/api/groups/${groupId}/lessons/${lessonId}/video`;
 }
 
 function timeToMinutes(timeStr: string): number {
@@ -102,41 +157,6 @@ function checkScheduleConflicts(
   }
 
   return null;
-}
-
-function computeEntitlement(
-  purchases: any[],
-  now: Date = new Date()
-): {
-  remainingCredits: number;
-  monthlyActive: boolean;
-  monthlyExpiresAt: Date | null;
-  hasAccess: boolean;
-} {
-  let remainingCredits = 0;
-  let monthlyActive = false;
-  let monthlyExpiresAt: Date | null = null;
-
-  for (const p of purchases) {
-    if (p.type === "LECTURES") {
-      remainingCredits += p.remainingLectures || 0;
-    } else if (p.type === "MONTHLY") {
-      const exp = p.monthlyExpiresAt ? new Date(p.monthlyExpiresAt) : null;
-      if (exp && exp > now) {
-        monthlyActive = true;
-        if (!monthlyExpiresAt || exp > monthlyExpiresAt) {
-          monthlyExpiresAt = exp;
-        }
-      }
-    }
-  }
-
-  return {
-    remainingCredits,
-    monthlyActive,
-    monthlyExpiresAt,
-    hasAccess: monthlyActive || remainingCredits > 0,
-  };
 }
 
 // Public group detail by ID (no auth). Declared before "/:id" so ObjectId
@@ -917,6 +937,54 @@ router.delete(
       await Group.findByIdAndDelete(req.params.id);
       // Cascade cleanup of related records so no dangling references remain
       await Purchase.deleteMany({ groupId: req.params.id });
+
+      // Best-effort cleanup of every file this group owns in Supabase Storage:
+      // lessons' recorded videos + uploaded documents, live session recordings,
+      // and the group's description video.
+      const lessonFiles = await Lesson.find({ groupId: req.params.id })
+        .select("videoUrl documentUrl recordedLiveVideoUrl recordedVideoUrl documents")
+        .lean();
+      for (const lesson of lessonFiles) {
+        const paths = [
+          toStorageVideoPath(lesson.videoUrl || ""),
+          toStorageVideoPath(lesson.recordedLiveVideoUrl || ""),
+          toStorageVideoPath(lesson.recordedVideoUrl || ""),
+          toStoragePath(lesson.documentUrl || ""),
+          ...(Array.isArray(lesson.documents)
+            ? lesson.documents.map((d: string) => toStoragePath(d || ""))
+            : []),
+        ].filter((p): p is string => Boolean(p));
+        for (const path of paths) {
+          try {
+            await deleteFile(path);
+          } catch (e) {
+            console.warn("Failed to delete group lesson file:", e);
+          }
+        }
+      }
+
+      const sessionRecordings = await Session.find({ groupId: req.params.id })
+        .select("supabaseVideoPath")
+        .lean();
+      for (const session of sessionRecordings) {
+        const path = toStorageSessionPath(session.supabaseVideoPath || "");
+        if (!path) continue;
+        try {
+          await deleteFile(path);
+        } catch (e) {
+          console.warn("Failed to delete session recording:", e);
+        }
+      }
+
+      const descriptionVideoPath = toStorageGroupVideoPath(group.descriptionVideo || "");
+      if (descriptionVideoPath) {
+        try {
+          await deleteFile(descriptionVideoPath);
+        } catch (e) {
+          console.warn("Failed to delete group description video:", e);
+        }
+      }
+
       const sessionIds = (await Session.find({ groupId: req.params.id }).select("_id").lean()).map(
         (s: any) => s._id
       );
@@ -1886,7 +1954,9 @@ export default router;
 // ============================================================
 
 // Upload an attachment (video / document) for a lesson (teacher, group owner).
-// Videos go to the group-videos bucket, everything else to documents.
+// Recorded videos go to the private lesson-videos bucket, everything else to
+// documents. Returns the bucket-relative path; lesson videos are served through
+// the authenticated proxy route, never as public URLs.
 router.post(
   "/:id/lessons/upload",
   auth,
@@ -1914,7 +1984,7 @@ router.post(
       const safeExt = fileExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8);
       const fileName = `${userId}-${Date.now()}.${safeExt}`;
       const isVideo = req.file.mimetype.startsWith("video/");
-      const filePath = `${isVideo ? "group-videos" : "documents"}/lessons/${fileName}`;
+      const filePath = `${isVideo ? LESSON_VIDEOS_BUCKET : "documents"}/lessons/${fileName}`;
 
       const uploadResult = await uploadFile(filePath, req.file.buffer, req.file.mimetype);
       if (!uploadResult) {
@@ -1922,7 +1992,7 @@ router.post(
         return;
       }
 
-      res.json({ success: true, url: getPublicUrl(filePath), mimeType: req.file.mimetype });
+      res.json({ success: true, url: filePath, mimeType: req.file.mimetype });
     } catch (error: any) {
       console.error("Lesson upload error:", error);
       if (error instanceof multer.MulterError) {
@@ -1936,15 +2006,86 @@ router.post(
   }
 );
 
+// Create a signed upload URL so the browser can upload large lesson files
+// (recorded videos) directly to Supabase Storage. Backend-buffered uploads
+// cannot handle 4K videos or Vercel's serverless body limit, and this keeps
+// files in the private buckets without ever exposing a public URL.
+router.post(
+  "/:id/lessons/upload-url",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const { filename, mimeType } = req.body || {};
+      if (!filename || !mimeType) {
+        res.status(400).json({ message: "filename and mimeType are required" });
+        return;
+      }
+
+      const isVideo = String(mimeType).startsWith("video/");
+      const bucket = isVideo ? LESSON_VIDEOS_BUCKET : "documents";
+      const ext = (String(filename).split(".").pop() || (isVideo ? "mp4" : "bin"))
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .slice(0, 8);
+      const userId = req.user!._id.toString();
+      const fullPath = `${bucket}/lessons/${userId}-${Date.now()}.${ext}`;
+
+      const signed = await createSignedUploadUrl(
+        bucket,
+        fullPath.replace(`${bucket}/`, "")
+      );
+      if (!signed) {
+        res.status(500).json({ message: "Failed to create upload URL" });
+        return;
+      }
+
+      res.json({
+        success: true,
+        bucket,
+        path: fullPath.replace(`${bucket}/`, ""),
+        fullPath,
+        token: signed.token,
+        uploadUrl: signed.uploadUrl,
+        mimeType,
+      });
+    } catch (error: any) {
+      console.error("Lesson upload URL error:", error);
+      res.status(500).json({ message: "Error creating upload URL", error: error.message });
+    }
+  }
+);
+
 // Create a lesson in a group (teacher, group owner).
-// LIVE: meetingLink required. RECORDED: videoUrl. DOCUMENT: documentUrl. LINK: referenceUrl.
+// Every new lesson is a live session (meetingLink + scheduleDay/scheduleTime are
+// required) that may bundle optional extras: a recorded video, multiple documents
+// and multiple reference links. The recording of the live session itself is added
+// later through a separate upload action once the session has finished.
 router.post(
   "/:id/lessons",
   auth,
   requireRole("TEACHER"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { title, description, type, meetingLink, videoUrl, documentUrl, referenceUrl, scheduleDay, scheduleTime } = req.body;
+      const {
+        title,
+        description,
+        meetingLink,
+        scheduleDay,
+        scheduleTime,
+        recordedVideoUrl,
+        documents,
+        referenceLinks,
+      } = req.body;
       const group = await Group.findById(req.params.id);
 
       if (!group) {
@@ -1959,29 +2100,12 @@ router.post(
         res.status(400).json({ message: "عنوان الدرس مطلوب" });
         return;
       }
-      if (!["LIVE", "RECORDED", "DOCUMENT", "LINK"].includes(type)) {
-        res.status(400).json({ message: "نوع الدرس غير صالح" });
-        return;
-      }
-
-      if (type === "LIVE" && (!meetingLink || !meetingLink.trim())) {
+      if (!meetingLink || !meetingLink.trim()) {
         res.status(400).json({ message: "رابط اجتماع الدرس المباشر مطلوب" });
         return;
       }
-      if (type === "LIVE" && (!scheduleDay || !scheduleTime)) {
+      if (!scheduleDay || !scheduleTime) {
         res.status(400).json({ message: "يرجى اختيار يوم ووقت الحصة من جدول المجموعة" });
-        return;
-      }
-      if (type === "RECORDED" && (!videoUrl || !videoUrl.trim())) {
-        res.status(400).json({ message: "رابط أو ملف الفيديو المسجل مطلوب" });
-        return;
-      }
-      if (type === "DOCUMENT" && (!documentUrl || !documentUrl.trim())) {
-        res.status(400).json({ message: "ملف المستند مطلوب" });
-        return;
-      }
-      if (type === "LINK" && (!referenceUrl || !referenceUrl.trim())) {
-        res.status(400).json({ message: "الرابط المرجعي مطلوب" });
         return;
       }
 
@@ -1990,14 +2114,14 @@ router.post(
         teacherId: req.user!._id,
         title: title.trim(),
         description: description?.trim() || "",
-        type,
-        meetingLink: type === "LIVE" ? meetingLink.trim() : undefined,
-        videoUrl: type === "RECORDED" ? videoUrl.trim() : undefined,
-        documentUrl: type === "DOCUMENT" ? documentUrl.trim() : undefined,
-        referenceUrl: type === "LINK" ? referenceUrl.trim() : undefined,
-        scheduleDay: type === "LIVE" ? scheduleDay.trim() : undefined,
-        scheduleTime: type === "LIVE" ? scheduleTime.trim() : undefined,
-        scheduledAt: type === "LIVE" ? nextScheduledDate(scheduleDay, scheduleTime) : undefined,
+        type: "LIVE",
+        meetingLink: meetingLink.trim(),
+        recordedVideoUrl: normalizeStoredUrl(recordedVideoUrl),
+        documents: normalizeLessonList(documents, true),
+        referenceLinks: normalizeLessonList(referenceLinks, false),
+        scheduleDay: scheduleDay.trim(),
+        scheduleTime: scheduleTime.trim(),
+        scheduledAt: nextScheduledDate(scheduleDay, scheduleTime),
       });
 
       // Notify enrolled students about the new lesson
@@ -2048,9 +2172,333 @@ router.get(
         .sort({ createdAt: -1 })
         .lean();
 
-      res.json({ success: true, data: lessons });
+      // Students only get lesson content once they have an active entitlement
+      // (remaining lectures credits or an active monthly subscription).
+      let hasAccess = true;
+      if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        }).lean();
+        hasAccess = computeEntitlement(purchases).hasAccess;
+        if (!hasAccess) {
+          for (const lesson of lessons) {
+            delete lesson.description;
+            delete lesson.meetingLink;
+            delete lesson.videoUrl;
+            delete lesson.documentUrl;
+            delete lesson.referenceUrl;
+            delete lesson.recordedLiveVideoUrl;
+            delete lesson.recordedVideoUrl;
+            delete lesson.documents;
+            delete lesson.referenceLinks;
+          }
+        }
+      }
+
+      // Present a unified shape to clients: every lesson exposes documents[] and
+      // referenceLinks[] (legacy single-value fields are folded into the arrays),
+      // so the frontend never has to special-case old lessons.
+      for (const lesson of lessons) {
+        if (hasAccess) {
+          lesson.documents = Array.isArray(lesson.documents) && lesson.documents.length
+            ? lesson.documents
+            : lesson.documentUrl
+            ? [lesson.documentUrl]
+            : [];
+          lesson.referenceLinks =
+            Array.isArray(lesson.referenceLinks) && lesson.referenceLinks.length
+              ? lesson.referenceLinks
+              : lesson.referenceUrl
+              ? [lesson.referenceUrl]
+              : [];
+        }
+      }
+
+      // For authorized users, private lesson files are delivered through
+      // authenticated endpoints: videos via short-lived signed URLs so the
+      // browser streams them directly from Supabase, documents via signed URLs.
+      // External links pass through unchanged. If signing fails, videos fall
+      // back to the authenticated proxy route.
+      if (hasAccess) {
+        for (const lesson of lessons) {
+          if (lesson.videoUrl) {
+            const videoPath = toStorageVideoPath(lesson.videoUrl);
+            if (videoPath) {
+              lesson.videoUrl =
+                (await createSignedVideoUrl(lesson.videoUrl)) ??
+                lessonVideoProxyUrl(req, group._id, lesson._id);
+            }
+          }
+          if (lesson.recordedLiveVideoUrl) {
+            const videoPath = toStorageVideoPath(lesson.recordedLiveVideoUrl);
+            if (videoPath) {
+              lesson.recordedLiveVideoUrl =
+                (await createSignedVideoUrl(lesson.recordedLiveVideoUrl)) ??
+                `${lessonVideoProxyUrl(req, group._id, lesson._id)}?field=recordedLiveVideoUrl`;
+            }
+          }
+          if (lesson.recordedVideoUrl) {
+            const videoPath = toStorageVideoPath(lesson.recordedVideoUrl);
+            if (videoPath) {
+              lesson.recordedVideoUrl =
+                (await createSignedVideoUrl(lesson.recordedVideoUrl)) ??
+                `${lessonVideoProxyUrl(req, group._id, lesson._id)}?field=recordedVideoUrl`;
+            }
+          }
+          if (Array.isArray(lesson.documents)) {
+            for (let i = 0; i < lesson.documents.length; i++) {
+              const doc = lesson.documents[i];
+              if (!doc) continue;
+              if (toStoragePath(doc)) {
+                const signed = await createSignedUrl(doc);
+                if (signed) lesson.documents[i] = signed;
+              }
+            }
+          }
+        }
+      }
+
+      res.json({ success: true, data: lessons, hasAccess });
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching lessons", error: error.message });
+    }
+  }
+);
+
+// Teacher-only preview stream for a recorded lesson video that was just
+// uploaded but has no lessonId yet (the proxy route below requires a saved
+// lesson). Validates that the path is a lesson-videos object so a teacher can
+// only preview their own group's uploads before saving.
+router.get(
+  "/:id/lessons/video/preview",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group || group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const videoPath = toStorageVideoPath(String(req.query.path || ""));
+      if (!videoPath) {
+        res.status(400).json({ message: "Invalid video path" });
+        return;
+      }
+
+      const upstream = await fetchStorageObject(
+        LESSON_VIDEOS_BUCKET,
+        videoPath.replace(`${LESSON_VIDEOS_BUCKET}/`, ""),
+        req.headers.range as string | undefined
+      );
+
+      if (!upstream.body) {
+        res.status(upstream.status).end();
+        return;
+      }
+
+      res.status(upstream.status);
+      res.setHeader(
+        "Content-Type",
+        upstream.headers.get("Content-Type") || "video/mp4"
+      );
+      const contentLength = upstream.headers.get("Content-Length");
+      const contentRange = upstream.headers.get("Content-Range");
+      if (contentLength) res.setHeader("Content-Length", contentLength);
+      if (contentRange) res.setHeader("Content-Range", contentRange);
+      res.setHeader("Accept-Ranges", upstream.headers.get("Accept-Ranges") || "bytes");
+      res.setHeader("Cache-Control", "private, no-transform, max-age=60");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+
+      const body: any = upstream.body;
+      if (typeof body.getReader === "function") {
+        Readable.fromWeb(body, { highWaterMark: 128 * 1024 }).pipe(res);
+      } else {
+        body.pipe(res);
+      }
+    } catch (error: any) {
+      console.error("Lesson video preview error:", error);
+      if (!res.headersSent) res.status(500).json({ message: "Error streaming video" });
+      else res.end();
+    }
+  }
+);
+
+// Stream a recorded lesson video through the API so access is re-checked on
+// every request. Auth is taken from the JWT cookie, so <video> tags work
+// without an Authorization header. Range headers are forwarded to Supabase so
+// seeking/scrubbing works. The underlying object lives in the private
+// lesson-videos bucket and is never exposed via a public URL. A lesson may
+// hold several videos (legacy videoUrl, the recorded live session, or an extra
+// recorded video); the ?field= query selects which one to stream.
+router.get(
+  "/:id/lessons/:lessonId/video",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const isTeacher = group.teacherId.toString() === req.user!._id.toString();
+      const isStudent = (group.students || []).some(
+        (s: any) => s.toString() === req.user!._id.toString()
+      );
+
+      if (!isTeacher && !isStudent && req.user!.role !== "ADMIN") {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      // Students must hold an active entitlement (paid) to watch.
+      if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        }).lean();
+        if (!computeEntitlement(purchases).hasAccess) {
+          res.status(402).json({ message: "Payment required" });
+          return;
+        }
+      }
+
+      const field =
+        req.query.field === "recordedLiveVideoUrl" ||
+        req.query.field === "recordedVideoUrl"
+          ? req.query.field
+          : "videoUrl";
+
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      }).select(`${field} type`);
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const stored = (lesson as any)[field] || "";
+      const videoPath = toStorageVideoPath(stored);
+      if (!videoPath) {
+        res.status(400).json({ message: "Lesson has no stored video" });
+        return;
+      }
+
+      const upstream = await fetchStorageObject(
+        LESSON_VIDEOS_BUCKET,
+        videoPath.replace(`${LESSON_VIDEOS_BUCKET}/`, ""),
+        req.headers.range as string | undefined
+      );
+
+      if (!upstream.body) {
+        res.status(upstream.status).end();
+        return;
+      }
+
+      res.status(upstream.status);
+      res.setHeader(
+        "Content-Type",
+        upstream.headers.get("Content-Type") || "video/mp4"
+      );
+      const contentLength = upstream.headers.get("Content-Length");
+      const contentRange = upstream.headers.get("Content-Range");
+      if (contentLength) res.setHeader("Content-Length", contentLength);
+      if (contentRange) res.setHeader("Content-Range", contentRange);
+      res.setHeader("Accept-Ranges", upstream.headers.get("Accept-Ranges") || "bytes");
+      res.setHeader("Cache-Control", "private, no-transform, max-age=60");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+
+      const body: any = upstream.body;
+      if (typeof body.getReader === "function") {
+        Readable.fromWeb(body, { highWaterMark: 128 * 1024 }).pipe(res);
+      } else {
+        body.pipe(res);
+      }
+    } catch (error: any) {
+      console.error("Lesson video proxy error:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Error streaming video" });
+      } else {
+        res.end();
+      }
+    }
+  }
+);
+
+// Remux a stored lesson video to faststart MP4 so browsers can start playback
+// immediately. Teacher/group owner only. Downloads the object, remuxes it
+// server-side with a stream copy (no re-encode), stores the optimized copy and
+// points the lesson at it.
+router.post(
+  "/:id/lessons/:lessonId/video/optimize",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const field =
+        req.body?.field === "recordedVideoUrl" ? "recordedVideoUrl" : "recordedLiveVideoUrl";
+      const stored = (lesson as any)[field];
+      const videoPath = toStorageVideoPath(String(stored || ""));
+      if (!videoPath) {
+        res.status(400).json({ message: "Lesson has no stored video" });
+        return;
+      }
+
+      const upstream = await fetchStorageObject(
+        LESSON_VIDEOS_BUCKET,
+        videoPath.replace(`${LESSON_VIDEOS_BUCKET}/`, "")
+      );
+      if (!upstream.ok || !upstream.body) {
+        res.status(upstream.status).json({ message: "Failed to download video" });
+        return;
+      }
+      const buffer = Buffer.from(await upstream.arrayBuffer());
+
+      const optimized = await remuxVideoToFaststart(buffer);
+
+      const userId = req.user!._id.toString();
+      const newPath = `lesson-videos/lessons/${userId}-${Date.now()}-optimized.mp4`;
+      const uploaded = await uploadFile(newPath, optimized, "video/mp4");
+      if (!uploaded) {
+        res.status(500).json({ message: "Failed to store optimized video" });
+        return;
+      }
+
+      (lesson as any)[field] = newPath;
+      await lesson.save();
+
+      // Remove the old (unoptimized) object; the lesson now points at the new one.
+      if (videoPath !== newPath) {
+        await deleteFile(videoPath);
+      }
+
+      res.json({ success: true, lesson });
+    } catch (error: any) {
+      console.error("Lesson video optimize error:", error);
+      res.status(500).json({ message: "Error optimizing video", error: error.message });
     }
   }
 );
@@ -2062,7 +2510,21 @@ router.put(
   requireRole("TEACHER"),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { title, description, type, meetingLink, videoUrl, documentUrl, referenceUrl, scheduleDay, scheduleTime } = req.body;
+      const {
+        title,
+        description,
+        type,
+        meetingLink,
+        videoUrl,
+        documentUrl,
+        referenceUrl,
+        recordedLiveVideoUrl,
+        recordedVideoUrl,
+        documents,
+        referenceLinks,
+        scheduleDay,
+        scheduleTime,
+      } = req.body;
       const group = await Group.findById(req.params.id);
       if (!group) {
         res.status(404).json({ message: "Group not found" });
@@ -2105,9 +2567,37 @@ router.put(
       if (description !== undefined) lesson.description = description.trim();
       if (type !== undefined) lesson.type = newType;
       if (meetingLink !== undefined) lesson.meetingLink = meetingLink.trim();
-      if (videoUrl !== undefined) lesson.videoUrl = videoUrl.trim();
-      if (documentUrl !== undefined) lesson.documentUrl = documentUrl.trim();
+      if (videoUrl !== undefined) {
+        // The UI hands back the proxy URL for a lesson it did not re-upload;
+        // keep the stored path in that case instead of persisting the URL.
+        if (isProxyVideoUrl(videoUrl, String(req.params.lessonId))) {
+          // unchanged
+        } else {
+          lesson.videoUrl = normalizeStoredUrl(videoUrl);
+        }
+      }
+      if (documentUrl !== undefined) lesson.documentUrl = normalizeStoredUrl(documentUrl);
       if (referenceUrl !== undefined) lesson.referenceUrl = referenceUrl.trim();
+      if (recordedLiveVideoUrl !== undefined) {
+        if (isProxyVideoUrl(recordedLiveVideoUrl, String(req.params.lessonId))) {
+          // unchanged
+        } else {
+          lesson.recordedLiveVideoUrl = normalizeStoredUrl(recordedLiveVideoUrl);
+        }
+      }
+      if (recordedVideoUrl !== undefined) {
+        if (isProxyVideoUrl(recordedVideoUrl, String(req.params.lessonId))) {
+          // unchanged
+        } else {
+          lesson.recordedVideoUrl = normalizeStoredUrl(recordedVideoUrl);
+        }
+      }
+      if (documents !== undefined) {
+        lesson.documents = normalizeLessonList(documents, true);
+      }
+      if (referenceLinks !== undefined) {
+        lesson.referenceLinks = normalizeLessonList(referenceLinks, false);
+      }
       if (scheduleDay !== undefined) lesson.scheduleDay = scheduleDay.trim();
       if (scheduleTime !== undefined) lesson.scheduleTime = scheduleTime.trim();
       if (scheduleDay !== undefined || scheduleTime !== undefined) {
@@ -2152,11 +2642,22 @@ router.delete(
         return;
       }
 
-      // Best-effort cleanup of the stored attachment file
-      if (lesson.documentUrl || lesson.videoUrl) {
-        const stored = lesson.documentUrl || lesson.videoUrl || "";
+      // Best-effort cleanup of every file this lesson owns in Supabase Storage:
+      // the recorded videos (lesson-videos bucket) and the uploaded documents
+      // (documents bucket). Old lessons may hold public URLs, so normalize
+      // before deleting.
+      const storedFiles = [
+        toStorageVideoPath(lesson.videoUrl || ""),
+        toStorageVideoPath(lesson.recordedLiveVideoUrl || ""),
+        toStorageVideoPath(lesson.recordedVideoUrl || ""),
+        toStoragePath(lesson.documentUrl || ""),
+        ...(Array.isArray(lesson.documents)
+          ? lesson.documents.map((d: string) => toStoragePath(d || ""))
+          : []),
+      ].filter((p): p is string => Boolean(p));
+      for (const path of storedFiles) {
         try {
-          await deleteFile(stored);
+          await deleteFile(path);
         } catch (e) {
           console.warn("Failed to delete lesson file:", e);
         }

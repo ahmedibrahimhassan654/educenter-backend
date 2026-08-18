@@ -36,6 +36,9 @@ const PORT = process.env.PORT || 5000;
 // clients that expect JSON on every request
 app.set("etag", false);
 
+// Trust the first hop so req.protocol reflects https behind Vercel/proxies.
+app.set("trust proxy", 1);
+
 // Allowed origins: configured frontend URL, plus any localhost port in development
 const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
   .split(",")

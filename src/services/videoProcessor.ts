@@ -87,7 +87,9 @@ export async function downloadVideoFromSupabase(
   storagePath: string
 ): Promise<Buffer> {
   await import("./storageService.js");
-  const url = `${config.supabaseUrl}/storage/v1/object/${config.sessionRecordingsBucket}/${storagePath}`;
+  // Accept either a bare path or one prefixed with the bucket name.
+  const cleanPath = storagePath.replace(/^session-recordings\//, "");
+  const url = `${config.supabaseUrl}/storage/v1/object/${config.sessionRecordingsBucket}/${cleanPath}`;
 
   const response = await fetch(url, {
     headers: {
@@ -117,6 +119,84 @@ export async function processVideoToTranscript(
   return {
     transcript: transcript.trim(),
   };
+}
+
+/**
+ * Remux a video buffer to MP4 with the moov atom at the front (faststart)
+ * using a stream copy (no re-encode — fast and lossless). Browsers need the
+ * moov atom before they can start playing, so without faststart large
+ * recordings buffer until the whole file has downloaded.
+ */
+export function remuxVideoToFaststart(
+  inputBuffer: Buffer,
+  outputFormat: string = "mp4"
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const tempDir = os.tmpdir();
+    const inputPath = path.join(
+      tempDir,
+      `video-input-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const outputPath = path.join(
+      tempDir,
+      `video-output-${Date.now()}-${Math.random().toString(36).slice(2)}.${outputFormat}`
+    );
+    fs.writeFileSync(inputPath, inputBuffer);
+
+    const ffmpegPath = getFfmpegPath();
+    const ffmpeg = spawn(ffmpegPath, [
+      "-i",
+      inputPath,
+      "-c",
+      "copy",
+      "-movflags",
+      "+faststart",
+      "-y",
+      outputPath,
+    ]);
+
+    let stderr = "";
+
+    ffmpeg.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    ffmpeg.on("close", (code) => {
+      try {
+        fs.unlinkSync(inputPath);
+      } catch {
+        // ignore cleanup errors
+      }
+
+      if (code !== 0) {
+        try {
+          fs.unlinkSync(outputPath);
+        } catch {
+          // ignore
+        }
+        reject(new Error(`FFmpeg exited with code ${code}: ${stderr.slice(-300)}`));
+        return;
+      }
+
+      try {
+        const buffer = fs.readFileSync(outputPath);
+        fs.unlinkSync(outputPath);
+        resolve(buffer);
+      } catch (err: any) {
+        reject(new Error(`Failed to read output file: ${err.message}`));
+      }
+    });
+
+    ffmpeg.on("error", (err) => {
+      try {
+        fs.unlinkSync(inputPath);
+        fs.unlinkSync(outputPath);
+      } catch {
+        // ignore
+      }
+      reject(new Error(`FFmpeg spawn error: ${err.message}`));
+    });
+  });
 }
 
 export async function processSupabaseVideoToTranscript(
