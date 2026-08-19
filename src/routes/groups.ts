@@ -38,6 +38,12 @@ import {
   sendInvitationRejectedEmail,
 } from "../services/emailService";
 import { remuxVideoToFaststart } from "../services/videoProcessor";
+import {
+  getOrCreateWallet,
+  getWalletBalance,
+  addWalletCredits,
+  consumeWalletCredit,
+} from "../services/walletService";
 import bcrypt from "bcryptjs";
 
 const router = Router();
@@ -152,24 +158,6 @@ function transformLessonForDelivery(
     lesson.documentUrl = lessonDocumentProxyUrl(req, groupId, lesson._id, 0);
   }
   return lesson;
-}
-
-// Decrement one remaining credit from the student's oldest LECTURES purchase
-// for the group. Returns false when there are no credits left to consume.
-async function consumeLessonCredit(studentId: any, groupId: any): Promise<boolean> {
-  const purchase = await Purchase.findOne({
-    groupId,
-    studentId,
-    type: "LECTURES",
-    remainingLectures: { $gt: 0 },
-  }).sort({ createdAt: 1 });
-  if (!purchase) return false;
-  purchase.remainingLectures = Math.max(
-    0,
-    (purchase.remainingLectures || 0) - 1
-  );
-  await purchase.save();
-  return true;
 }
 
 // True when a value is this platform's authenticated lesson document proxy URL.
@@ -771,7 +759,8 @@ router.get(
           groupId: group._id,
           studentId: req.user!._id,
         }).lean();
-        const entitlement = computeEntitlement(purchases);
+        const walletBalance = await getWalletBalance(req.user!._id);
+        const entitlement = computeEntitlement(purchases, walletBalance);
         const groupObj = group.toObject() as any;
         const studentId = req.user!._id.toString();
         groupObj.isMember = (groupObj.students || []).some(
@@ -794,7 +783,6 @@ router.get(
           delete groupObj.googleMeetLink;
         }
         groupObj.entitlement = entitlement;
-        await cache.set(`group:${req.params.id}`, groupObj, 60);
         res.json(groupObj);
         return;
       }
@@ -846,7 +834,7 @@ router.post(
           studentId: req.user!._id,
           type: "LECTURES",
           lectures: lecturesCount,
-          remainingLectures: lecturesCount,
+          remainingLectures: 0,
           monthlyExpiresAt: null,
           unitPrice,
           amountPaid: lecturesCount * unitPrice,
@@ -854,8 +842,18 @@ router.post(
           platformFeeTotal: lecturesCount * (group.platformFee || 0),
           status: "PAID",
         });
+        const balance = await addWalletCredits(
+          req.user!._id,
+          lecturesCount,
+          group._id,
+          `شراء ${lecturesCount} حصة - ${group.title}`
+        );
         await cache.delete(`group:${group._id}`);
-        res.status(201).json({ success: true, data: purchase });
+        res.status(201).json({
+          success: true,
+          data: purchase,
+          walletBalance: balance,
+        });
         return;
       }
 
@@ -922,10 +920,11 @@ router.get(
         })
           .sort("-createdAt")
           .lean();
+        const walletBalance = await getWalletBalance(req.user!._id);
         res.json({
           success: true,
           data: purchases,
-          entitlement: computeEntitlement(purchases),
+          entitlement: computeEntitlement(purchases, walletBalance),
         });
         return;
       }
@@ -2285,7 +2284,8 @@ router.get(
           groupId: group._id,
           studentId: req.user!._id,
         }).lean();
-        const entitlement = computeEntitlement(purchases);
+        const walletBalance = await getWalletBalance(req.user!._id);
+        const entitlement = computeEntitlement(purchases, walletBalance);
         hasAccess = entitlement.hasAccess;
         remainingCredits = entitlement.remainingCredits;
         monthlyActive = entitlement.monthlyActive;
@@ -2409,10 +2409,12 @@ router.post(
         groupId: group._id,
         studentId: req.user!._id,
       }).lean();
-      const entitlement = computeEntitlement(purchases);
+      const walletBalance = await getWalletBalance(req.user!._id);
+      const entitlement = computeEntitlement(purchases, walletBalance);
 
       let opened = entitlement.monthlyActive;
       let consumedCredit = false;
+      let remainingCredits = entitlement.remainingCredits;
 
       if (!opened) {
         const access = await LessonAccess.findOne({
@@ -2422,8 +2424,13 @@ router.post(
         if (access) {
           opened = true;
         } else if (entitlement.remainingCredits > 0) {
-          const consumed = await consumeLessonCredit(req.user!._id, group._id);
-          if (!consumed) {
+          const newBalance = await consumeWalletCredit(
+            req.user!._id,
+            group._id,
+            lesson._id,
+            `فتح درس: ${lesson.title}`
+          );
+          if (newBalance < 0) {
             res.status(402).json({
               message: "لا توجد حصص متبقية في رصيدك — اشترِ حصصاً لفتح هذا الدرس",
             });
@@ -2436,6 +2443,7 @@ router.post(
           });
           opened = true;
           consumedCredit = true;
+          remainingCredits = newBalance;
         } else {
           res.status(402).json({
             message: "لا توجد حصص متبقية في رصيدك — اشترِ حصصاً لفتح هذا الدرس",
@@ -2466,7 +2474,7 @@ router.post(
         data: delivered,
         opened,
         consumedCredit,
-        remainingCredits: entitlement.remainingCredits - (consumedCredit ? 1 : 0),
+        remainingCredits,
         monthlyActive: entitlement.monthlyActive,
       });
     } catch (error: any) {

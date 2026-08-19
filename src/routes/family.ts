@@ -1,10 +1,13 @@
 import { Router, Response } from "express";
 import { User } from "../models/User";
 import { ParentChildInvitation } from "../models/ParentChildInvitation";
+import { WalletTransaction } from "../models/Wallet";
+import { LessonAccess } from "../models/LessonAccess";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { familyInvitationLimiter } from "../middleware/rateLimiter";
 import { createNotification } from "../services/notificationService";
+import { getOrCreateWallet } from "../services/walletService";
 import {
   sendFamilyInvitationEmail,
   sendFamilyInvitationAcceptedEmail,
@@ -478,6 +481,92 @@ router.delete(
       res.json({ success: true, message: "تم فك ربط الطالب بنجاح" });
     } catch (error: any) {
       res.status(500).json({ message: "Error unlinking student", error: error.message });
+    }
+  }
+);
+
+/**
+ * GET /api/family/children/:childId/monitoring
+ * Parent monitoring for a linked child: wallet balance, recent transactions,
+ * and every lesson paid for from the wallet with its group + lesson info.
+ */
+router.get(
+  "/children/:childId/monitoring",
+  auth,
+  requireRole("PARENT"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const parent = await User.findById(req.user!._id).select("students");
+      const childId = req.params.childId;
+
+      const isChild = (parent?.students || []).some(
+        (s: any) => s.toString() === childId
+      );
+      if (!isChild) {
+        res.status(403).json({ message: "هذا الحساب ليس من أبنائك" });
+        return;
+      }
+
+      const child = await User.findById(childId).select(
+        "name avatarUrl stage grade"
+      );
+      if (!child) {
+        res.status(404).json({ message: "Student not found" });
+        return;
+      }
+
+      const wallet = await getOrCreateWallet(childId);
+
+      const transactions = await WalletTransaction.find({ studentId: childId })
+        .sort({ createdAt: -1 })
+        .limit(100)
+        .populate("groupId", "name")
+        .populate("lessonId", "title")
+        .lean();
+
+      const paidLessons = await LessonAccess.find({ studentId: childId })
+        .sort({ consumedAt: -1 })
+        .populate("groupId", "name subject stage grade")
+        .populate("lessonId", "title type scheduledAt")
+        .lean();
+
+      res.json({
+        success: true,
+        data: {
+          child: {
+            id: child._id,
+            name: child.name,
+            avatarUrl: child.avatarUrl || null,
+            stage: child.stage || null,
+            grade: child.grade || null,
+          },
+          balance: wallet.balance,
+          transactions: transactions.map((t: any) => ({
+            id: t._id,
+            type: t.type,
+            amount: t.amount,
+            notes: t.notes || "",
+            groupName: t.groupId?.name || null,
+            lessonTitle: t.lessonId?.title || null,
+            createdAt: t.createdAt,
+          })),
+          paidLessons: paidLessons.map((a: any) => ({
+            id: a._id,
+            groupId: a.groupId?._id,
+            groupName: a.groupId?.name || null,
+            subject: a.groupId?.subject || null,
+            stage: a.groupId?.stage || null,
+            grade: a.groupId?.grade || null,
+            lessonId: a.lessonId?._id,
+            lessonTitle: a.lessonId?.title || null,
+            lessonType: a.lessonId?.type || null,
+            scheduledAt: a.lessonId?.scheduledAt || null,
+            consumedAt: a.consumedAt,
+          })),
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching child monitoring", error: error.message });
     }
   }
 );

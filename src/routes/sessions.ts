@@ -7,6 +7,7 @@ import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { cache } from "../services/cache";
 import { computeEntitlement } from "../services/entitlement";
+import { getWalletBalance } from "../services/walletService";
 import {
   createSignedUploadUrl,
   fetchStorageObject,
@@ -305,7 +306,8 @@ router.get(
             groupId: session.groupId,
             studentId: req.user!._id,
           }).lean();
-          allowed = computeEntitlement(purchases).hasAccess;
+          const walletBalance = await getWalletBalance(req.user!._id);
+          allowed = computeEntitlement(purchases, walletBalance).hasAccess;
         }
       }
 

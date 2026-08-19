@@ -23,6 +23,7 @@ import verificationRoutes from "../routes/verification";
 import aiRoutes from "../routes/ai";
 import settingsRoutes from "../routes/settings";
 import familyRoutes from "../routes/family";
+import walletRoutes from "../routes/wallet";
 import { cache } from "../services/cache";
 import { auth } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
@@ -163,6 +164,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/curriculum", curriculumRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/family", familyRoutes);
+app.use("/api/wallet", walletRoutes);
 
 // Admin routes
 app.use("/api/admin/curriculum", adminCurriculumRoutes);
