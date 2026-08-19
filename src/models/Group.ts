@@ -13,6 +13,7 @@ export interface IGroup extends Document {
   googleMeetLink: string;
   learningPoints: string[];
   descriptionVideo: string;
+  videoOptimized?: boolean;
   scheduleDays: string[];
   students: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -76,6 +77,10 @@ const groupSchema = new Schema<IGroup>(
     descriptionVideo: {
       type: String,
       trim: true,
+    },
+    videoOptimized: {
+      type: Boolean,
+      default: false,
     },
     scheduleDays: [
       {

@@ -10,6 +10,7 @@ import { computeEntitlement } from "../services/entitlement";
 import { getWalletBalance } from "../services/walletService";
 import {
   createSignedUploadUrl,
+  createSignedSessionUrl,
   fetchStorageObject,
   toStorageSessionPath,
   SESSION_RECORDINGS_BUCKET,
@@ -19,9 +20,20 @@ const router = Router();
 
 // Absolute URL for the authenticated session-recording proxy, built from the
 // host the API was reached on (so cookies for that host are sent with the
-// media request). Recordings are private and streamed only through this route.
+// media request). Used as a fallback when signing fails.
 function sessionVideoProxyUrl(req: AuthRequest, sessionId: any): string {
   return `${req.protocol}://${req.get("host")}/api/sessions/${sessionId}/video`;
+}
+
+// Sign a session's recording URL so it streams directly from Supabase.
+async function signSessionRecording(
+  req: AuthRequest,
+  session: any
+): Promise<void> {
+  const stored = session.supabaseVideoPath;
+  if (!toStorageSessionPath(stored || "")) return;
+  const signed = await createSignedSessionUrl(stored);
+  session.supabaseVideoPath = signed || sessionVideoProxyUrl(req, session._id);
 }
 
 // Get all sessions (filtered by group or teacher)
@@ -35,10 +47,17 @@ router.get(
       const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20));
       const skip = (pageNum - 1) * limitNum;
 
-      // Build cache key
+      // Cache raw sessions (storage paths) and sign recording URLs on every
+      // request so cached copies never leak expiring signed URLs.
       const cacheKey = `sessions:${req.user!.role}:${req.user!._id}:${groupId || "all"}:${pageNum}`;
       const cached = await cache.get(cacheKey);
       if (cached) {
+        const sessions = (cached as any).data;
+        if (Array.isArray(sessions)) {
+          for (const session of sessions) {
+            await signSessionRecording(req, session);
+          }
+        }
         res.json(cached);
         return;
       }
@@ -77,9 +96,7 @@ router.get(
       const response = { success: true, data: sessions };
       if (Array.isArray(sessions)) {
         for (const session of sessions) {
-          if (toStorageSessionPath(session.supabaseVideoPath || "")) {
-            session.supabaseVideoPath = sessionVideoProxyUrl(req, session._id);
-          }
+          await signSessionRecording(req, session);
         }
       }
       await cache.set(cacheKey, response, 30);
@@ -131,19 +148,23 @@ router.get(
   auth,
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const cached = await cache.get(`session:${req.params.id}`);
+      if (cached) {
+        await signSessionRecording(req, cached);
+        res.json(cached);
+        return;
+      }
+
       const session = await Session.findById(req.params.id)
         .populate("groupId", "title subject grade googleMeetLink")
-        .populate("teacherId", "name email phone");
+        .populate("teacherId", "name");
 
       if (!session) {
         res.status(404).json({ message: "Session not found" });
         return;
       }
 
-      if (toStorageSessionPath(session.supabaseVideoPath || "")) {
-        session.supabaseVideoPath = sessionVideoProxyUrl(req, session._id);
-      }
-
+      await signSessionRecording(req, session);
       await cache.set(`session:${req.params.id}`, session, 60);
       res.json(session);
     } catch (error: any) {

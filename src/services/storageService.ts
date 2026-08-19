@@ -107,6 +107,46 @@ async function signObject(
   }
 }
 
+// Signed video URLs live longer than document links so a long lesson can be
+// watched without the player having to refresh mid-way. The player refreshes
+// automatically when one expires anyway.
+export const SIGNED_VIDEO_URL_TTL_SECONDS = Number(
+  process.env.SIGNED_VIDEO_URL_TTL_SECONDS || 60 * 60
+);
+
+/**
+ * Create a signed, directly-streamable URL for a lesson video (private
+ * lesson-videos bucket). Accepts any stored lesson-video shape (plain path,
+ * public URL, signed URL). Returns null for external links / proxy URLs so
+ * callers keep those untouched.
+ */
+export async function createSignedVideoUrl(
+  stored: string,
+  expiresIn: number = SIGNED_VIDEO_URL_TTL_SECONDS
+): Promise<string | null> {
+  const path = toStorageVideoPath(stored);
+  if (!path) return null;
+  return signObject(LESSON_VIDEOS_BUCKET, path.replace(/^lesson-videos\//, ""), expiresIn);
+}
+
+/**
+ * Create a signed, directly-streamable URL for a live-session recording
+ * (private session-recordings bucket). Accepts any stored shape. Returns null
+ * for external links / proxy URLs.
+ */
+export async function createSignedSessionUrl(
+  stored: string,
+  expiresIn: number = SIGNED_VIDEO_URL_TTL_SECONDS
+): Promise<string | null> {
+  const path = toStorageSessionPath(stored);
+  if (!path) return null;
+  return signObject(
+    SESSION_RECORDINGS_BUCKET,
+    path.replace(/^session-recordings\//, ""),
+    expiresIn
+  );
+}
+
 /** Sign a list of stored documents, preserving order. */
 export async function createSignedUrls(
   stored: string[],

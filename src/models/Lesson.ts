@@ -17,6 +17,7 @@ export interface ILesson extends Document {
   scheduleDay?: string;
   scheduleTime?: string;
   scheduledAt?: Date;
+  videoOptimized?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -91,6 +92,10 @@ const lessonSchema = new Schema<ILesson>(
     },
     scheduledAt: {
       type: Date,
+    },
+    videoOptimized: {
+      type: Boolean,
+      default: false,
     },
   },
   {

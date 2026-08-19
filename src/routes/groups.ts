@@ -27,6 +27,7 @@ import {
   isProxyVideoUrl,
   fetchStorageObject,
   setBucketPublic,
+  createSignedVideoUrl,
   DOCUMENTS_BUCKET,
   LESSON_VIDEOS_BUCKET,
   GROUP_VIDEOS_BUCKET,
@@ -46,6 +47,11 @@ import {
   addWalletCredits,
   consumeWalletCredit,
 } from "../services/walletService";
+import { AIContent } from "../models/AIContent";
+import { GeneratedContent } from "../models/GeneratedContent";
+import { parseDocument } from "../services/contentParser";
+import { processSupabaseVideoToTranscript } from "../services/videoProcessor";
+import { generateHomework } from "../services/aiService";
 import bcrypt from "bcryptjs";
 
 const router = Router();
@@ -126,27 +132,42 @@ function lessonDocumentProxyUrl(
   return `${req.protocol}://${req.get("host")}/api/groups/${groupId}/lessons/${lessonId}/document?index=${index}`;
 }
 
-// Apply the authenticated-proxy transform to a lesson object so stored private
-// files are only reachable via authed endpoints. Expects documents[] and
-// referenceLinks[] to already be folded. External links pass through.
-function transformLessonForDelivery(
+// Apply the delivery transform to a lesson object so stored private files are
+// reachable only by authorized users. Lesson videos are served directly from
+// Supabase via short-lived signed URLs (no Vercel function in the media path —
+// this is what makes playback buffer-free), falling back to the authenticated
+// proxy when signing fails. Documents keep using the authenticated proxy.
+// Expects documents[] and referenceLinks[] to already be folded. External
+// links pass through.
+async function transformLessonForDelivery(
   req: AuthRequest,
   groupId: any,
   lesson: any
-): any {
+): Promise<any> {
   const baseProxy = lessonVideoProxyUrl(req, groupId, lesson._id);
-  if (lesson.videoUrl && toStorageVideoPath(lesson.videoUrl)) {
-    lesson.videoUrl = baseProxy;
-  }
-  if (
-    lesson.recordedLiveVideoUrl &&
-    toStorageVideoPath(lesson.recordedLiveVideoUrl)
-  ) {
-    lesson.recordedLiveVideoUrl = `${baseProxy}?field=recordedLiveVideoUrl`;
-  }
-  if (lesson.recordedVideoUrl && toStorageVideoPath(lesson.recordedVideoUrl)) {
-    lesson.recordedVideoUrl = `${baseProxy}?field=recordedVideoUrl`;
-  }
+
+  const resolveVideo = async (
+    value: string | undefined,
+    field: string
+  ): Promise<string | undefined> => {
+    if (!value) return undefined;
+    if (!toStorageVideoPath(value)) return value; // external link passes through
+    const signed = await createSignedVideoUrl(value);
+    return (
+      signed ||
+      (field === "videoUrl" ? baseProxy : `${baseProxy}?field=${field}`)
+    );
+  };
+
+  lesson.videoUrl = await resolveVideo(lesson.videoUrl, "videoUrl");
+  lesson.recordedLiveVideoUrl = await resolveVideo(
+    lesson.recordedLiveVideoUrl,
+    "recordedLiveVideoUrl"
+  );
+  lesson.recordedVideoUrl = await resolveVideo(
+    lesson.recordedVideoUrl,
+    "recordedVideoUrl"
+  );
   if (Array.isArray(lesson.documents)) {
     for (let i = 0; i < lesson.documents.length; i++) {
       const doc = lesson.documents[i];
@@ -675,6 +696,69 @@ router.post(
         return;
       }
       res.status(500).json({ message: "Error uploading video", error: error.message });
+    }
+  }
+);
+
+// Group description videos stream from the public group-videos bucket. The
+// browser needs the moov atom up front to start playing, so this remuxes the
+// uploaded file with faststart (stream copy — no re-encode). Best-effort: the
+// frontend fires it after upload and ignores failures.
+router.post(
+  "/:id/video/optimize",
+  auth,
+  requireRole("TEACHER"),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id);
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      if (group.teacherId.toString() !== req.user!._id.toString()) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const stored = group.descriptionVideo;
+      const videoPath = toStorageGroupVideoPath(String(stored || ""));
+      if (!videoPath) {
+        res.status(400).json({ message: "Group has no stored description video" });
+        return;
+      }
+
+      const upstream = await fetchStorageObject(
+        GROUP_VIDEOS_BUCKET,
+        videoPath.replace(`${GROUP_VIDEOS_BUCKET}/`, "")
+      );
+      if (!upstream.ok || !upstream.body) {
+        res.status(upstream.status).json({ message: "Failed to download video" });
+        return;
+      }
+      const buffer = Buffer.from(await upstream.arrayBuffer());
+
+      const optimized = await remuxVideoToFaststart(buffer);
+
+      const userId = req.user!._id.toString();
+      const newPath = `group-videos/${userId}-${Date.now()}-optimized.mp4`;
+      const uploaded = await uploadFile(newPath, optimized, "video/mp4");
+      if (!uploaded) {
+        res.status(500).json({ message: "Failed to store optimized video" });
+        return;
+      }
+
+      group.descriptionVideo = newPath;
+      group.videoOptimized = true;
+      await group.save();
+
+      if (videoPath !== newPath) {
+        await deleteFile(videoPath);
+      }
+
+      res.json({ success: true, group });
+    } catch (error: any) {
+      console.error("Group video optimize error:", error);
+      res.status(500).json({ message: "Error optimizing video", error: error.message });
     }
   }
 );
@@ -2361,7 +2445,7 @@ router.get(
       // file). External links pass through unchanged.
       if (isPrivileged) {
         for (const lesson of lessons) {
-          transformLessonForDelivery(req, group._id, lesson);
+          await transformLessonForDelivery(req, group._id, lesson);
         }
       }
 
@@ -2474,7 +2558,7 @@ router.post(
           : lessonObj.referenceUrl
           ? [lessonObj.referenceUrl]
           : [];
-      const delivered = transformLessonForDelivery(req, group._id, lessonObj);
+      const delivered = await transformLessonForDelivery(req, group._id, lessonObj);
 
       res.json({
         success: true,
@@ -2557,6 +2641,500 @@ router.get(
 // lesson-videos bucket and is never exposed via a public URL. A lesson may
 // hold several videos (legacy videoUrl, the recorded live session, or an extra
 // recorded video); the ?field= query selects which one to stream.
+// Return a fresh signed URL for a lesson video (no bytes are proxied through
+// Vercel). Same access rules as the video proxy route; used by the player to
+// refresh an expiring signed URL so long lessons keep playing without a hitch.
+router.get(
+  "/:id/lessons/:lessonId/video/signed",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+
+      const isTeacher = group.teacherId.toString() === req.user!._id.toString();
+      const isStudent = (group.students || []).some(
+        (s: any) => s.toString() === req.user!._id.toString()
+      );
+
+      if (!isTeacher && !isStudent && req.user!.role !== "ADMIN") {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      if (isStudent && !isTeacher && req.user!.role !== "ADMIN") {
+        const purchases = await Purchase.find({
+          groupId: group._id,
+          studentId: req.user!._id,
+        }).lean();
+        let allowed = computeEntitlement(purchases).monthlyActive;
+        if (!allowed) {
+          const access = await LessonAccess.findOne({
+            lessonId: req.params.lessonId,
+            studentId: req.user!._id,
+          }).lean();
+          allowed = Boolean(access);
+        }
+        if (!allowed) {
+          res.status(402).json({ message: "Payment required" });
+          return;
+        }
+      }
+
+      const field =
+        req.query.field === "recordedLiveVideoUrl" ||
+        req.query.field === "recordedVideoUrl"
+          ? req.query.field
+          : "videoUrl";
+
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      }).select(`${field} type`);
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+
+      const stored = (lesson as any)[field] || "";
+      if (!toStorageVideoPath(stored)) {
+        res.status(400).json({ message: "Lesson has no stored video" });
+        return;
+      }
+
+      const url = await createSignedVideoUrl(stored);
+      if (!url) {
+        res
+          .status(500)
+          .json({ message: "فشل إنشاء رابط الفيديو — أعد المحاولة" });
+        return;
+      }
+
+      res.json({ success: true, url });
+    } catch (error: any) {
+      console.error("Lesson signed URL error:", error);
+      res.status(500).json({ message: "Error creating video link" });
+    }
+  }
+);
+
+// Check the requesting user can use AI tools on a lesson: group members who
+// paid for the lesson (or hold a monthly subscription), the owning teacher and
+// admins. Returns true when allowed.
+async function canAccessLessonAI(
+  req: AuthRequest,
+  group: any,
+  lesson: any
+): Promise<boolean> {
+  const isPrivileged =
+    group.teacherId.toString() === req.user!._id.toString() ||
+    req.user!.role === "ADMIN";
+  if (isPrivileged) return true;
+
+  const isMember = (group.students || []).some(
+    (s: any) => s.toString() === req.user!._id.toString()
+  );
+  if (!isMember) return false;
+
+  const purchases = await Purchase.find({
+    groupId: group._id,
+    studentId: req.user!._id,
+  }).lean();
+  if (computeEntitlement(purchases).monthlyActive) return true;
+
+  const access = await LessonAccess.findOne({
+    lessonId: lesson._id,
+    studentId: req.user!._id,
+  }).lean();
+  return Boolean(access);
+}
+
+// Index a lesson's materials for the AI tools: parses every uploaded document
+// and best-effort transcribes the lesson videos (short clips only — long files
+// fail on the free hosting plan and get a friendly error). Deduplicates by
+// lesson + source so re-running is safe. Access is checked like the video proxy.
+router.post(
+  "/:id/lessons/:lessonId/ai/index",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+      if (!(await canAccessLessonAI(req, group, lesson))) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const teacherId = lesson.teacherId;
+      const lessonId = lesson._id;
+      const groupId = group._id;
+      const results: Array<{ kind: string; title: string; status: string }> = [];
+
+      // 1) Documents (private documents bucket → parsed server-side).
+      const docPaths: Array<{ path: string; title: string }> = [];
+      const rawDocs = Array.isArray(lesson.documents) && lesson.documents.length
+        ? lesson.documents
+        : lesson.documentUrl
+        ? [lesson.documentUrl]
+        : [];
+      rawDocs.forEach((doc: string, i: number) => {
+        const path = toStoragePath(doc);
+        if (!path) return;
+        docPaths.push({
+          path,
+          title: `${lesson.title} - مستند ${i + 1}`,
+        });
+      });
+
+      for (const { path, title } of docPaths) {
+        const existing = await AIContent.findOne({
+          lessonId,
+          sourceType: "LESSON_DOCUMENT",
+          sourceId: path,
+        });
+        if (existing && existing.status === "READY") {
+          results.push({ kind: "document", title, status: "READY" });
+          continue;
+        }
+        try {
+          const upstream = await fetchStorageObject(
+            DOCUMENTS_BUCKET,
+            path.replace(/^documents\//, "")
+          );
+          if (!upstream.ok || !upstream.body) {
+            throw new Error(`فشل تحميل المستند (${upstream.status})`);
+          }
+          const buffer = Buffer.from(await upstream.arrayBuffer());
+          const mime = upstream.headers.get("Content-Type") || inferMimeFromPath(path);
+          const parsed = await parseDocument(buffer, mime);
+          if (existing) {
+            existing.content = parsed.text;
+            existing.tokenCount = Math.ceil(parsed.text.length / 4);
+            existing.status = "READY";
+            existing.error = undefined;
+            await existing.save();
+          } else {
+            await AIContent.create({
+              userId: teacherId,
+              groupId,
+              lessonId,
+              type: "DOCUMENT",
+              sourceType: "LESSON_DOCUMENT",
+              sourceId: path,
+              supabasePath: path,
+              title,
+              content: parsed.text,
+              tokenCount: Math.ceil(parsed.text.length / 4),
+              status: "READY",
+              metadata: { fileType: parsed.fileType, pageCount: parsed.pageCount },
+            });
+          }
+          results.push({ kind: "document", title, status: "READY" });
+        } catch (error: any) {
+          if (existing) {
+            existing.status = "ERROR";
+            existing.error = error.message;
+            await existing.save();
+          } else {
+            await AIContent.create({
+              userId: teacherId,
+              groupId,
+              lessonId,
+              type: "DOCUMENT",
+              sourceType: "LESSON_DOCUMENT",
+              sourceId: path,
+              supabasePath: path,
+              title,
+              content: "",
+              tokenCount: 0,
+              status: "ERROR",
+              error: error.message,
+            });
+          }
+          results.push({ kind: "document", title, status: "ERROR" });
+        }
+      }
+
+      // 2) Videos (best-effort transcription with a size guard).
+      const videoFields: Array<[string, string]> = [
+        ["videoUrl", "فيديو الدرس"],
+        ["recordedLiveVideoUrl", "تسجيل الحصة"],
+        ["recordedVideoUrl", "فيديو إضافي"],
+      ];
+      for (const [field, label] of videoFields) {
+        const stored = (lesson as any)[field];
+        const path = toStorageVideoPath(String(stored || ""));
+        if (!path) continue;
+
+        const existing = await AIContent.findOne({
+          lessonId,
+          sourceType: "LESSON_VIDEO",
+          sourceId: path,
+        });
+        if (existing && existing.status === "READY") {
+          results.push({ kind: "video", title: label, status: "READY" });
+          continue;
+        }
+
+        try {
+          const probe = await fetchStorageObject(
+            LESSON_VIDEOS_BUCKET,
+            path.replace(`${LESSON_VIDEOS_BUCKET}/`, ""),
+            "bytes=0-0"
+          );
+          if (!probe.ok) throw new Error(`تعذر الوصول للفيديو (${probe.status})`);
+          const size = parseContentRangeSize(probe.headers.get("Content-Range"));
+          if (size && size > MAX_LESSON_VIDEO_AI_BYTES) {
+            throw new Error(
+              "الفيديو كبير جداً للتلخيص في الخطة الحالية — جرّب مع مقطع قصير أو اعتمد على مستندات الدرس"
+            );
+          }
+
+          if (existing) {
+            existing.status = "PROCESSING";
+            existing.error = undefined;
+            await existing.save();
+          } else {
+            await AIContent.create({
+              userId: teacherId,
+              groupId,
+              lessonId,
+              type: "VIDEO_TRANSCRIPT",
+              sourceType: "LESSON_VIDEO",
+              sourceId: path,
+              supabasePath: path,
+              title: `${lesson.title} - ${label}`,
+              content: "",
+              tokenCount: 0,
+              status: "PROCESSING",
+            });
+          }
+          const fresh = await AIContent.findOne({ lessonId, sourceType: "LESSON_VIDEO", sourceId: path });
+          try {
+            const { transcript } = await processSupabaseVideoToTranscript(path);
+            if (fresh) {
+              fresh.content = transcript;
+              fresh.tokenCount = Math.ceil(transcript.length / 4);
+              fresh.status = "READY";
+              await fresh.save();
+            }
+            results.push({ kind: "video", title: label, status: "READY" });
+          } catch (transcribeError: any) {
+            if (fresh) {
+              fresh.status = "ERROR";
+              fresh.error =
+                "تعذر تفريغ الفيديو تلقائياً (قد يكون طويلاً جداً) — استخدم مستندات الدرس أو مقطعاً قصيراً";
+              await fresh.save();
+            }
+            results.push({ kind: "video", title: label, status: "ERROR" });
+          }
+        } catch (error: any) {
+          if (existing) {
+            existing.status = "ERROR";
+            existing.error = error.message;
+            await existing.save();
+          } else {
+            await AIContent.create({
+              userId: teacherId,
+              groupId,
+              lessonId,
+              type: "VIDEO_TRANSCRIPT",
+              sourceType: "LESSON_VIDEO",
+              sourceId: path,
+              supabasePath: path,
+              title: `${lesson.title} - ${label}`,
+              content: "",
+              tokenCount: 0,
+              status: "ERROR",
+              error: error.message,
+            });
+          }
+          results.push({ kind: "video", title: label, status: "ERROR" });
+        }
+      }
+
+      res.json({ success: true, data: results });
+    } catch (error: any) {
+      console.error("Lesson AI index error:", error);
+      res.status(500).json({ message: "Error indexing lesson materials", error: error.message });
+    }
+  }
+);
+
+// Return a lesson's AI material statuses + the student's generated artifacts
+// (summary/exam/flashcards/homework) for that lesson.
+router.get(
+  "/:id/lessons/:lessonId/ai",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+      if (!(await canAccessLessonAI(req, group, lesson))) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const [materials, generated] = await Promise.all([
+        AIContent.find({ lessonId: lesson._id })
+          .select("title type sourceType status error tokenCount metadata createdAt")
+          .sort("createdAt")
+          .lean(),
+        GeneratedContent.find({
+          userId: req.user!._id,
+          lessonId: lesson._id,
+        })
+          .select("type title data config createdAt")
+          .sort("-createdAt")
+          .lean(),
+      ]);
+
+      res.json({ success: true, data: { materials, generated } });
+    } catch (error: any) {
+      console.error("Lesson AI status error:", error);
+      res.status(500).json({ message: "Error fetching AI status", error: error.message });
+    }
+  }
+);
+
+// Generate a homework assignment for a lesson from its aggregated materials.
+router.post(
+  "/:id/lessons/:lessonId/ai/homework",
+  auth,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const group = await Group.findById(req.params.id).select("teacherId students");
+      if (!group) {
+        res.status(404).json({ message: "Group not found" });
+        return;
+      }
+      const lesson = await Lesson.findOne({
+        _id: req.params.lessonId,
+        groupId: group._id,
+      });
+      if (!lesson) {
+        res.status(404).json({ message: "Lesson not found" });
+        return;
+      }
+      if (!(await canAccessLessonAI(req, group, lesson))) {
+        res.status(403).json({ message: "Forbidden" });
+        return;
+      }
+
+      const materials = await AIContent.find({
+        lessonId: lesson._id,
+        status: "READY",
+      })
+        .select("title content type")
+        .sort("createdAt")
+        .lean();
+      if (materials.length === 0) {
+        res.status(400).json({
+          message:
+            "لا توجد مواد جاهزة لهذا الدرس بعد — اضغط على «جهّز مواد الدرس» أولاً",
+        });
+        return;
+      }
+
+      const context = materials
+        .map((m: any) => `--- ${m.title} ---\n${m.content}`)
+        .join("\n\n")
+        .slice(0, 15000);
+
+      const difficulty = String(req.body?.difficulty || "medium");
+      const raw = await generateHomework(context, {
+        count: Number(req.body?.count) || 8,
+        difficulty,
+        language: String(req.body?.language || "ar"),
+      });
+
+      let homeworkData: any = {};
+      try {
+        homeworkData = JSON.parse(raw);
+      } catch {
+        homeworkData = {};
+      }
+
+      const generated = await GeneratedContent.create({
+        userId: req.user!._id,
+        contentId: materials[0]._id,
+        lessonId: lesson._id,
+        type: "HOMEWORK",
+        title: `واجب - ${lesson.title}`,
+        data: homeworkData,
+        config: { difficulty, language: String(req.body?.language || "ar") },
+      });
+
+      res.json({
+        success: true,
+        data: {
+          id: generated._id,
+          type: generated.type,
+          title: generated.title,
+          homework: homeworkData,
+          createdAt: generated.createdAt,
+        },
+      });
+    } catch (error: any) {
+      console.error("Homework generation error:", error);
+      res.status(500).json({ message: "Error generating homework", error: error.message });
+    }
+  }
+);
+
+// Helpers for the lesson AI index endpoint.
+const MAX_LESSON_VIDEO_AI_BYTES = 25 * 1024 * 1024;
+
+function parseContentRangeSize(contentRange: string | null): number | null {
+  if (!contentRange) return null;
+  const match = contentRange.match(/\/(\d+)$/);
+  return match ? Number(match[1]) : null;
+}
+
+function inferMimeFromPath(path: string): string {
+  const lower = path.toLowerCase();
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  if (lower.endsWith(".txt")) return "text/plain";
+  if (lower.endsWith(".md")) return "text/markdown";
+  if (lower.endsWith(".png")) return "image/png";
+  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+  if (lower.endsWith(".webp")) return "image/webp";
+  if (lower.endsWith(".docx"))
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (lower.endsWith(".doc")) return "application/msword";
+  return "text/plain";
+}
+
+// Stream a lesson video through the API so access is re-checked on every
+// request. Auth comes from the JWT cookie so <video> works without a header,
+// and Range is forwarded so seeking works. This is the fallback path: signed
+// URLs are preferred (direct Supabase streaming, no function in the media
+// path), but the proxy stays as a safety net when signing fails.
 router.get(
   "/:id/lessons/:lessonId/video",
   auth,
@@ -2835,6 +3413,7 @@ router.post(
       }
 
       (lesson as any)[field] = newPath;
+      (lesson as any).videoOptimized = true;
       await lesson.save();
 
       // Remove the old (unoptimized) object; the lesson now points at the new one.

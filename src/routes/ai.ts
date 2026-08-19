@@ -21,10 +21,116 @@ import { ChatHistory } from "../models/ChatHistory";
 import { GeneratedContent } from "../models/GeneratedContent";
 import { Session } from "../models/Session";
 import { User } from "../models/User";
+import { Group } from "../models/Group";
+import { Lesson } from "../models/Lesson";
+import { Purchase } from "../models/Purchase";
+import { LessonAccess } from "../models/LessonAccess";
+import { computeEntitlement } from "../services/entitlement";
+import { getWalletBalance } from "../services/walletService";
 
 const router = Router();
 
 const MAX_AI_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+// Verify the requesting user can use AI tools on a specific lesson: group
+// members who paid for the lesson (or hold a monthly subscription), plus the
+// owning teacher and admins. Returns the lesson + group on success.
+async function assertLessonAccess(
+  req: AuthRequest,
+  lessonId: string
+): Promise<{ lesson: any; group: any; isPrivileged: boolean } | null> {
+  const lesson = await Lesson.findById(lessonId);
+  if (!lesson) return null;
+  const group = await Group.findById(lesson.groupId).select("teacherId students");
+  if (!group) return null;
+
+  const isPrivileged =
+    lesson.teacherId.toString() === req.user!._id.toString() ||
+    req.user!.role === "ADMIN";
+  if (isPrivileged) return { lesson, group, isPrivileged: true };
+
+  const isMember = (group.students || []).some(
+    (s: any) => s.toString() === req.user!._id.toString()
+  );
+  if (!isMember) return null;
+
+  const purchases = await Purchase.find({
+    groupId: group._id,
+    studentId: req.user!._id,
+  }).lean();
+  const walletBalance = await getWalletBalance(req.user!._id);
+  if (computeEntitlement(purchases, walletBalance).monthlyActive) {
+    return { lesson, group, isPrivileged: false };
+  }
+
+  const access = await LessonAccess.findOne({
+    lessonId: lesson._id,
+    studentId: req.user!._id,
+  }).lean();
+  if (access) return { lesson, group, isPrivileged: false };
+
+  return null;
+}
+
+// Aggregate a lesson's READY AI materials (documents + video transcripts) into
+// one context string the generation tools can run on. Returns an error object
+// instead when the lesson is locked or nothing is ready yet.
+async function resolveLessonContext(
+  req: AuthRequest,
+  lessonId: string
+): Promise<{ content: any; text: string } | { error: string }> {
+  const allowed = await assertLessonAccess(req, lessonId);
+  if (!allowed) {
+    return { error: "غير مصرح به — الدرس مقفل أو أنت لست عضواً في المجموعة" };
+  }
+
+  const contents = await AIContent.find({ lessonId, status: "READY" })
+    .select("title content type")
+    .sort("createdAt")
+    .lean();
+
+  if (contents.length === 0) {
+    return {
+      error:
+        "لا توجد مواد جاهزة لهذا الدرس بعد — اضغط على «جهّز مواد الدرس» أولاً",
+    };
+  }
+
+  const text = contents
+    .map((c: any) => `--- ${c.title} ---\n${c.content}`)
+    .join("\n\n")
+    .slice(0, 15000);
+
+  return { content: contents[0], text };
+}
+
+// Resolve the source for a generation call: either a standalone AIContent the
+// user owns (المعلم الذكي flow) or an entire lesson's aggregated materials.
+async function resolveGenerateSource(
+  req: AuthRequest,
+  contentId: string | undefined,
+  lessonId: string | undefined
+): Promise<{ content: any; text: string } | { error: string }> {
+  if (lessonId) {
+    return resolveLessonContext(req, lessonId);
+  }
+  if (!contentId) {
+    return { error: "Content ID is required" };
+  }
+  const content = await AIContent.findOne({
+    _id: contentId,
+    userId: req.user!._id,
+  });
+  if (!content) {
+    return { error: "Content not found" };
+  }
+  if (content.status !== "READY") {
+    return { error: "Content is not ready yet" };
+  }
+  const textChunks = chunkText(content.content, 3000);
+  const text = textChunks[0] || content.content.slice(0, 3000);
+  return { content, text };
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -311,7 +417,7 @@ router.post(
 
 router.post("/chat", aiRateLimiter, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { contentId, messages, chatId } = req.body;
+    const { contentId, lessonId, messages, chatId } = req.body;
     const userId = req.user!._id;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -330,7 +436,14 @@ router.post("/chat", aiRateLimiter, async (req: AuthRequest, res: Response): Pro
       }
     }
 
-    if (contentId) {
+    if (lessonId) {
+      const ctx = await resolveLessonContext(req, lessonId);
+      if ("error" in ctx) {
+        res.status(400).json({ message: ctx.error });
+        return;
+      }
+      contextText = ctx.text;
+    } else if (contentId) {
       const content = await AIContent.findOne({ _id: contentId, userId });
       if (!content) {
         res.status(404).json({ message: "Content not found" });
@@ -546,28 +659,16 @@ router.delete("/chat-history/:id", async (req: AuthRequest, res: Response): Prom
 
 router.post("/generate-questions", aiRateLimiter, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { contentId, count = 10, difficulty = "medium", language = "ar", questionType = "mixed" } = req.body;
+    const { contentId, lessonId, count = 10, difficulty = "medium", language = "ar", questionType = "mixed" } = req.body;
     const userId = req.user!._id;
 
-    if (!contentId) {
-      res.status(400).json({ message: "Content ID is required" });
+    const source = await resolveGenerateSource(req, contentId, lessonId);
+    if ("error" in source) {
+      res.status(400).json({ message: source.error });
       return;
     }
 
-    const content = await AIContent.findOne({ _id: contentId, userId });
-    if (!content) {
-      res.status(404).json({ message: "Content not found" });
-      return;
-    }
-    if (content.status !== "READY") {
-      res.status(400).json({ message: "Content is not ready yet" });
-      return;
-    }
-
-    const textChunks = chunkText(content.content, 3000);
-    const textToUse = textChunks[0] || content.content.slice(0, 3000);
-
-    const rawQuestions = await generateQuestions(textToUse, {
+    const rawQuestions = await generateQuestions(source.text, {
       count,
       difficulty,
       language,
@@ -584,9 +685,10 @@ router.post("/generate-questions", aiRateLimiter, async (req: AuthRequest, res: 
 
     const generated = await GeneratedContent.create({
       userId,
-      contentId,
+      contentId: contentId || source.content._id,
+      lessonId,
       type: "QUESTIONS",
-      title: `أسئلة - ${content.title}`,
+      title: `أسئلة - ${source.content.title}`,
       data: questionsData,
       config: { count, difficulty, language, questionType },
     });
@@ -609,34 +711,23 @@ router.post("/generate-questions", aiRateLimiter, async (req: AuthRequest, res: 
 
 router.post("/generate-summary", aiRateLimiter, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { contentId, language = "ar" } = req.body;
+    const { contentId, lessonId, language = "ar" } = req.body;
     const userId = req.user!._id;
 
-    if (!contentId) {
-      res.status(400).json({ message: "Content ID is required" });
+    const source = await resolveGenerateSource(req, contentId, lessonId);
+    if ("error" in source) {
+      res.status(400).json({ message: source.error });
       return;
     }
 
-    const content = await AIContent.findOne({ _id: contentId, userId });
-    if (!content) {
-      res.status(404).json({ message: "Content not found" });
-      return;
-    }
-    if (content.status !== "READY") {
-      res.status(400).json({ message: "Content is not ready yet" });
-      return;
-    }
-
-    const textChunks = chunkText(content.content, 3000);
-    const textToUse = textChunks[0] || content.content.slice(0, 3000);
-
-    const summary = await generateSummary(textToUse, language);
+    const summary = await generateSummary(source.text, language);
 
     const generated = await GeneratedContent.create({
       userId,
-      contentId,
+      contentId: contentId || source.content._id,
+      lessonId,
       type: "SUMMARY",
-      title: `ملخص - ${content.title}`,
+      title: `ملخص - ${source.content.title}`,
       data: { summary },
       config: { language },
     });
@@ -659,28 +750,16 @@ router.post("/generate-summary", aiRateLimiter, async (req: AuthRequest, res: Re
 
 router.post("/generate-flashcards", aiRateLimiter, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { contentId, count = 20, language = "ar" } = req.body;
+    const { contentId, lessonId, count = 20, language = "ar" } = req.body;
     const userId = req.user!._id;
 
-    if (!contentId) {
-      res.status(400).json({ message: "Content ID is required" });
+    const source = await resolveGenerateSource(req, contentId, lessonId);
+    if ("error" in source) {
+      res.status(400).json({ message: source.error });
       return;
     }
 
-    const content = await AIContent.findOne({ _id: contentId, userId });
-    if (!content) {
-      res.status(404).json({ message: "Content not found" });
-      return;
-    }
-    if (content.status !== "READY") {
-      res.status(400).json({ message: "Content is not ready yet" });
-      return;
-    }
-
-    const textChunks = chunkText(content.content, 3000);
-    const textToUse = textChunks[0] || content.content.slice(0, 3000);
-
-    const rawFlashcards = await generateFlashcards(textToUse, count, language);
+    const rawFlashcards = await generateFlashcards(source.text, count, language);
 
     let flashcardsData: any[];
     try {
@@ -692,9 +771,10 @@ router.post("/generate-flashcards", aiRateLimiter, async (req: AuthRequest, res:
 
     const generated = await GeneratedContent.create({
       userId,
-      contentId,
+      contentId: contentId || source.content._id,
+      lessonId,
       type: "FLASHCARDS",
-      title: `بطاقات مراجعة - ${content.title}`,
+      title: `بطاقات مراجعة - ${source.content.title}`,
       data: flashcardsData,
       config: { count, language },
     });
@@ -717,34 +797,23 @@ router.post("/generate-flashcards", aiRateLimiter, async (req: AuthRequest, res:
 
 router.post("/generate-notes", aiRateLimiter, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { contentId, language = "ar" } = req.body;
+    const { contentId, lessonId, language = "ar" } = req.body;
     const userId = req.user!._id;
 
-    if (!contentId) {
-      res.status(400).json({ message: "Content ID is required" });
+    const source = await resolveGenerateSource(req, contentId, lessonId);
+    if ("error" in source) {
+      res.status(400).json({ message: source.error });
       return;
     }
 
-    const content = await AIContent.findOne({ _id: contentId, userId });
-    if (!content) {
-      res.status(404).json({ message: "Content not found" });
-      return;
-    }
-    if (content.status !== "READY") {
-      res.status(400).json({ message: "Content is not ready yet" });
-      return;
-    }
-
-    const textChunks = chunkText(content.content, 3000);
-    const textToUse = textChunks[0] || content.content.slice(0, 3000);
-
-    const notes = await generateStudyNotes(textToUse, language);
+    const notes = await generateStudyNotes(source.text, language);
 
     const generated = await GeneratedContent.create({
       userId,
-      contentId,
+      contentId: contentId || source.content._id,
+      lessonId,
       type: "STUDY_NOTES",
-      title: `ملاحظات دراسية - ${content.title}`,
+      title: `ملاحظات دراسية - ${source.content.title}`,
       data: { notes },
       config: { language },
     });

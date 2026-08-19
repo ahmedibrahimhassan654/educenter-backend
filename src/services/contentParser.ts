@@ -37,7 +37,7 @@ export interface ParsedContent {
 export async function parsePdf(buffer: Buffer): Promise<ParsedContent> {
   GlobalWorkerOptions.workerSrc = "";
 
-  const doc = await getDocument({ data: buffer }).promise;
+  const doc = await getDocument({ data: new Uint8Array(buffer) }).promise;
   const pages: string[] = [];
 
   for (let i = 1; i <= doc.numPages; i++) {

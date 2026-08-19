@@ -290,6 +290,102 @@ ${content.slice(0, 15000)}`;
   return response.choices[0]?.message?.content || "";
 }
 
+export async function generateHomework(
+  content: string,
+  options: {
+    count?: number;
+    difficulty?: string;
+    language?: string;
+  } = {}
+): Promise<string> {
+  const { count = 8, difficulty = "medium", language = "ar" } = options;
+  const langInstruction = language === "ar" ? "باللغة العربية" : "in English";
+
+  const prompt = `You are an expert educator. Based on the following content, create a homework assignment ${langInstruction} for a student.
+
+Difficulty level: ${difficulty}
+
+The assignment must have:
+- A short "title" ${langInstruction}.
+- Clear "instructions" telling the student what to do (${langInstruction}).
+- Three "sections": 1) أسئلة اختيار من متعدد (${Math.max(
+    3,
+    Math.ceil(count * 0.4)
+  )} questions), 2) صحيح أم خطأ (${Math.max(2, Math.ceil(count * 0.25))} questions), 3) أسئلة مقالية قصيرة (${Math.max(
+    2,
+    Math.ceil(count * 0.35)
+  )} questions).
+- Every question has "explanation" showing why the answer is correct (${langInstruction}).
+
+Format your response as a JSON object with this exact structure:
+{
+  "title": "Assignment title ${langInstruction}",
+  "instructions": "Student instructions ${langInstruction}",
+  "sections": [
+    {
+      "name": "اختيار من متعدد",
+      "questions": [
+        {
+          "id": 1,
+          "type": "multiple_choice",
+          "question": "Question text ${langInstruction}",
+          "options": ["Option A", "Option B", "Option C", "Option D"],
+          "correctAnswer": "The option letter (A/B/C/D)",
+          "explanation": "Brief explanation ${langInstruction}"
+        }
+      ]
+    },
+    {
+      "name": "صحيح أم خطأ",
+      "questions": [
+        {
+          "id": 2,
+          "type": "true_false",
+          "question": "Statement ${langInstruction}",
+          "options": ["صحيح", "خطأ"],
+          "correctAnswer": "صحيح or خطأ",
+          "explanation": "Brief explanation ${langInstruction}"
+        }
+      ]
+    },
+    {
+      "name": "مقالي",
+      "questions": [
+        {
+          "id": 3,
+          "type": "short_answer",
+          "question": "Open question ${langInstruction}",
+          "correctAnswer": "Expected key points",
+          "explanation": "Brief explanation ${langInstruction}"
+        }
+      ]
+    }
+  ]
+}
+
+Content:
+${content.slice(0, 15000)}
+
+Respond ONLY with the JSON object, no additional text.`;
+
+  const response = await groq.chat.completions.create({
+    model: config.groqChatModel,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an expert educational content creator. Always respond with valid JSON only.",
+      },
+      { role: "user", content: prompt },
+    ],
+    temperature: 0.3,
+    max_tokens: config.maxAiTokens,
+    response_format: { type: "json_object" },
+  });
+
+  return response.choices[0]?.message?.content || "{}";
+}
+
 export async function generateTeacherProfile(
   rawExperience: string,
   rawBio: string,

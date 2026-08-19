@@ -4,8 +4,15 @@ export interface IAIContent extends Document {
   userId: mongoose.Types.ObjectId;
   type: "DOCUMENT" | "VIDEO_TRANSCRIPT";
   title: string;
-  sourceType: "SESSION_RECORDING" | "UPLOAD" | "CURRICULUM";
+  sourceType:
+    | "SESSION_RECORDING"
+    | "UPLOAD"
+    | "CURRICULUM"
+    | "LESSON_DOCUMENT"
+    | "LESSON_VIDEO";
   sourceId?: string;
+  lessonId?: mongoose.Types.ObjectId;
+  groupId?: mongoose.Types.ObjectId;
   supabasePath?: string;
   content: string;
   tokenCount: number;
@@ -42,12 +49,22 @@ const aiContentSchema = new Schema<IAIContent>(
     },
     sourceType: {
       type: String,
-      enum: ["SESSION_RECORDING", "UPLOAD", "CURRICULUM"],
+      enum: ["SESSION_RECORDING", "UPLOAD", "CURRICULUM", "LESSON_DOCUMENT", "LESSON_VIDEO"],
       required: true,
     },
     sourceId: {
       type: String,
       trim: true,
+    },
+    lessonId: {
+      type: Schema.Types.ObjectId,
+      ref: "Lesson",
+      index: true,
+    },
+    groupId: {
+      type: Schema.Types.ObjectId,
+      ref: "Group",
+      index: true,
     },
     supabasePath: {
       type: String,

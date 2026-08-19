@@ -3,7 +3,8 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IGeneratedContent extends Document {
   userId: mongoose.Types.ObjectId;
   contentId: mongoose.Types.ObjectId;
-  type: "QUESTIONS" | "SUMMARY" | "FLASHCARDS" | "STUDY_NOTES";
+  lessonId?: mongoose.Types.ObjectId;
+  type: "QUESTIONS" | "SUMMARY" | "FLASHCARDS" | "STUDY_NOTES" | "HOMEWORK";
   title: string;
   data: any;
   config: {
@@ -29,9 +30,14 @@ const generatedContentSchema = new Schema<IGeneratedContent>(
       required: true,
       index: true,
     },
+    lessonId: {
+      type: Schema.Types.ObjectId,
+      ref: "Lesson",
+      index: true,
+    },
     type: {
       type: String,
-      enum: ["QUESTIONS", "SUMMARY", "FLASHCARDS", "STUDY_NOTES"],
+      enum: ["QUESTIONS", "SUMMARY", "FLASHCARDS", "STUDY_NOTES", "HOMEWORK"],
       required: true,
     },
     title: {
