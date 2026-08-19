@@ -3,6 +3,7 @@ import { Settings } from "../models/Settings";
 import { auth, AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/rbac";
 import { cache } from "../services/cache";
+import { setBucketPublic, GROUP_VIDEOS_BUCKET } from "../services/storageService";
 
 const router = Router();
 
@@ -140,6 +141,31 @@ router.put(
         message: "Error updating settings",
         error: error.message,
       });
+    }
+  }
+);
+
+// POST /api/admin/settings/storage/group-videos-public
+// One-time maintenance: make the group-videos bucket public so group
+// description videos stream from their public URLs. Lesson videos live in the
+// private lesson-videos bucket and are unaffected.
+router.post(
+  "/storage/group-videos-public",
+  auth,
+  requireRole("ADMIN"),
+  async (_req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const ok = await setBucketPublic(GROUP_VIDEOS_BUCKET);
+      if (!ok) {
+        res.status(500).json({ message: "تعذر جعل مجلد فيديوهات المجموعات عاماً" });
+        return;
+      }
+      res.json({
+        success: true,
+        message: "تم جعل فيديوهات المجموعات عامة بنجاح",
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error making bucket public", error: error.message });
     }
   }
 );

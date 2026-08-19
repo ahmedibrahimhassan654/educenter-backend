@@ -209,6 +209,48 @@ export function getPublicUrl(filePath: string): string {
 }
 
 /**
+ * Ensure a storage bucket is public so objects inside it are readable via
+ * their public URLs without authentication. Group description videos live in
+ * the `group-videos` bucket and are meant to be publicly browsable, while
+ * lesson/session content stays in private buckets served through the
+ * authenticated proxy routes. Non-fatal: returns false when Supabase is
+ * unreachable so callers can decide how to handle it.
+ */
+export async function setBucketPublic(bucket: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `${config.supabaseUrl}/storage/v1/bucket/${bucket}`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: config.supabaseSecretKey,
+          Authorization: `Bearer ${config.supabaseSecretKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ public: true }),
+      }
+    );
+
+    if (!response.ok) {
+      const text = await response.text();
+      // 404 means the bucket doesn't exist yet (never uploaded to) — fine.
+      if (response.status !== 404) {
+        console.error(
+          `Failed to make ${bucket} public (${response.status}):`,
+          text
+        );
+      }
+      return response.status === 404 ? true : false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error making ${bucket} public:`, error);
+    return false;
+  }
+}
+
+/**
  * True when a lesson's stored video value is a private lesson-videos path.
  */
 export function isStorageVideoPath(value: string): boolean {

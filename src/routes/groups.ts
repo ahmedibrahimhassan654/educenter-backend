@@ -26,8 +26,10 @@ import {
   toStorageGroupVideoPath,
   isProxyVideoUrl,
   fetchStorageObject,
+  setBucketPublic,
   DOCUMENTS_BUCKET,
   LESSON_VIDEOS_BUCKET,
+  GROUP_VIDEOS_BUCKET,
 } from "../services/storageService";
 import {
   sendGroupInvitationEmail,
@@ -653,6 +655,11 @@ router.post(
         res.status(500).json({ message: "Failed to upload video" });
         return;
       }
+
+      // Group description videos are public (visible on the group's public
+      // page before any purchase). Ensure the bucket is public so the returned
+      // URL actually streams; lesson videos stay private in their own bucket.
+      await setBucketPublic(GROUP_VIDEOS_BUCKET);
 
       res.json({ success: true, videoUrl: getPublicUrl(filePath) });
     } catch (error: any) {
